@@ -1,12 +1,12 @@
 # So khớp hai file kết quả dạng tập {(itemset đã sort, support)}.
-#   julia --project scripts/compare.jl ours.txt spmf.txt
+#   julia --project experiments/spmf/compare.jl ours.txt spmf.txt
 # Exit code: 0 nếu khớp 100%, 1 nếu lệch, 2 nếu sai tham số.
 
 using EclatMining
 
 function main(args::Vector{String})::Int
     if length(args) != 2 || !all(isfile, args)
-        println(stderr, "Cách dùng: julia --project scripts/compare.jl <output của nhóm> <output tham chiếu SPMF>")
+        println(stderr, "Cách dùng: julia --project experiments/spmf/compare.jl <output của nhóm> <output tham chiếu SPMF>")
         return 2
     end
     result = compare_itemsets(read_spmf_output(args[1]), read_spmf_output(args[2]))

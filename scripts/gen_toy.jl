@@ -1,4 +1,4 @@
-# Sinh các CSDL nhỏ trong data/toy/ dùng cho unit test (toy.txt có sẵn, không sinh lại).
+# Sinh các CSDL nhỏ trong test/fixtures/transactions/ dùng cho unit test (toy.txt có sẵn, không sinh lại).
 #   julia --project scripts/gen_toy.jl
 # Seed cố định 42. Các file sinh ra được commit, nên test không phụ thuộc việc chạy lại script
 # (dãy số ngẫu nhiên của Julia có thể đổi giữa các phiên bản Julia).
@@ -6,7 +6,7 @@
 using Random
 using EclatMining
 
-const TOY_DIR = normpath(joinpath(@__DIR__, "..", "data", "toy"))
+const TOY_DIR = normpath(joinpath(@__DIR__, "..", "test", "fixtures", "transactions"))
 
 function write_lines(name::String, lines::Vector{String})::Nothing
     open(joinpath(TOY_DIR, name), "w") do io
