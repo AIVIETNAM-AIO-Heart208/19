@@ -17,6 +17,7 @@ const DEFAULT_LEVELS = [20, 40, 60]
 const LEVELS = Dict{String,Vector{Int}}(
     "toy" => [20, 21, 39, 40, 60],
     "rand_sparse" => [2, 5, 10, 20, 40, 60],
+    "ws_line" => [40, 60, 70, 80],   # dòng chỉ có khoảng trắng = giao dịch rỗng: 70% × 5 = 3,5 -> 4
 )
 
 # SPMF không đọc được các file này (đã quan sát hộp đen, xem test/fixtures/README.md).

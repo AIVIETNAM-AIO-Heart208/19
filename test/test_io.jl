@@ -16,8 +16,10 @@ using EclatMining
 
     # Dòng trống, dòng @ # %, dấu cách thừa, item chưa sort, item trùng trong dòng.
     dirty = read_spmf(toy("dup_items_comments.txt"))
-    @test dirty == [[1, 2, 3], [1, 2, 3, 5], [5], [1, 2, 4], [2, 4], [1, 3, 5], [1, 2, 3, 5]]
-    @test dirty == read_spmf(toy("dup_items_comments_clean.txt"))
+    # Dòng "   " (chỉ có dấu cách) là một giao dịch rỗng, đứng giữa [1, 2, 4] và [2, 4].
+    @test dirty == [[1, 2, 3], [1, 2, 3, 5], [5], [1, 2, 4], Int[], [2, 4], [1, 3, 5], [1, 2, 3, 5]]
+    # Bỏ giao dịch rỗng thì ra đúng bản _clean (7 giao dịch, không có dòng chỉ có dấu cách).
+    @test filter(!isempty, dirty) == read_spmf(toy("dup_items_comments_clean.txt"))
 
     @test isempty(read_spmf(toy("empty.txt")))
 
@@ -29,6 +31,27 @@ using EclatMining
     @test_throws ArgumentError EclatMining.read_transactions(IOBuffer("1 -2 3\n"))
 
     @test (@inferred read_spmf(toy("toy.txt"))) isa Vector{Vector{Int}}
+
+    # Dòng chỉ có khoảng trắng = một giao dịch rỗng (giống SPMF); dòng trống hẳn thì bỏ.
+    @testset "dòng chỉ có khoảng trắng" begin
+        text = "1 2\n1 2\n1\n\n   \n\t\n1 2\n"
+        db = EclatMining.read_transactions(IOBuffer(text))
+        @test db == [[1, 2], [1, 2], [1], Int[], Int[], [1, 2]]     # "   " và "\t" tính, "" không tính
+        without = EclatMining.read_transactions(IOBuffer("1 2\n1 2\n1\n\n1 2\n"))
+        @test length(db) == length(without) + 2                     # |DB| tăng đúng số dòng khoảng trắng
+
+        # Ngưỡng tuyệt đối đổi theo |DB|: 70% × 4 = 2,8 -> 3 nhưng 70% × 5 = 3,5 -> 4.
+        one_ws = EclatMining.read_transactions(IOBuffer("1 2\n1 2\n1\n   \n1 2\n"))
+        four = EclatMining.read_transactions(IOBuffer("1 2\n1 2\n1\n1 2\n"))
+        @test (length(four), length(one_ws)) == (4, 5)
+        @test minsup_abs(parse_minsup("70%"), length(four)) == 3
+        @test minsup_abs(parse_minsup("70%"), length(one_ws)) == 4
+        @test Dict(eclat(four, 3)) == Dict([1] => 4, [2] => 3, [1, 2] => 3)
+        @test Dict(eclat(one_ws, 4)) == Dict([1] => 4)              # item 2 (support 3) rớt vì ngưỡng tăng
+
+        # Giao dịch rỗng không được làm thay đổi support của itemset nào.
+        @test Dict(eclat(one_ws, 1)) == Dict(eclat(four, 1))
+    end
 end
 
 @testset "parse_minsup / minsup_abs" begin

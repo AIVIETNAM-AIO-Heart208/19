@@ -32,8 +32,11 @@ end
 function read_transactions(io::IO)::Vector{Vector{Int}}
     db = Vector{Int}[]
     for (lineno, raw) in enumerate(eachline(io))
-        line = strip(lstrip(raw, '﻿'))        # bỏ BOM (file do Windows tạo) và khoảng trắng 2 đầu
-        isempty(line) && continue                   # dòng trống
+        raw = lstrip(raw, '﻿')                 # bỏ BOM (file do Windows tạo)
+        isempty(raw) && continue                    # dòng trống hẳn: bỏ
+        line = strip(raw)
+        # Dòng chỉ có khoảng trắng: SPMF tính là một giao dịch rỗng (|DB| tăng 1), nhóm làm giống SPMF.
+        isempty(line) && (push!(db, Int[]); continue)
         is_comment_char(first(line)) && continue    # dòng @ # %
         push!(db, parse_items(line, lineno))
     end
@@ -44,7 +47,8 @@ end
     read_spmf(path) -> Vector{Vector{Int}}
 
 Đọc CSDL giao dịch định dạng SPMF: mỗi dòng một giao dịch, item cách nhau khoảng trắng.
-Bỏ dòng trống và dòng bắt đầu bằng `@`, `#`, `%`. Mỗi giao dịch được sort và bỏ item trùng.
+Bỏ dòng trống hẳn và dòng bắt đầu bằng `@`, `#`, `%`. Dòng chỉ có khoảng trắng là một giao dịch rỗng
+(giống SPMF, làm |DB| và minsup tuyệt đối đổi). Mỗi giao dịch được sort và bỏ item trùng.
 Các giao dịch trùng nhau được GIỮ NGUYÊN vì chúng vẫn được tính vào support.
 """
 read_spmf(path::AbstractString)::Vector{Vector{Int}} = open(read_transactions, path)

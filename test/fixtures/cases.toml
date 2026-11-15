@@ -124,3 +124,27 @@ input = "transactions/toy.txt"
 minsup_percent = 60
 expected = "spmf_expected/toy_60.txt"
 n_itemsets = 9
+
+[[case]]
+input = "transactions/ws_line.txt"
+minsup_percent = 40
+expected = "spmf_expected/ws_line_40.txt"
+n_itemsets = 3
+
+[[case]]
+input = "transactions/ws_line.txt"
+minsup_percent = 60
+expected = "spmf_expected/ws_line_60.txt"
+n_itemsets = 3
+
+[[case]]
+input = "transactions/ws_line.txt"
+minsup_percent = 70
+expected = "spmf_expected/ws_line_70.txt"
+n_itemsets = 1
+
+[[case]]
+input = "transactions/ws_line.txt"
+minsup_percent = 80
+expected = "spmf_expected/ws_line_80.txt"
+n_itemsets = 1
