@@ -18,3 +18,8 @@ Thumbs.db
 /docs/report/*.fdb_latexmk
 /docs/report/*.synctex.gz
 
+
+# Vai B: de goc (ban sao cuc bo), SPMF jar, output CLI tam
+spec/
+tools/*.jar
+out*.txt
