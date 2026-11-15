@@ -8,6 +8,7 @@ include("algorithm/baseline.jl")
 include("algorithm/optimized.jl")
 include("io.jl")
 include("utils.jl")
+include("eclat_interface.jl")   # STUB của B: xóa dòng này khi A đã định nghĩa `eclat`
 include("applications/association_rules.jl")
 include("applications/market_basket.jl")
 include("applications/biology.jl")
