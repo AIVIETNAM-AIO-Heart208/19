@@ -53,6 +53,41 @@ Các giao dịch trùng nhau được GIỮ NGUYÊN vì chúng vẫn được t�
 """
 read_spmf(path::AbstractString)::Vector{Vector{Int}} = open(read_transactions, path)
 
+# Làm sạch một CSDL giao dịch để SPMF đọc được mà không đổi số giao dịch (xem `clean_spmf`).
+function clean_transactions(input::IO, output::IO)::Int
+    n = 0
+    for (lineno, raw) in enumerate(eachline(input))
+        raw = lstrip(raw, '﻿')
+        isempty(raw) && continue                    # dòng trống hẳn: SPMF cũng bỏ, không phải giao dịch
+        line = strip(raw)
+        if isempty(line)
+            print(output, " \n")                    # giao dịch rỗng: đúng một dấu cách (SPMF đọc ra giao dịch rỗng)
+        else
+            is_comment_char(first(line)) && continue
+            join(output, parse_items(line, lineno), ' ')   # sort + bỏ item trùng, các item cách nhau đúng một dấu cách
+            print(output, '\n')
+        end
+        n += 1
+    end
+    return n
+end
+
+"""
+    clean_spmf(in, out) -> Int
+
+Ghi vào `out` bản làm sạch của file giao dịch `in`, trả về số giao dịch đã ghi. Bản sạch có mỗi dòng một
+giao dịch, không dấu cách đầu/cuối, các item cách nhau đúng một dấu cách, item sort tăng dần và không trùng,
+nên SPMF (vốn crash với dấu cách đầu dòng, dấu cách liền nhau, item trùng) đọc được.
+
+Không đổi số giao dịch: dòng chỉ có khoảng trắng (một giao dịch rỗng) được ghi thành một dòng gồm đúng
+một dấu cách, đã kiểm thử hộp đen là SPMF vẫn đọc ra một giao dịch rỗng. Chỉ bỏ những dòng không phải giao dịch:
+dòng trống hẳn và dòng bắt đầu bằng `@`, `#`, `%`. Benchmark thật phải đi qua hàm này trước khi đưa cho SPMF.
+"""
+function clean_spmf(input::AbstractString, output::AbstractString)::Int
+    abspath(input) == abspath(output) && throw(ArgumentError("input và output phải là hai file khác nhau"))
+    return open(in_io -> open(out_io -> clean_transactions(in_io, out_io), output, "w"), input)
+end
+
 # ---------------------------------------------------------------------------
 # Ghi / đọc kết quả `i1 i2 ... #SUP: n`
 # ---------------------------------------------------------------------------

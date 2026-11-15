@@ -24,6 +24,24 @@ expected = "spmf_expected/dup_items_comments_clean_60.txt"
 n_itemsets = 2
 
 [[case]]
+input = "transactions/dup_items_comments_cleaned.txt"
+minsup_percent = 20
+expected = "spmf_expected/dup_items_comments_cleaned_20.txt"
+n_itemsets = 17
+
+[[case]]
+input = "transactions/dup_items_comments_cleaned.txt"
+minsup_percent = 40
+expected = "spmf_expected/dup_items_comments_cleaned_40.txt"
+n_itemsets = 6
+
+[[case]]
+input = "transactions/dup_items_comments_cleaned.txt"
+minsup_percent = 60
+expected = "spmf_expected/dup_items_comments_cleaned_60.txt"
+n_itemsets = 2
+
+[[case]]
 input = "transactions/dup_tx.txt"
 minsup_percent = 20
 expected = "spmf_expected/dup_tx_20.txt"

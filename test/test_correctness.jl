@@ -90,10 +90,11 @@ end
     println("Khớp SPMF: ", length(files), " file output, ", length(datasets),
             " CSDL, tổng ", n_itemsets, " itemset tham chiếu")
 
-    # File bẩn SPMF không đọc được: đối chiếu qua output SPMF của bản đã làm sạch.
-    dirty = filter(!isempty, read_spmf(toy("dup_items_comments.txt")))   # bản 7 giao dịch, khớp _clean
+    # File bẩn SPMF không đọc được: nhóm đọc file bẩn, SPMF đọc bản clean_spmf của nó (8 giao dịch, có giao dịch rỗng).
+    dirty = read_spmf(toy("dup_items_comments.txt"))
+    @test length(dirty) == 8
     @testset "dup_items_comments (bẩn) @ $pct%" for pct in (20, 40, 60)
-        spmf = read_spmf_output(joinpath(EXPECTED_DIR, "dup_items_comments_clean_$pct.txt"))
+        spmf = read_spmf_output(joinpath(EXPECTED_DIR, "dup_items_comments_cleaned_$pct.txt"))
         @test is_exact_match(compare_itemsets(eclat(dirty, minsup_abs(pct // 100, length(dirty))), spmf))
     end
 end

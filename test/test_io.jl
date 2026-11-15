@@ -115,3 +115,42 @@ end
     @test_throws ArgumentError EclatMining.read_itemsets(IOBuffer("1 2 #SUP: 2\n2 1 #SUP: 2\n"))
     @test (@inferred read_spmf_output(joinpath(EXPECTED_DIR, "toy_40.txt"))) isa Dict{Vector{Int},Int}
 end
+
+@testset "clean_spmf" begin
+    dirty_path = toy("dup_items_comments.txt")
+    mktempdir() do dir
+        out = joinpath(dir, "cleaned.txt")
+        n = clean_spmf(dirty_path, out)
+
+        # Không đổi số giao dịch và nội dung: đọc lại bản sạch ra đúng CSDL của file bẩn.
+        @test n == 8
+        @test read_spmf(out) == read_spmf(dirty_path)
+        @test length(read_spmf(out)) == length(read_spmf(dirty_path))
+
+        # Fixture đã commit (đã chạy qua SPMF thật) đúng là output của clean_spmf.
+        @test readlines(out) == readlines(toy("dup_items_comments_cleaned.txt"))   # readlines: không phụ thuộc CRLF khi checkout
+
+        # Dạng sạch: một dấu cách giữa các item, không dấu cách đầu/cuối, riêng giao dịch rỗng là một dấu cách.
+        lines = readlines(out)
+        @test lines == ["1 2 3", "1 2 3 5", "5", "1 2 4", " ", "2 4", "1 3 5", "1 2 3 5"]
+
+        # Idempotent.
+        out2 = joinpath(dir, "cleaned2.txt")
+        @test clean_spmf(out, out2) == n
+        @test readlines(out2) == readlines(out)
+
+        # CRLF, BOM, dòng comment, dòng trống, dòng khoảng trắng.
+        crlf = joinpath(dir, "crlf.txt")
+        write(crlf, "﻿@x\r\n 2  1 1 \r\n\r\n\t \r\n# c\r\n3")
+        @test clean_spmf(crlf, out) == 3
+        @test read(out, String) == "1 2\n \n3\n"
+
+        # File rỗng cho ra file rỗng; item sai báo lỗi; không ghi đè chính file input.
+        write(crlf, "")
+        @test clean_spmf(crlf, out) == 0
+        @test filesize(out) == 0
+        write(crlf, "1 x\n")
+        @test_throws ArgumentError clean_spmf(crlf, out)
+        @test_throws ArgumentError clean_spmf(crlf, crlf)
+    end
+end

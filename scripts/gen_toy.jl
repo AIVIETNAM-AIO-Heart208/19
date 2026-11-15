@@ -43,8 +43,14 @@ function main()::Nothing
     write_lines("dup_items_comments.txt", dirty)
 
     # Bản đã làm sạch của file trên (qua chính read_spmf) để đối chiếu cách SPMF đọc file bẩn.
-    clean = read_spmf(joinpath(TOY_DIR, "dup_items_comments.txt"))
+    # `_clean`: viết tay, 7 giao dịch, KHÔNG có giao dịch rỗng (từ lúc đọc dòng "   " thành giao dịch rỗng,
+    # file này không còn là bản làm sạch đúng nữa nhưng vẫn là một CSDL hợp lệ có output SPMF).
+    clean = filter(!isempty, read_spmf(joinpath(TOY_DIR, "dup_items_comments.txt")))
     write_lines("dup_items_comments_clean.txt", [join(t, ' ') for t in clean])
+
+    # `_cleaned`: đúng output của clean_spmf, 8 giao dịch kể cả giao dịch rỗng; SPMF đọc được.
+    n = clean_spmf(joinpath(TOY_DIR, "dup_items_comments.txt"), joinpath(TOY_DIR, "dup_items_comments_cleaned.txt"))
+    println("đã ghi dup_items_comments_cleaned.txt (", n, " giao dịch)")
 
     write_lines("empty.txt", String[])
 
