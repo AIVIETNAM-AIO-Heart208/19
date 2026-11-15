@@ -19,7 +19,6 @@ Thumbs.db
 /docs/report/*.synctex.gz
 
 
-# Vai B: de goc (ban sao cuc bo), SPMF jar, output CLI tam
-spec/
+# Vai B: SPMF jar, output CLI tam
 tools/*.jar
 out*.txt
