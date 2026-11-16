@@ -4,7 +4,7 @@
 
 ## Trạng thái
 
-Repository hiện có khung dự án Julia; thuật toán, kiểm thử và thực nghiệm chưa được triển khai.
+Repository có khung dự án Julia, parser/writer SPMF, CLI và bộ kiểm thử (đang pass). Eclat hiện là stub brute-force tạm (`src/algorithm/stub.jl`), nên khớp SPMF hiện là của stub; thực nghiệm chưa được triển khai.
 
 ## Môi trường
 
@@ -74,9 +74,9 @@ Chi tiết (phiên bản, checksum, hành vi SPMF với input bẩn) ở `experi
 
 - Thành viên và mã nhóm.
 - Bài báo gốc Eclat và ít nhất ba tài liệu liên quan.
-- Hướng dẫn CLI và ví dụ sau khi triển khai.
+- Ví dụ CLI chạy trên Eclat thật (sau khi A cài lõi).
 - Link Colab công khai, nguồn dữ liệu và checksum.
-- Lệnh kiểm thử: julia --project=. test/runtests.jl (sau khi triển khai tests).
+- Lệnh kiểm thử: julia --project test/runtests.jl (test đã có và pass, chạy trên stub).
 - Output của lần chạy kiểm thử cuối.
 
 ## Hướng ứng dụng dự kiến

@@ -12,8 +12,9 @@ Sinh lại toàn bộ bằng `julia --project experiments/spmf/run_reference.jl`
 
 - `empty.txt`: SPMF từ chối với `IllegalArgumentException: The input file is empty`.
 - `dup_items_comments.txt` (file bẩn): SPMF crash (`NumberFormatException: For input string: ""`).
-  File bẩn được đối chiếu qua bản đã làm sạch `dup_items_comments_clean.txt`, do `clean_spmf` sinh ra
-  (xem `test/test_io.jl`).
+  File bẩn được đối chiếu qua `dup_items_comments_cleaned.txt` (8 giao dịch): đây là output của `clean_spmf`
+  và là file test dùng (xem `test/test_io.jl`). `dup_items_comments_clean.txt` (7 giao dịch) là bản làm sạch
+  viết tay, không phải output của `clean_spmf`. `ws_line.txt` cũng viết tay.
 
 Thử riêng từng loại "bẩn" trên một CSDL 4 giao dịch, minsup 50%:
 

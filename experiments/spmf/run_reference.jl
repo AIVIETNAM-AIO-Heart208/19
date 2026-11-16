@@ -21,10 +21,11 @@ const LEVELS = Dict{String,Vector{Int}}(
 )
 
 # SPMF không đọc được các file này (đã quan sát hộp đen, xem test/fixtures/README.md).
-# File bẩn được đối chiếu qua bản đã làm sạch `<tên>_clean.txt`.
+# File bẩn được đối chiếu qua `<tên>_cleaned.txt` (output của clean_spmf, 8 giao dịch với dup_items_comments).
+# `<tên>_clean.txt` (7 giao dịch) là bản làm sạch viết tay, không dùng ở đây.
 const SPMF_REJECTS = Dict{String,String}(
     "empty" => "SPMF từ chối file rỗng",
-    "dup_items_comments" => "SPMF crash vì dấu cách đầu dòng, item trùng; dùng bản _clean",
+    "dup_items_comments" => "SPMF crash vì dấu cách đầu dòng, item trùng; dùng bản _cleaned",
 )
 
 # Chạy một lệnh, gộp stdout + stderr; không ném lỗi khi exit code ≠ 0.
