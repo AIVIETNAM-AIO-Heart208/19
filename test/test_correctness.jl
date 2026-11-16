@@ -28,42 +28,41 @@ using EclatMining
     @test is_exact_match(empty_result) && match_ratio(empty_result) == 1.0
 end
 
-@testset "toy (contextPasquier99)" begin
+@testset "toy (contextPasquier99) — $miner" for miner in (eclat_baseline, eclat_bitset)
     db = read_spmf(toy("toy.txt"))
-    r40 = eclat(db, minsup_abs(parse_minsup("40%"), length(db)))
+    r40 = miner(db, minsup_abs(parse_minsup("40%"), length(db)))
     @test length(r40) == 15
     @test is_exact_match(compare_itemsets(r40, TOY_40))
-    @test length(eclat(db, 1)) == 19
-    @test length(eclat(db, 3)) == 9
+    @test length(miner(db, 1)) == 19
+    @test length(miner(db, 3)) == 9
     @test all(issorted(first(p)) && allunique(first(p)) for p in r40)
 end
 
-@testset "edge cases" begin
+@testset "edge cases — $miner" for miner in (eclat_baseline, eclat_bitset)
     # CSDL rỗng.
-    @test isempty(eclat(Vector{Int}[], 0))
+    @test isempty(miner(Vector{Int}[], 0))
     @test isempty(reference_mine(Vector{Int}[], 0))
 
     # minsup 100%: chỉ còn itemset có mặt trong mọi giao dịch.
     db = [[1, 2], [1, 2, 3], [1]]
     full = minsup_abs(parse_minsup("100%"), length(db))
     @test full == 3
-    @test is_exact_match(compare_itemsets(eclat(db, full), Dict([1] => 3)))
+    @test is_exact_match(compare_itemsets(miner(db, full), Dict([1] => 3)))
     toy_db = read_spmf(toy("toy.txt"))
-    @test isempty(eclat(toy_db, minsup_abs(parse_minsup("100%"), length(toy_db))))
+    @test isempty(miner(toy_db, minsup_abs(parse_minsup("100%"), length(toy_db))))
 
     # Giao dịch trùng: mỗi bản sao được tính một lần vào support.
-    @test is_exact_match(compare_itemsets(eclat([[1, 2], [1, 2], [1, 2]], 3),
+    @test is_exact_match(compare_itemsets(miner([[1, 2], [1, 2], [1, 2]], 3),
                                           Dict([1] => 3, [2] => 3, [1, 2] => 3)))
 
     # Item trùng trong dòng không được làm tăng support.
     dirty = read_spmf(toy("dup_items_comments.txt"))
-    got = Dict(eclat(dirty, 1))
+    got = Dict(miner(dirty, 1))
     @test got[[5]] == 4          # dòng "5 5 5" chỉ tính một lần
     @test got[[2, 4]] == 2
 end
 
-
-@testset "khớp SPMF" begin
+@testset "khớp SPMF — $miner" for miner in (eclat_baseline, eclat_bitset)
     files = sort(filter(f -> endswith(f, ".txt"), readdir(EXPECTED_DIR)))
     @test length(files) >= 15
     datasets = Set{String}()
@@ -79,7 +78,7 @@ end
         spmf = read_spmf_output(joinpath(EXPECTED_DIR, file))
         n_itemsets += length(spmf)
 
-        ours = compare_itemsets(eclat(db, threshold), spmf)
+        ours = compare_itemsets(miner(db, threshold), spmf)
         @test is_exact_match(ours)
         @test match_ratio(ours) == 1.0
 
@@ -95,6 +94,6 @@ end
     @test length(dirty) == 8
     @testset "dup_items_comments (bẩn) @ $pct%" for pct in (20, 40, 60)
         spmf = read_spmf_output(joinpath(EXPECTED_DIR, "dup_items_comments_cleaned_$pct.txt"))
-        @test is_exact_match(compare_itemsets(eclat(dirty, minsup_abs(pct // 100, length(dirty))), spmf))
+        @test is_exact_match(compare_itemsets(miner(dirty, minsup_abs(pct // 100, length(dirty))), spmf))
     end
 end
