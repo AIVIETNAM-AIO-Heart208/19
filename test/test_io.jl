@@ -74,6 +74,7 @@ end
     @test minsup_abs(parse_minsup("0.1%"), 5) == 1    # minsup rất nhỏ vẫn ≥ 1
     @test minsup_abs(parse_minsup("40%"), 0) == 0     # CSDL rỗng
     @test minsup_abs("40%", 5) == 2                   # phiên bản nhận thẳng chuỗi
+    @test minsup_abs(parse_minsup(".999999999999999"), 10000) == 10000   # numerator*n > typemax(Int64)
 
     for bad in ("0", "0%", "0.0", "1.01", "101%", "-0.4", "abc", "", "%", ".", "4e-1", "40 %%")
         @test_throws ArgumentError parse_minsup(bad)

@@ -174,9 +174,10 @@ end
     minsup_abs(r, n) -> Int
 
 Ngưỡng support tuyệt đối `ceil(r × n)` như SPMF, tính bằng phép chia nguyên làm tròn lên
-(`cld`) trên tử và mẫu nên không có sai số dấu phẩy động.
+(`cld`) trên tử và mẫu nên không có sai số dấu phẩy động. Tích tử × n tính bằng `widemul` (Int128)
+để không tràn Int64 khi minsup có 15 chữ số; kết quả ≤ n nên luôn vừa Int.
 """
-minsup_abs(r::Rational{Int}, n::Int)::Int = cld(numerator(r) * n, denominator(r))
+minsup_abs(r::Rational{Int}, n::Int)::Int = Int(cld(widemul(numerator(r), n), denominator(r)))   # nhân Int128 để không tràn Int64
 minsup_abs(s::AbstractString, n::Int)::Int = minsup_abs(parse_minsup(s), n)
 
 # ---------------------------------------------------------------------------
