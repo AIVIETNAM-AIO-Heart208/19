@@ -55,10 +55,10 @@
 ### Người A — Hiệu năng và khả năng mở rộng
 
 **Goal 5. Runtime và số lượng itemset theo minsup**
-- [ ] Chạy Eclat và SPMF trên **ít nhất 4 benchmark datasets** do Người B chuẩn bị.
-- [ ] Với **mỗi dataset**, đo runtime tại **ít nhất 5–7 mức minsup** từ cao xuống thấp.
-- [ ] Vẽ biểu đồ so sánh runtime **Eclat và SPMF trên cùng đồ thị**.
-- [ ] Vẽ biểu đồ **số lượng frequent itemset theo minsup**; phân tích khác biệt giữa dữ liệu dense và sparse.
+- [x] Chạy Eclat và SPMF trên **ít nhất 4 benchmark datasets** do Người B chuẩn bị.
+- [x] Với **mỗi dataset**, đo runtime tại **ít nhất 5–7 mức minsup** từ cao xuống thấp.
+- [x] Vẽ biểu đồ so sánh runtime **Eclat và SPMF trên cùng đồ thị**.
+- [x] Vẽ biểu đồ **số lượng frequent itemset theo minsup**; phân tích khác biệt giữa dữ liệu dense và sparse.
 
 **Goal 6. Scalability và ảnh hưởng độ dài giao dịch**
 - [ ] Chọn dataset lớn (ví dụ Retail hoặc Accidents); tạo các mức **10%, 25%, 50%, 75%, 100%** giao dịch.

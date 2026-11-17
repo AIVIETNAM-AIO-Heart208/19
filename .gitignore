@@ -21,6 +21,10 @@ Thumbs.db
 
 # SPMF jar, output tạm của CLI
 tools/*.jar
+/results/metrics/benchmark_runs/*/*.txt
+/results/metrics/benchmark_runs/*/*.log
+.venv-figures/
+__pycache__/
 out*.txt
 
 # Ghi chú làm việc và file prompt cho trợ lý AI: chỉ để trên máy, không đưa lên repo

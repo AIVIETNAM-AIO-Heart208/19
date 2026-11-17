@@ -1,3 +1,14 @@
-# TODO: Chốt ít nhất 4 datasets và 5–7 mức minsup cho mỗi dataset.
+# Shared real-dataset benchmark grid. Pilot artifacts are kept separately.
 seed = 42
+dataset_manifest = "data/datasets.toml"
+dataset_ids = ["chess", "mushroom", "retail", "accidents", "t10i4d100k"]
+repeats = 5
+timeout_seconds = 120
+jvm_flags = ["-Xmx2g", "-XX:ActiveProcessorCount=1"]
 
+[minsup]
+chess = ["90%", "85%", "80%", "75%", "70%", "65%", "60%"]
+mushroom = ["60%", "50%", "40%", "30%", "25%", "20%", "15%"]
+retail = ["2%", "1.5%", "1%", "0.75%", "0.5%", "0.25%", "0.1%"]
+accidents = ["95%", "90%", "85%", "80%", "75%", "70%", "65%"]
+t10i4d100k = ["2%", "1.5%", "1%", "0.75%", "0.5%", "0.25%", "0.1%"]

@@ -1,0 +1,6 @@
+id,transactions,item_count,mean_transaction_length,min_transaction_length,max_transaction_length,min_item,max_item,raw_bytes,lines_normalized
+chess,3196,75,37.0,37,37,1,75,342294,3196
+mushroom,8124,119,23.0,23,23,1,119,570408,8124
+retail,88162,16470,10.305755314080896,1,76,0,16469,4167490,88162
+accidents,340183,468,33.80789163479657,18,51,1,468,35509823,340183
+t10i4d100k,100000,870,10.10228,1,29,0,999,4022055,100000

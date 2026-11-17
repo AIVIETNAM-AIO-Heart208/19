@@ -1,2 +1,104 @@
-# TODO: Thêm nguồn tải, phiên bản, giấy phép và SHA-256 cho từng dataset.
+schema_version = 1
+source_catalog = "https://fimi.uantwerpen.be/data/"
+downloaded_on = "2026-11-17"
+format = "FIMI integer transactions"
 
+[[dataset]]
+id = "chess"
+name = "Chess"
+source_url = "https://fimi.uantwerpen.be/data/chess.dat"
+raw_path = "data/raw/chess.dat"
+processed_path = "data/processed/chess.txt"
+raw_sha256 = "a12ea887df58a396709430af5bf0a9a32d1f6eba8e7c13dd41f28b98572c5db2"
+processed_sha256 = "341d0ff8676e053dd3b417d61f84c732736154f987ce56975a099b07460957f5"
+raw_bytes = 342294
+transactions = 3196
+item_count = 75
+mean_transaction_length = 37.0
+min_transaction_length = 37
+max_transaction_length = 37
+min_item = 1
+max_item = 75
+lines_normalized = 3196
+version = "FIMI snapshot pinned by SHA-256"
+license = "Not specified in the FIMI catalog; do not infer a license from availability"
+
+[[dataset]]
+id = "mushroom"
+name = "Mushroom"
+source_url = "https://fimi.uantwerpen.be/data/mushroom.dat"
+raw_path = "data/raw/mushroom.dat"
+processed_path = "data/processed/mushroom.txt"
+raw_sha256 = "6cf94bc482712c3936f0b40c921381ab2b776c3d9941880fecac4d83ca5cbeb5"
+processed_sha256 = "06206c73983251a9488414c4379a030e836bbeb6fe9eff1b5624a0193a811640"
+raw_bytes = 570408
+transactions = 8124
+item_count = 119
+mean_transaction_length = 23.0
+min_transaction_length = 23
+max_transaction_length = 23
+min_item = 1
+max_item = 119
+lines_normalized = 8124
+version = "FIMI snapshot pinned by SHA-256"
+license = "Not specified in the FIMI catalog; do not infer a license from availability"
+
+[[dataset]]
+id = "retail"
+name = "Retail"
+source_url = "https://fimi.uantwerpen.be/data/retail.dat"
+raw_path = "data/raw/retail.dat"
+processed_path = "data/processed/retail.txt"
+raw_sha256 = "d967431ba522e32f0fbb243f2ee113ecd4cb374cb0234c1b0858dae1d499a055"
+processed_sha256 = "8eebf67a21e008e2c6a0ebe0d8ca44bb7abfd6b22386112ea0a92b4a47067092"
+raw_bytes = 4167490
+transactions = 88162
+item_count = 16470
+mean_transaction_length = 10.305755314080896
+min_transaction_length = 1
+max_transaction_length = 76
+min_item = 0
+max_item = 16469
+lines_normalized = 88162
+version = "FIMI snapshot pinned by SHA-256"
+license = "FIMI catalog permits use with proper acknowledgement and copy of work to dataset donor; see source_catalog"
+
+[[dataset]]
+id = "accidents"
+name = "Accidents"
+source_url = "https://fimi.uantwerpen.be/data/accidents.dat"
+raw_path = "data/raw/accidents.dat"
+processed_path = "data/processed/accidents.txt"
+raw_sha256 = "8c2275550966e3cb4b6066f2bb168489a9566c500af559fa3925f1b11d97f0cd"
+processed_sha256 = "c2b3762e3f8f0ca241c35359b24e3015fd34ea241d09f94b42ae44ed42914726"
+raw_bytes = 35509823
+transactions = 340183
+item_count = 468
+mean_transaction_length = 33.80789163479657
+min_transaction_length = 18
+max_transaction_length = 51
+min_item = 1
+max_item = 468
+lines_normalized = 340183
+version = "FIMI snapshot pinned by SHA-256"
+license = "FIMI catalog permits use with proper acknowledgement and copy of work to dataset donor; see source_catalog"
+
+[[dataset]]
+id = "t10i4d100k"
+name = "T10I4D100K"
+source_url = "https://fimi.uantwerpen.be/data/T10I4D100K.dat"
+raw_path = "data/raw/t10i4d100k.dat"
+processed_path = "data/processed/t10i4d100k.txt"
+raw_sha256 = "464d7b87aa7fdc0dc432ddad0493515569b2968b0f229ce39399c454a8c62e0c"
+processed_sha256 = "9efa76cece5dc2b677970dc41ced21830b8d12c4525646cbc4947abb03ce517d"
+raw_bytes = 4022055
+transactions = 100000
+item_count = 870
+mean_transaction_length = 10.10228
+min_transaction_length = 1
+max_transaction_length = 29
+min_item = 0
+max_item = 999
+lines_normalized = 100000
+version = "FIMI snapshot pinned by SHA-256"
+license = "Not specified in the FIMI catalog; do not infer a license from availability"

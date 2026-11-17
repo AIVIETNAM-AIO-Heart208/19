@@ -4,7 +4,7 @@
 
 ## Trạng thái
 
-Đã có baseline TID-list và optimized BitVector; `eclat` mặc định gọi bitset. Cả hai khớp 27/27 case SPMF. Kiểm thử Julia 1.11.4: 3825 pass, 0 fail/error, 1 skip do quyền tạo symlink Windows. Đã có số liệu runtime/allocation/peak RAM trên dữ liệu tổng hợp; benchmark thật Chương 2 chưa thực hiện.
+Đã có baseline TID-list và optimized BitVector; `eclat` mặc định gọi bitset. Cả hai khớp 27/27 case SPMF. Kiểm thử Julia 1.11.4: 3842 pass, 0 fail/error, 1 skip do quyền tạo symlink Windows. Đã có số liệu tối ưu trên dữ liệu tổng hợp và benchmark runtime trên cả 5 CSDL thật: 7 mức minsup mỗi bộ, 350 mẫu chính thức, 35/35 cấu hình khớp itemset/support với SPMF. Xem [kết quả và phân tích](docs/report/runtime_benchmarks.md).
 
 ## Môi trường
 
@@ -61,12 +61,15 @@ Kết quả kiểm tra hai implementation ngày 17/11/2026 (Windows, Julia 1.11.
 ```text
 Khớp SPMF: 27/27 case, 7 CSDL, tổng 552 itemset tham chiếu (mỗi bản)
 Test Summary: | Pass  Broken  Total
-EclatMining   | 3825       1   3826
+EclatMining   | 3842       1   3843
 ```
 
 Một Broken là @test_skip do Windows thiếu quyền tạo symlink. Không skip bitset/baseline. CLI toy @40% khớp 100%; module không có cảnh báo ghi đè hoặc method ambiguity.
 
 ## So sánh hiệu năng
+
+Benchmark trên năm bộ dữ liệu thật: xem [hướng dẫn runtime](experiments/BENCHMARKS.md).
+Luồng này dùng `experiments/run_benchmarks.jl`, độc lập với phép đo tối ưu bên dưới.
 
 ```powershell
 julia --startup-file=no --threads=1 --project=. experiments/run_runtime.jl
@@ -107,3 +110,10 @@ Market Basket Analysis và dữ liệu sinh học; nhóm có thể đổi sang h
 ## Nội dung Chương 1
 
 Bản viết chung: [docs/report/chapter1.md](docs/report/chapter1.md). Phần cài đặt có baseline, bitset, I/O/CLI, kiểm thử và đo tối ưu. `clean_spmf` và CLI dùng chung kiểm tra file nguồn/đích, bao gồm alias hoa/thường và hard link. Báo cáo IEEE tổng hợp sẽ ghép nội dung này cùng Chương 2–3.
+
+## Chuẩn bị benchmark
+
+Đã chuẩn bị Chess, Mushroom, Retail, Accidents và T10I4D100K từ FIMI.
+Tải lại/kiểm tra/chuẩn hóa: `julia --project=. scripts/prepare_benchmarks.jl`.
+Dùng file data/processed/*.txt cho mọi miner; raw và processed được giữ ngoài Git.
+Nguồn, checksum và thống kê: [data/README.md](data/README.md), [data/datasets.toml](data/datasets.toml).
