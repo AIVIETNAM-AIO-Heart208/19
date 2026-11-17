@@ -2,6 +2,7 @@
 # Chạy qua test/runtests.jl (file đó định nghĩa TOY_DIR, EXPECTED_DIR, TOY_40, toy() và reference_mine).
 
 using Test
+using TOML
 using EclatMining
 
 @testset "compare_itemsets" begin
@@ -62,31 +63,43 @@ end
     @test got[[2, 4]] == 2
 end
 
+# Danh sách case lấy từ cases.toml (do experiments/spmf/run_reference.jl ghi khi chạy SPMF thật),
+# không lấy từ những file đang có trong thư mục: mất fixture nào thì case đó fail, không bị bỏ qua.
+const SPMF_CASES = TOML.parsefile(joinpath(FIXTURES, "cases.toml"))["case"]
+
 @testset "khớp SPMF — $miner" for miner in (eclat_baseline, eclat_bitset)
-    files = sort(filter(f -> endswith(f, ".txt"), readdir(EXPECTED_DIR)))
-    @test length(files) >= 15
+    @test !isempty(SPMF_CASES)
     datasets = Set{String}()
+    n_run = 0
     n_itemsets = 0
-    @testset "$file" for file in files
-        m = match(r"^(.+)_(\d+)\.txt$", file)
-        @test m !== nothing
-        name, pct = String(m.captures[1]), parse(Int, m.captures[2])
-        push!(datasets, name)
+    @testset "$(splitext(basename(case["expected"]))[1])" for case in SPMF_CASES
+        input = joinpath(FIXTURES, case["input"])
+        expected = joinpath(FIXTURES, case["expected"])
+        pct = case["minsup_percent"]::Int
+        has_input, has_expected = isfile(input), isfile(expected)
+        @test has_input
+        @test has_expected
+        if !(has_input && has_expected)
+            @error "Thiếu fixture cho case $(case["expected"])" input has_input expected has_expected
+        else
+            db = read_spmf(input)
+            threshold = minsup_abs(pct // 100, length(db))
+            spmf = read_spmf_output(expected)
+            @test length(spmf) == case["n_itemsets"]      # expected khớp số itemset SPMF báo lúc sinh
+            push!(datasets, case["input"])
+            n_itemsets += length(spmf)
 
-        db = read_spmf(toy(name * ".txt"))
-        threshold = minsup_abs(pct // 100, length(db))
-        spmf = read_spmf_output(joinpath(EXPECTED_DIR, file))
-        n_itemsets += length(spmf)
+            ours = compare_itemsets(miner(db, threshold), spmf)
+            @test is_exact_match(ours)
+            @test match_ratio(ours) == 1.0
 
-        ours = compare_itemsets(miner(db, threshold), spmf)
-        @test is_exact_match(ours)
-        @test match_ratio(ours) == 1.0
-
-        oracle = compare_itemsets(reference_mine(db, threshold), spmf)
-        @test is_exact_match(oracle)
+            oracle = compare_itemsets(reference_mine(db, threshold), spmf)
+            @test is_exact_match(oracle)
+            n_run += 1
+        end
     end
-    @test length(datasets) >= 5          # đề yêu cầu ít nhất 5 CSDL khác nhau
-    println("Khớp SPMF: ", length(files), " file output, ", length(datasets),
+    @test n_run == length(SPMF_CASES)    # đủ mọi case đã khai báo đều chạy so khớp
+    println("Khớp SPMF: ", n_run, "/", length(SPMF_CASES), " case, ", length(datasets),
             " CSDL, tổng ", n_itemsets, " itemset tham chiếu")
 
     # File bẩn SPMF không đọc được: nhóm đọc file bẩn, SPMF đọc bản clean_spmf của nó (8 giao dịch, có giao dịch rỗng).
