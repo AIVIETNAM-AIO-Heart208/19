@@ -24,6 +24,7 @@ const TOY_40 = Dict{Vector{Int},Int}(
 @testset "EclatMining" begin
     include("test_io.jl")
     include("test_correctness.jl")
+    include("test_goal2_provenance.jl")
     # test_applications.jl của A mới là placeholder (chỉ có comment, không có test).
     # Không include để khỏi lẫn vào kết quả; thêm dòng include khi A viết test ứng dụng.
 end

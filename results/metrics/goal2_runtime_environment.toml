@@ -1,0 +1,57 @@
+commit = "be3da2ea3e809a7797a78e84c12838ef06a37908"
+dirty = true
+
+[provenance]
+julia = "1.11.4"
+threads = 1
+cpu = "znver3"
+os = "NT"
+
+    [provenance.files]
+    "src\\algorithm\\optimized.jl" = "cb93eed8e61a3711c43af7629b12b4e9c338caf685414331bc5f09a37dd6fa0a"
+    "src\\algorithm\\baseline.jl" = "22212527aef3df1fd9f238184853c6e892bb4841b3cf9e1d9af7dd4c9aae1d10"
+    "Project.toml" = "0ca4e47370c2532a074d97889e7f50dba73f8d768677b47299363373b90b4009"
+    "src\\EclatMining.jl" = "d06f70d1a5024a195d2b6beab634ea3967f55aa5b5720d5fcd4e2efd06880ba5"
+    "experiments/goal2_common.jl" = "622d8752eb8254608dd853e8ea02302b7c316a89e400eb36ee65903cd9a11ddc"
+    "experiments/run_runtime.jl" = "187ad923fdfafb4b6831f86e3da0be518089b5131d132166ce83d211941b5754"
+    "src\\io.jl" = "63f43caa340dbb1f1e3072297700b5e33e245ef7a5374f01d87367e1f0a8400d"
+    "experiments/summarize_goal2.jl" = "8ac6a7507e26733842a542878a29e219fa1c41fc8e5fb8a9878f03e2abe7dcf2"
+    "src\\applications\\biology.jl" = "e2508ec370f48a87fa222976983f3f794ed435fb0524de56bc46feec5ceeb6c8"
+    "experiments/configs/goal2.toml" = "3c04756b74ddcc8b816a0fa34409dd02a5e2257183a785fbfb448160c7450e00"
+    "src\\applications\\association_rules.jl" = "f86b679f7c6e9d251eafd7358be044cc529803b48e44dd76c436b54e0759e65e"
+    "experiments/run_memory.jl" = "0bf3351cd97a864e67a46221677914bd9f75e460ee20d674ee36d6cba13b5458"
+    "src\\applications\\market_basket.jl" = "cd9fb4238c4cb1f91adc355a8f9bad229218a1851c90363b8833c5da5bb7fe22"
+
+[config]
+repeats = 7
+seed = 42
+memory_repeats = 3
+
+    [[config.case]]
+    name = "synthetic_dense"
+    items = 24
+    minsup = "20%"
+    probability = 0.6
+    n = 12000
+    [[config.case]]
+    name = "synthetic_dense"
+    items = 24
+    minsup = "35%"
+    probability = 0.6
+    n = 12000
+    [[config.case]]
+    name = "synthetic_sparse"
+    items = 500
+    minsup = "0.5%"
+    probability = 0.01
+    n = 20000
+    [[config.case]]
+    name = "synthetic_sparse"
+    items = 500
+    minsup = "1%"
+    probability = 0.01
+    n = 20000
+
+[artifacts]
+"goal2_runtime_summary.csv" = "6a239adb20c90a3625b4ef4f04cd6dfa8bbaeb4bb6bbba1d386a829f646aa71c"
+"goal2_runtime_raw.csv" = "2aad84f5279f687e72298d884f7cabf3d967184a75541417f470aa8ee3ef7eff"

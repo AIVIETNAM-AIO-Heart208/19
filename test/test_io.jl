@@ -204,3 +204,39 @@ end
         end
     end
 end
+
+@testset "clean_spmf preserves aliased input" begin
+    mktempdir() do dir
+        cd(dir) do
+            original = "2 1\n1 3\n"
+            write("db.txt", original)
+            aliases = ["db.txt", "./db.txt", joinpath(dir, "db.txt")]
+            Sys.iswindows() && push!(aliases, "DB.TXT")
+            for alias in aliases
+                @test_throws ArgumentError clean_spmf("db.txt", alias)
+                @test read("db.txt", String) == original
+            end
+            hardlink("db.txt", "hard.txt")
+            @test_throws ArgumentError clean_spmf("db.txt", "hard.txt")
+            @test read("db.txt", String) == original
+            @test read("hard.txt", String) == original
+            # Same helper protects the CLI, including hard links.
+            @test CLI.same_file("db.txt", "hard.txt")
+            @test clean_spmf("db.txt", "clean.txt") == 2
+            @test read("clean.txt", String) == "1 2\n1 3\n"
+            @test read("db.txt", String) == original
+            # Windows may deny symlink creation; the existing CLI test reports that skip.
+            linked = try
+                symlink(joinpath(dir, "db.txt"), "sym.txt")
+                true
+            catch err
+                err isa Base.IOError || rethrow()
+                false
+            end
+            if linked
+                @test_throws ArgumentError clean_spmf("db.txt", "sym.txt")
+                @test read("db.txt", String) == original
+            end
+        end
+    end
+end

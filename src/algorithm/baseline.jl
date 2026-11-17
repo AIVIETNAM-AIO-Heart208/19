@@ -72,6 +72,3 @@ function _baseline_dfs!(result::Vector{Pair{Vector{Int},Int}}, prefix::Vector{In
     return nothing
 end
 
-"Default miner during Goal 1; switches to the optimized implementation in Goal 2."
-eclat(db::Vector{Vector{Int}}, minsup_abs::Int) = eclat_baseline(db, minsup_abs)
-

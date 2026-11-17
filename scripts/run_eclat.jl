@@ -32,15 +32,8 @@ function parse_args(args::Vector{String})::Dict{String,String}
     return opts
 end
 
-# true nếu hai đường dẫn chỉ cùng một file.
-# 1) So dạng chuẩn hóa: abspath gắn thư mục hiện tại, normpath bỏ `.`/`..`/dấu phân cách thừa;
-#    trên Windows thêm lowercase vì NTFS mặc định không phân biệt hoa thường. Không cần file tồn tại.
-# 2) Nếu cả hai đã tồn tại: samefile so (thiết bị, inode), bắt symlink/hard link mà dạng chữ khác hẳn.
-function same_file(a::AbstractString, b::AbstractString)::Bool
-    key(p) = (k = normpath(abspath(p)); Sys.iswindows() ? lowercase(k) : k)
-    key(a) == key(b) && return true
-    return ispath(a) && ispath(b) && samefile(a, b)
-end
+# Share the input/output identity guard with clean_spmf.
+same_file(a::AbstractString, b::AbstractString)::Bool = EclatMining.same_file(a, b)
 
 # Trả về exit code: 0 thành công, 1 khi tham số thiếu/sai.
 function main(args::Vector{String})::Int

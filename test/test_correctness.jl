@@ -6,8 +6,8 @@ using TOML
 using EclatMining
 using Random
 
-# Add eclat_bitset here only after Goal 2 implements it.
-const IMPLEMENTED_MINERS = (eclat_baseline,)
+# Both production implementations must pass every shared test.
+const IMPLEMENTED_MINERS = (eclat_baseline, eclat_bitset)
 
 @testset "compare_itemsets" begin
     same = compare_itemsets(TOY_40, copy(TOY_40))
@@ -117,27 +117,22 @@ const SPMF_CASES = TOML.parsefile(joinpath(FIXTURES, "cases.toml"))["case"]
 end
 
 
-@testset "Goal 2 pending: bitset" begin
-    @test_throws ErrorException eclat_bitset([[1]], 1)
-    @test_skip is_exact_match(compare_itemsets(eclat_bitset([[1]], 1), [[1] => 1]))
-end
-
-@testset "baseline API, invariants and oracle" begin
-    @test isempty(eclat_baseline(Vector{Int}[], 3))
-    @test isempty(eclat_baseline([Int[], Int[]], 1))
-    @test isempty(eclat_baseline([[1]], 2))
-    @test eclat_baseline([[0]], 1) == [[0] => 1]
-    @test_throws ArgumentError eclat_baseline(Vector{Int}[], -1)
-    @test_throws ArgumentError eclat_baseline([[1]], 0)
+@testset "API, invariants and oracle — $miner" for miner in IMPLEMENTED_MINERS
+    @test isempty(miner(Vector{Int}[], 3))
+    @test isempty(miner([Int[], Int[]], 1))
+    @test isempty(miner([[1]], 2))
+    @test miner([[0]], 1) == [[0] => 1]
+    @test_throws ArgumentError miner(Vector{Int}[], -1)
+    @test_throws ArgumentError miner([[1]], 0)
     for bad in ([[-1]], [[2, 1]], [[1, 1]])
-        @test_throws ArgumentError eclat_baseline(bad, 1)
-        @test_throws ArgumentError eclat_baseline(bad, 100)
+        @test_throws ArgumentError miner(bad, 1)
+        @test_throws ArgumentError miner(bad, 100)
     end
     db = [[0, 17, 1000], Int[], [0, 17, 1000], [17]]
     before = deepcopy(db)
-    result = @inferred eclat_baseline(db, 2)
+    result = @inferred miner(db, 2)
     @test is_exact_match(compare_itemsets(result, reference_mine(db, 2)))
-    @test result == eclat_baseline(db, 2)
+    @test result == miner(db, 2)
     @test eclat(db, 2) == result
     @test db == before
     @test all(allunique(first(p)) && issorted(first(p)) for p in result)
@@ -149,13 +144,13 @@ end
 
     # More than 20 distinct items, but only the singleton {0} is frequent.
     large_universe = [[0, i] for i in 1:30]
-    @test eclat_baseline(large_universe, 2) == [[0] => 30]
+    @test miner(large_universe, 2) == [[0] => 30]
 
     rng = MersenneTwister(20261117)
     for trial in 1:40
         random_db = [Int[i for i in 0:6 if rand(rng) < 0.4] for _ in 1:rand(rng, 1:12)]
         for threshold in unique([1, length(random_db), rand(rng, 1:length(random_db))])
-            actual = eclat_baseline(random_db, threshold)
+            actual = miner(random_db, threshold)
             @test is_exact_match(compare_itemsets(actual, reference_mine(random_db, threshold)))
         end
     end
@@ -168,8 +163,23 @@ end
     for a in transactions, b in transactions, c in transactions
         small_db = [a, b, c]
         for threshold in 1:3
-            @test is_exact_match(compare_itemsets(eclat_baseline(small_db, threshold),
+            @test is_exact_match(compare_itemsets(miner(small_db, threshold),
                                                  reference_mine(small_db, threshold)))
+        end
+    end
+end
+
+@testset "packed mask boundaries" begin
+    for n in (1, 63, 64, 65, 127, 128, 129)
+        db = [Int[] for _ in 1:n]
+        for tid in 1:n
+            push!(db[tid], 0)
+            tid in (1, 63, 64, 65, 127, 128, n) && push!(db[tid], 7)
+            iseven(tid) && push!(db[tid], typemax(Int))
+        end
+        for threshold in unique([1, n, max(1, n ÷ 2)])
+            @test is_exact_match(compare_itemsets(eclat_bitset(db, threshold),
+                                                 eclat_baseline(db, threshold)))
         end
     end
 end

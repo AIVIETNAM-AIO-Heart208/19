@@ -7,6 +7,9 @@ export CompareResult, compare_itemsets, match_ratio, is_exact_match, print_compa
 include("algorithm/baseline.jl")
 include("algorithm/optimized.jl")
 include("io.jl")
+
+"Default public miner; baseline remains available for comparisons."
+eclat(db::Vector{Vector{Int}}, minsup_abs::Int) = eclat_bitset(db, minsup_abs)
 include("applications/association_rules.jl")
 include("applications/market_basket.jl")
 include("applications/biology.jl")

@@ -16,37 +16,37 @@
 ### Người A — Thuật toán và tối ưu
 
 **Goal 1. Eclat baseline hoạt động đúng**
-- [ ] Đọc và ghi chú bài báo gốc của Eclat; giải thích TID-set, phép giao, tính support, quy trình tìm kiếm và độ phức tạp.
-- [ ] Thiết kế cấu trúc dữ liệu cho TID-set / frequent itemset.
-- [ ] Tự cài đặt Eclat baseline từ đầu, trả về **đầy đủ frequent itemset và support**.
-- [ ] Bàn giao API/hàm gọi thống nhất để Người B tích hợp CLI và kiểm thử.
+- [x] Đọc và ghi chú bài báo gốc của Eclat; giải thích TID-set, phép giao, tính support, quy trình tìm kiếm và độ phức tạp.
+- [x] Thiết kế cấu trúc dữ liệu cho TID-set / frequent itemset.
+- [x] Tự cài đặt Eclat baseline từ đầu, trả về **đầy đủ frequent itemset và support**.
+- [x] Bàn giao API/hàm gọi thống nhất để Người B tích hợp CLI và kiểm thử.
 
 **Goal 2. Eclat optimized và đo cải thiện**
-- [ ] Cài đặt **ít nhất một kỹ thuật tối ưu** phù hợp (đề xuất: bitset/BitArray cho TID-set).
-- [ ] Giữ baseline và optimized để chạy trên cùng đầu vào, cùng minsup.
-- [ ] Đo thời gian chạy và bộ nhớ; ghi bảng chênh lệch (bao gồm trường hợp tối ưu không hiệu quả).
-- [ ] Viết phần giải thích thuật toán và tối ưu của Chương 1.
+- [x] Cài đặt **ít nhất một kỹ thuật tối ưu** phù hợp (đề xuất: bitset/BitArray cho TID-set).
+- [x] Giữ baseline và optimized để chạy trên cùng đầu vào, cùng minsup.
+- [x] Đo thời gian chạy và bộ nhớ; ghi bảng chênh lệch (bao gồm trường hợp tối ưu không hiệu quả).
+- [x] Viết phần giải thích thuật toán và tối ưu của Chương 1.
 
 ### Người B — I/O, kiểm thử và đối chiếu SPMF
 
 **Goal 3. Input/output chuẩn và CLI**
-- [ ] Viết hàm đọc file `.txt` giao dịch theo định dạng SPMF.
-- [ ] Viết hàm xuất frequent itemset kèm support theo định dạng SPMF.
-- [ ] Làm CLI nhận **đường dẫn file** và **minsup**, kết nối với Eclat của Người A.
+- [x] Viết hàm đọc file `.txt` giao dịch theo định dạng SPMF.
+- [x] Viết hàm xuất frequent itemset kèm support theo định dạng SPMF.
+- [x] Làm CLI nhận **đường dẫn file** và **minsup**, kết nối với Eclat của Người A.
 
 **Goal 4. Unit tests và correctness**
-- [ ] Chuẩn bị **ít nhất 5 CSDL kiểm thử khác nhau**, gồm cả tình huống biên hợp lý.
-- [ ] Lấy kết quả chuẩn từ **SPMF** trên cùng dữ liệu và minsup.
-- [ ] Viết unit tests tự động so sánh **từng itemset và support**, không chỉ tổng số itemset.
-- [ ] Báo cáo tỉ lệ khớp; phối hợp Người A sửa các trường hợp sai đến khi kết quả khớp hoàn toàn.
-- [ ] Đảm bảo lệnh chạy test (`julia --project test/runtests.jl` nếu dùng Julia, hoặc `pytest` nếu dùng Python) pass.
-- [ ] Viết phần kiểm thử, I/O và CLI của Chương 1.
+- [x] Chuẩn bị **ít nhất 5 CSDL kiểm thử khác nhau**, gồm cả tình huống biên hợp lý.
+- [x] Lấy kết quả chuẩn từ **SPMF** trên cùng dữ liệu và minsup.
+- [x] Viết unit tests tự động so sánh **từng itemset và support**, không chỉ tổng số itemset.
+- [x] Báo cáo tỉ lệ khớp; phối hợp Người A sửa các trường hợp sai đến khi kết quả khớp hoàn toàn.
+- [x] Đảm bảo lệnh chạy test (`julia --project test/runtests.jl` nếu dùng Julia, hoặc `pytest` nếu dùng Python) pass.
+- [x] Viết phần kiểm thử, I/O và CLI của Chương 1.
 
 **Nghiệm thu cuối tuần 1**
-- [ ] Eclat baseline + optimized chạy được và có kết quả đúng so với SPMF.
-- [ ] Đủ 5 CSDL unit test; CLI và I/O hoạt động.
-- [ ] Có số liệu chứng minh mức thay đổi thời gian/bộ nhớ giữa hai bản.
-- [ ] Phần Chương 1 của báo cáo đã có nội dung nháp.
+- [x] Eclat baseline + optimized chạy được và có kết quả đúng so với SPMF.
+- [x] Đủ 5 CSDL unit test; CLI và I/O hoạt động.
+- [x] Có số liệu chứng minh mức thay đổi thời gian/bộ nhớ giữa hai bản.
+- [x] Phần Chương 1 của báo cáo đã có nội dung nháp.
 
 ---
 

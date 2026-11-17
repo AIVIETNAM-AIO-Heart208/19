@@ -72,6 +72,16 @@ function clean_transactions(input::IO, output::IO)::Int
     return n
 end
 
+# Compare filesystem identity before opening an output in truncating mode.
+# Existing paths also cover hard links, symbolic links and Windows case aliases.
+function same_file(a::AbstractString, b::AbstractString)::Bool
+    if ispath(a) && ispath(b)
+        return samefile(a, b)
+    end
+    key(p) = Sys.iswindows() ? lowercase(abspath(p)) : abspath(p)
+    return key(a) == key(b)
+end
+
 """
     clean_spmf(in, out) -> Int
 
@@ -84,7 +94,7 @@ một dấu cách, đã kiểm thử hộp đen là SPMF vẫn đọc ra một g
 dòng trống hẳn và dòng bắt đầu bằng `@`, `#`, `%`. Benchmark thật phải đi qua hàm này trước khi đưa cho SPMF.
 """
 function clean_spmf(input::AbstractString, output::AbstractString)::Int
-    abspath(input) == abspath(output) && throw(ArgumentError("input và output phải là hai file khác nhau"))
+    same_file(input, output) && throw(ArgumentError("input và output phải là hai file khác nhau"))
     return open(in_io -> open(out_io -> clean_transactions(in_io, out_io), output, "w"), input)
 end
 

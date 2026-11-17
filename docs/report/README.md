@@ -6,3 +6,5 @@ Ba chương: cài đặt; thực nghiệm và đánh giá; hai ứng dụng th�
 Trích bài báo gốc và ít nhất 3 tài liệu liên quan; giải thích ký hiệu, thêm caption và tham chiếu hình/bảng.
 Xuất bản hoàn chỉnh thành docs/Report.pdf. Chưa tạo PDF rỗng.
 
+
+Bản viết chung Chương 1: [chapter1.md](chapter1.md), gồm thuật toán, tối ưu, I/O, CLI, correctness và số liệu. Dùng làm nguồn ghép vào IEEE của báo cáo tổng.
