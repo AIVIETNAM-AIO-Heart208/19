@@ -1,0 +1,117 @@
+rng = "MersenneTwister"
+ram_bytes = 0x03cfae8000
+pilot = false
+scope = "warmed_api"
+arguments = []
+timeout_scope = "each reference process and whole worker"
+java = """openjdk version \"25.0.5\" 2026-10-20 LTS\r\nOpenJDK Runtime Environment Temurin-25.0.5+8 (build 25.0.5+8-LTS)\r\nOpenJDK 64-Bit Server VM Temurin-25.0.5+8 (build 25.0.5+8-LTS, mixed mode, sharing)\r\n"""
+kind = "scalability"
+julia = "1.11.4"
+threads = 1
+cpu = "AMD Ryzen 7 7735HS with Radeon Graphics        "
+commit = "4d88578d50ebb8aa08fac310d354a67d83efe6e6"
+jar_sha256 = "2cc2d89e39909230ea0455da4a1c79b389dc98ca04b0670befb63e679b5e2ea0"
+complete = true
+dirty = true
+os = "NT"
+
+[artifacts]
+"summary.csv" = "827bb14d2ff122bb4c8081abd5d4ce044ea8e71c999016d9c280beef89ba19c8"
+"raw.csv" = "771f6f4b3bcac6a21a0324a43e47c6668792d8eaa51497ebc248f5452f411323"
+
+[config]
+repeats = 5
+minsup = "0.1%"
+timeout_seconds = 900
+percentages = [10, 25, 50, 75, 100]
+seed = 42
+dataset = "retail"
+
+[commands]
+reference_2 = "`'C:\\Users\\nakro\\AppData\\Local\\Temp\\eclat-java25\\jdk-25.0.5+8-jre\\bin\\java.exe' -Xmx2g -XX:ActiveProcessorCount=1 -jar 'C:\\Python\\DataMining\\Eclat\\tools\\spmf.jar' run Eclat 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_20261117T114929979\\input_2.txt' 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_20261117T114929979\\reference_2.txt' 0.1%`"
+worker_5 = "`'C:\\Users\\nakro\\AppData\\Local\\Temp\\eclat-julia-review-1.11.4\\julia-1.11.4\\bin\\julia.exe' -C native '-JC:\\Users\\nakro\\AppData\\Local\\Temp\\eclat-julia-review-1.11.4\\julia-1.11.4\\lib\\julia\\sys.dll' -g1 --startup-file=no --startup-file=no --threads=1 '--project=C:\\Python\\DataMining\\Eclat\\' 'C:\\Python\\DataMining\\Eclat\\experiments\\size_worker.jl' 'C:\\Python\\DataMining\\Eclat\\data/processed/retail.txt' 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_20261117T114929979\\reference_5.txt' 0.1% 5 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_20261117T114929979\\worker_5.toml'`"
+worker_1 = "`'C:\\Users\\nakro\\AppData\\Local\\Temp\\eclat-julia-review-1.11.4\\julia-1.11.4\\bin\\julia.exe' -C native '-JC:\\Users\\nakro\\AppData\\Local\\Temp\\eclat-julia-review-1.11.4\\julia-1.11.4\\lib\\julia\\sys.dll' -g1 --startup-file=no --startup-file=no --threads=1 '--project=C:\\Python\\DataMining\\Eclat\\' 'C:\\Python\\DataMining\\Eclat\\experiments\\size_worker.jl' 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_20261117T114929979\\input_1.txt' 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_20261117T114929979\\reference_1.txt' 0.1% 5 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_20261117T114929979\\worker_1.toml'`"
+reference_3 = "`'C:\\Users\\nakro\\AppData\\Local\\Temp\\eclat-java25\\jdk-25.0.5+8-jre\\bin\\java.exe' -Xmx2g -XX:ActiveProcessorCount=1 -jar 'C:\\Python\\DataMining\\Eclat\\tools\\spmf.jar' run Eclat 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_20261117T114929979\\input_3.txt' 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_20261117T114929979\\reference_3.txt' 0.1%`"
+worker_4 = "`'C:\\Users\\nakro\\AppData\\Local\\Temp\\eclat-julia-review-1.11.4\\julia-1.11.4\\bin\\julia.exe' -C native '-JC:\\Users\\nakro\\AppData\\Local\\Temp\\eclat-julia-review-1.11.4\\julia-1.11.4\\lib\\julia\\sys.dll' -g1 --startup-file=no --startup-file=no --threads=1 '--project=C:\\Python\\DataMining\\Eclat\\' 'C:\\Python\\DataMining\\Eclat\\experiments\\size_worker.jl' 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_20261117T114929979\\input_4.txt' 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_20261117T114929979\\reference_4.txt' 0.1% 5 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_20261117T114929979\\worker_4.toml'`"
+reference_5 = "`'C:\\Users\\nakro\\AppData\\Local\\Temp\\eclat-java25\\jdk-25.0.5+8-jre\\bin\\java.exe' -Xmx2g -XX:ActiveProcessorCount=1 -jar 'C:\\Python\\DataMining\\Eclat\\tools\\spmf.jar' run Eclat 'C:\\Python\\DataMining\\Eclat\\data/processed/retail.txt' 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_20261117T114929979\\reference_5.txt' 0.1%`"
+worker_2 = "`'C:\\Users\\nakro\\AppData\\Local\\Temp\\eclat-julia-review-1.11.4\\julia-1.11.4\\bin\\julia.exe' -C native '-JC:\\Users\\nakro\\AppData\\Local\\Temp\\eclat-julia-review-1.11.4\\julia-1.11.4\\lib\\julia\\sys.dll' -g1 --startup-file=no --startup-file=no --threads=1 '--project=C:\\Python\\DataMining\\Eclat\\' 'C:\\Python\\DataMining\\Eclat\\experiments\\size_worker.jl' 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_20261117T114929979\\input_2.txt' 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_20261117T114929979\\reference_2.txt' 0.1% 5 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_20261117T114929979\\worker_2.toml'`"
+worker_3 = "`'C:\\Users\\nakro\\AppData\\Local\\Temp\\eclat-julia-review-1.11.4\\julia-1.11.4\\bin\\julia.exe' -C native '-JC:\\Users\\nakro\\AppData\\Local\\Temp\\eclat-julia-review-1.11.4\\julia-1.11.4\\lib\\julia\\sys.dll' -g1 --startup-file=no --startup-file=no --threads=1 '--project=C:\\Python\\DataMining\\Eclat\\' 'C:\\Python\\DataMining\\Eclat\\experiments\\size_worker.jl' 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_20261117T114929979\\input_3.txt' 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_20261117T114929979\\reference_3.txt' 0.1% 5 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_20261117T114929979\\worker_3.toml'`"
+reference_4 = "`'C:\\Users\\nakro\\AppData\\Local\\Temp\\eclat-java25\\jdk-25.0.5+8-jre\\bin\\java.exe' -Xmx2g -XX:ActiveProcessorCount=1 -jar 'C:\\Python\\DataMining\\Eclat\\tools\\spmf.jar' run Eclat 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_20261117T114929979\\input_4.txt' 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_20261117T114929979\\reference_4.txt' 0.1%`"
+reference_1 = "`'C:\\Users\\nakro\\AppData\\Local\\Temp\\eclat-java25\\jdk-25.0.5+8-jre\\bin\\java.exe' -Xmx2g -XX:ActiveProcessorCount=1 -jar 'C:\\Python\\DataMining\\Eclat\\tools\\spmf.jar' run Eclat 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_20261117T114929979\\input_1.txt' 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_20261117T114929979\\reference_1.txt' 0.1%`"
+
+[sources]
+"src\\algorithm\\optimized.jl" = "cb93eed8e61a3711c43af7629b12b4e9c338caf685414331bc5f09a37dd6fa0a"
+"src\\algorithm\\baseline.jl" = "22212527aef3df1fd9f238184853c6e892bb4841b3cf9e1d9af7dd4c9aae1d10"
+"experiments/size_benchmarks.jl" = "009393455df65dc4520a7660aa1653b89a11f28074b3bb92bd9d7a58b1aabfa5"
+"Project.toml" = "0ca4e47370c2532a074d97889e7f50dba73f8d768677b47299363373b90b4009"
+"data/datasets.toml" = "f08986e6bd663732373cf2af78013d9acd0c5e2c2d9c0b6bd546c81cacd45390"
+"src\\EclatMining.jl" = "d06f70d1a5024a195d2b6beab634ea3967f55aa5b5720d5fcd4e2efd06880ba5"
+"experiments/run_scalability.jl" = "4e3af0bf82630a4f6350c39aea3003d5266c1f22d5f2b9b9f5b14b3bc16518e5"
+"src\\io.jl" = "776f8403ebcdaa16578c1f47bb08bac5457bb3888a01d760335085c1e02e3ce6"
+"src\\applications\\biology.jl" = "e2508ec370f48a87fa222976983f3f794ed435fb0524de56bc46feec5ceeb6c8"
+"experiments/configs/scalability.toml" = "b71d50307580de31ea0c9b08d9725bfef5f481c68327cc0faf64567b3ba9ac61"
+"src\\applications\\association_rules.jl" = "f86b679f7c6e9d251eafd7358be044cc529803b48e44dd76c436b54e0759e65e"
+"experiments/dataset_benchmarks.jl" = "d5b16be0ca8a177725acb099357988fdd7dfc5aaa1cd61731633de0f7320d0b1"
+"experiments/size_worker.jl" = "ceb3a12a78ee00c11e0be6cc258b7ae08cd84c9c09c40bd3ab3add1b0cb0d3f5"
+"src\\applications\\market_basket.jl" = "cd9fb4238c4cb1f91adc355a8f9bad229218a1851c90363b8833c5da5bb7fe22"
+
+[[cases]]
+source_sha256 = "8eebf67a21e008e2c6a0ebe0d8ca44bb7abfd6b22386112ea0a92b4a47067092"
+level = 10
+sha256 = "793fc51a80c849041fcc0f7148ca29d4e88098b9da06de40acc3c6d0e3b0e062"
+status = "exact_match"
+reason = ""
+indices_sha256 = "bfcfc07a2866834e683ec1f2af41fb6abb3afd599332e285a984859a2caa04ba"
+actual_fraction = 0.09999773144892357
+input = "results\\metrics\\size_runs\\scalability_20261117T114929979\\input_1.txt"
+case_id = 1
+threshold = 9
+n = 8816
+[[cases]]
+source_sha256 = "8eebf67a21e008e2c6a0ebe0d8ca44bb7abfd6b22386112ea0a92b4a47067092"
+level = 25
+sha256 = "b1c0a2a8af73354f17e4329ff19df37c5161b4dc8e871107b554045db3321f0a"
+status = "exact_match"
+reason = ""
+indices_sha256 = "a297b122f2a281bf4d5b5a794f5fcf13cdbf02913319fff7ea789b376c0ee24d"
+actual_fraction = 0.24999432862230894
+input = "results\\metrics\\size_runs\\scalability_20261117T114929979\\input_2.txt"
+case_id = 2
+threshold = 23
+n = 22040
+[[cases]]
+source_sha256 = "8eebf67a21e008e2c6a0ebe0d8ca44bb7abfd6b22386112ea0a92b4a47067092"
+level = 50
+sha256 = "9911ad4eaaca8335128c07df2499f82651f6d4e6f20845f249cfdc653609c2e1"
+status = "exact_match"
+reason = ""
+indices_sha256 = "536c52bc7503201cfaae9e857534870e13d569ee3e590d59bab886a72981df7e"
+actual_fraction = 0.5
+input = "results\\metrics\\size_runs\\scalability_20261117T114929979\\input_3.txt"
+case_id = 3
+threshold = 45
+n = 44081
+[[cases]]
+source_sha256 = "8eebf67a21e008e2c6a0ebe0d8ca44bb7abfd6b22386112ea0a92b4a47067092"
+level = 75
+sha256 = "bb7fec16cad2a7362b1e856073f1122596632291572c5b9d0144bd8ec73a8aee"
+status = "exact_match"
+reason = ""
+indices_sha256 = "a41b77e51407887482a2cf26a233285d6dad1e234ee70861b6c471af387d82f8"
+actual_fraction = 0.749994328622309
+input = "results\\metrics\\size_runs\\scalability_20261117T114929979\\input_4.txt"
+case_id = 4
+threshold = 67
+n = 66121
+[[cases]]
+source_sha256 = "8eebf67a21e008e2c6a0ebe0d8ca44bb7abfd6b22386112ea0a92b4a47067092"
+level = 100
+sha256 = "8eebf67a21e008e2c6a0ebe0d8ca44bb7abfd6b22386112ea0a92b4a47067092"
+status = "exact_match"
+reason = ""
+indices_sha256 = "8a8d9b4a7e276506fb0bfb92a8c31261dc810a9932236ae192bc21ae1a2b92a6"
+actual_fraction = 1.0
+input = "data\\processed\\retail.txt"
+case_id = 5
+threshold = 89
+n = 88162

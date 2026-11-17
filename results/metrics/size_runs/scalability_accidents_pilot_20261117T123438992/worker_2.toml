@@ -1,0 +1,6 @@
+singletons = 14
+itemsets = 319
+result_sha256 = "be94f044dc3faf1362bac2b8904f76444b0bbca12045e74b906174c0ff6ea8bf"
+validation = "exact_match"
+max_length = 6
+times = [0.0489295]

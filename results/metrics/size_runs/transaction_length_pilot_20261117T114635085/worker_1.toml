@@ -1,0 +1,6 @@
+singletons = 64
+itemsets = 64
+result_sha256 = "d7864bba38abadd993d1bed8e882478cd0433901cef4afb6598ee9575053fe02"
+validation = "exact_match"
+max_length = 1
+times = [0.0044573]

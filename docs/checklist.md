@@ -61,10 +61,10 @@
 - [x] Vẽ biểu đồ **số lượng frequent itemset theo minsup**; phân tích khác biệt giữa dữ liệu dense và sparse.
 
 **Goal 6. Scalability và ảnh hưởng độ dài giao dịch**
-- [ ] Chọn dataset lớn (ví dụ Retail hoặc Accidents); tạo các mức **10%, 25%, 50%, 75%, 100%** giao dịch.
-- [ ] Đo và vẽ runtime theo kích thước dữ liệu; nhận xét tuyến tính / phi tuyến.
-- [ ] Nếu Eclat bị ảnh hưởng bởi độ dài giao dịch trung bình, tạo dữ liệu tổng hợp có độ dài tăng dần và đo ảnh hưởng.
-- [ ] Viết phần phương pháp đo và phân tích runtime / scalability của Chương 2.
+- [x] Chọn dataset lớn (ví dụ Retail hoặc Accidents); tạo các mức **10%, 25%, 50%, 75%, 100%** giao dịch.
+- [x] Đo và vẽ runtime theo kích thước dữ liệu; nhận xét tuyến tính / phi tuyến.
+- [x] Nếu Eclat bị ảnh hưởng bởi độ dài giao dịch trung bình, tạo dữ liệu tổng hợp có độ dài tăng dần và đo ảnh hưởng.
+- [x] Viết phần phương pháp đo và phân tích runtime / scalability của Chương 2.
 
 ### Người B — Benchmark, correctness và bộ nhớ
 

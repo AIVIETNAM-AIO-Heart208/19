@@ -25,5 +25,6 @@ const TOY_40 = Dict{Vector{Int},Int}(
     include("test_correctness.jl")
     include("test_benchmark_provenance.jl")
     include("test_dataset_benchmarks.jl")
+    include("test_size_benchmarks.jl")
     # Kiểm thử ứng dụng chưa triển khai; bổ sung test_applications.jl khi có test thực tế.
 end

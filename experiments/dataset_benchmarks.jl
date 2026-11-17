@@ -50,15 +50,17 @@ end
 
 function output_count(path)
     isfile(path) || error("Missing output: $path")
-    n = 0
-    for line in eachline(path)
-        s = strip(line)
-        isempty(s) && continue
-        first(s) in ('@', '#', '%') && continue
-        occursin(r"^\d+(?: \d+)*\s+#SUP: \d+$", s) || error("Malformed output: $path")
-        n += 1
+    return open(path) do io
+        n = 0
+        for line in eachline(io)
+            s = strip(line)
+            isempty(s) && continue
+            first(s) in ('@', '#', '%') && continue
+            occursin(r"^\d+(?: \d+)*\s+#SUP: \d+$", s) || error("Malformed output: $path")
+            n += 1
+        end
+        return n
     end
-    return n
 end
 
 function exact_outputs(a, b)

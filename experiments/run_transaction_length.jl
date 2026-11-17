@@ -1,3 +1,3 @@
-# TODO: Triển khai thực nghiệm run_transaction_length với cấu hình và kết quả tái tạo được.
-error("Thực nghiệm chưa được triển khai.")
+include("size_benchmarks.jl")
+abspath(PROGRAM_FILE) == (@__FILE__) && SizeBenchmarks.main("transaction_length",ARGS)
 

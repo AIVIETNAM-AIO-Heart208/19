@@ -4,7 +4,7 @@
 
 ## Trạng thái
 
-Đã có baseline TID-list và optimized BitVector; `eclat` mặc định gọi bitset. Cả hai khớp 27/27 case SPMF. Kiểm thử Julia 1.11.4: 3842 pass, 0 fail/error, 1 skip do quyền tạo symlink Windows. Đã có số liệu tối ưu trên dữ liệu tổng hợp và benchmark runtime trên cả 5 CSDL thật: 7 mức minsup mỗi bộ, 350 mẫu chính thức, 35/35 cấu hình khớp itemset/support với SPMF. Xem [kết quả và phân tích](docs/report/runtime_benchmarks.md).
+Đã có baseline TID-list và optimized BitVector; `eclat` mặc định gọi bitset. Cả hai khớp 27/27 case SPMF. Kiểm thử Julia 1.11.4: 3873 pass, 0 fail/error, 1 skip do quyền tạo symlink Windows. Đã có số liệu tối ưu trên dữ liệu tổng hợp và benchmark runtime trên cả 5 CSDL thật: 7 mức minsup mỗi bộ, 350 mẫu chính thức, 35/35 cấu hình khớp itemset/support với SPMF. Xem [kết quả và phân tích](docs/report/runtime_benchmarks.md).
 
 ## Môi trường
 
@@ -61,12 +61,14 @@ Kết quả kiểm tra hai implementation ngày 17/11/2026 (Windows, Julia 1.11.
 ```text
 Khớp SPMF: 27/27 case, 7 CSDL, tổng 552 itemset tham chiếu (mỗi bản)
 Test Summary: | Pass  Broken  Total
-EclatMining   | 3842       1   3843
+EclatMining   | 3873       1   3874
 ```
 
 Một Broken là @test_skip do Windows thiếu quyền tạo symlink. Không skip bitset/baseline. CLI toy @40% khớp 100%; module không có cảnh báo ghi đè hoặc method ambiguity.
 
 ## So sánh hiệu năng
+
+Scalability và ảnh hưởng độ dài giao dịch: [hướng dẫn](experiments/SIZE_EXPERIMENTS.md).
 
 Benchmark trên năm bộ dữ liệu thật: xem [hướng dẫn runtime](experiments/BENCHMARKS.md).
 Luồng này dùng `experiments/run_benchmarks.jl`, độc lập với phép đo tối ưu bên dưới.

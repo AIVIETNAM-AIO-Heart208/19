@@ -1,0 +1,2 @@
+"case_id","level","n","items","total_items","mean_length","threshold","minsup","seed","input_sha256","miner","scope","validation","repeats","itemsets","singletons","max_length","median_seconds","q1_seconds","q3_seconds","iqr_seconds"
+"1","10","8816","10103","90737","10.29230943738657","9","0.1%","42","793fc51a80c849041fcc0f7148ca29d4e88098b9da06de40acc3c6d0e3b0e062","julia_bitset","warmed_api","exact_match","1","8908","2222","6","0.9653574","0.9653574","0.9653574","0.0"

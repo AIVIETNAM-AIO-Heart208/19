@@ -1,0 +1,6 @@
+"case_id","repeat","seconds","scope","validation","itemsets"
+"1","1","0.020465","warmed_api","exact_match","319"
+"2","1","0.0489295","warmed_api","exact_match","319"
+"3","1","0.0986912","warmed_api","exact_match","319"
+"4","1","0.1464295","warmed_api","exact_match","315"
+"5","1","0.1966889","warmed_api","exact_match","313"

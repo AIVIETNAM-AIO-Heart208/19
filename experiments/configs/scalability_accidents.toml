@@ -1,0 +1,6 @@
+seed = 42
+minsup = "75%"
+repeats = 5
+timeout_seconds = 900
+percentages = [10, 25, 50, 75, 100]
+dataset = "accidents"

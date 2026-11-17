@@ -24,6 +24,9 @@ using .DatasetBenchmarks
         @test !B.exact_outputs(a,b)
         write(b, "broken")
         @test_throws Exception B.output_count(b)
+        # A failed parse must release its file before Windows cleanup/replacement.
+        rm(b)
+        @test !isfile(b)
         @test_throws Exception B.output_count(joinpath(dir, "missing"))
         log = joinpath(dir, "child.log")
         @test B.timed_process(`$(Base.julia_cmd()) --startup-file=no -e 'exit(3)'`, log, 20).status == "process_error"

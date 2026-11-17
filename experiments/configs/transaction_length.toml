@@ -1,0 +1,7 @@
+seed = 42
+minsup = "5%"
+repeats = 5
+timeout_seconds = 900
+n = 20000
+items = 64
+lengths = [8, 12, 16, 20, 24]

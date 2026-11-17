@@ -1,0 +1,6 @@
+singletons = 2122
+itemsets = 7663
+result_sha256 = "f4b82e7d48e6173d71ddccbac225e7018df323d2b495329dafa18edf4bc95ff0"
+validation = "exact_match"
+max_length = 6
+times = [7.7182766, 7.8818537, 7.5380256, 7.9063038, 7.3151798]

@@ -1,0 +1,2 @@
+"case_id","level","n","items","total_items","mean_length","threshold","minsup","seed","input_sha256","miner","scope","validation","repeats","itemsets","singletons","max_length","median_seconds","q1_seconds","q3_seconds","iqr_seconds"
+"1","8","20000","64","160000","8.0","1000","5%","42","d194790938c0c974dd930841dca2d91c4461e314320118e12361ce5a3d13424d","julia_bitset","warmed_api","exact_match","1","64","64","1","0.0041656","0.0041656","0.0041656","0.0"

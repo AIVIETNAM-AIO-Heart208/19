@@ -1,0 +1,117 @@
+rng = "MersenneTwister"
+ram_bytes = 0x03cfae8000
+pilot = true
+scope = "warmed_api"
+arguments = ["--dataset=accidents", "--pilot"]
+timeout_scope = "each reference process and whole worker"
+java = """openjdk version \"25.0.5\" 2026-10-20 LTS\r\nOpenJDK Runtime Environment Temurin-25.0.5+8 (build 25.0.5+8-LTS)\r\nOpenJDK 64-Bit Server VM Temurin-25.0.5+8 (build 25.0.5+8-LTS, mixed mode, sharing)\r\n"""
+kind = "scalability"
+julia = "1.11.4"
+threads = 1
+cpu = "AMD Ryzen 7 7735HS with Radeon Graphics        "
+commit = "4d88578d50ebb8aa08fac310d354a67d83efe6e6"
+jar_sha256 = "2cc2d89e39909230ea0455da4a1c79b389dc98ca04b0670befb63e679b5e2ea0"
+complete = true
+dirty = true
+os = "NT"
+
+[artifacts]
+"summary.csv" = "fb8115ab187f2b98e0d7ccd0655b7f603db59de645c46e87b79205bcee68baf2"
+"raw.csv" = "b27a47ccf86d9352693bb4f302572d5072d8308ac0c41404fc7a52de8729b242"
+
+[config]
+repeats = 5
+minsup = "75%"
+timeout_seconds = 900
+percentages = [10, 25, 50, 75, 100]
+seed = 42
+dataset = "accidents"
+
+[commands]
+reference_2 = "`'C:\\Users\\nakro\\AppData\\Local\\Temp\\eclat-java25\\jdk-25.0.5+8-jre\\bin\\java.exe' -Xmx2g -XX:ActiveProcessorCount=1 -jar 'C:\\Python\\DataMining\\Eclat\\tools\\spmf.jar' run Eclat 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_accidents_pilot_20261117T123438992\\input_2.txt' 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_accidents_pilot_20261117T123438992\\reference_2.txt' 75%`"
+worker_5 = "`'C:\\Users\\nakro\\AppData\\Local\\Temp\\eclat-julia-review-1.11.4\\julia-1.11.4\\bin\\julia.exe' -C native '-JC:\\Users\\nakro\\AppData\\Local\\Temp\\eclat-julia-review-1.11.4\\julia-1.11.4\\lib\\julia\\sys.dll' -g1 --startup-file=no --startup-file=no --threads=1 '--project=C:\\Python\\DataMining\\Eclat\\' 'C:\\Python\\DataMining\\Eclat\\experiments\\size_worker.jl' 'C:\\Python\\DataMining\\Eclat\\data/processed/accidents.txt' 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_accidents_pilot_20261117T123438992\\reference_5.txt' 75% 1 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_accidents_pilot_20261117T123438992\\worker_5.toml'`"
+worker_1 = "`'C:\\Users\\nakro\\AppData\\Local\\Temp\\eclat-julia-review-1.11.4\\julia-1.11.4\\bin\\julia.exe' -C native '-JC:\\Users\\nakro\\AppData\\Local\\Temp\\eclat-julia-review-1.11.4\\julia-1.11.4\\lib\\julia\\sys.dll' -g1 --startup-file=no --startup-file=no --threads=1 '--project=C:\\Python\\DataMining\\Eclat\\' 'C:\\Python\\DataMining\\Eclat\\experiments\\size_worker.jl' 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_accidents_pilot_20261117T123438992\\input_1.txt' 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_accidents_pilot_20261117T123438992\\reference_1.txt' 75% 1 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_accidents_pilot_20261117T123438992\\worker_1.toml'`"
+reference_3 = "`'C:\\Users\\nakro\\AppData\\Local\\Temp\\eclat-java25\\jdk-25.0.5+8-jre\\bin\\java.exe' -Xmx2g -XX:ActiveProcessorCount=1 -jar 'C:\\Python\\DataMining\\Eclat\\tools\\spmf.jar' run Eclat 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_accidents_pilot_20261117T123438992\\input_3.txt' 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_accidents_pilot_20261117T123438992\\reference_3.txt' 75%`"
+worker_4 = "`'C:\\Users\\nakro\\AppData\\Local\\Temp\\eclat-julia-review-1.11.4\\julia-1.11.4\\bin\\julia.exe' -C native '-JC:\\Users\\nakro\\AppData\\Local\\Temp\\eclat-julia-review-1.11.4\\julia-1.11.4\\lib\\julia\\sys.dll' -g1 --startup-file=no --startup-file=no --threads=1 '--project=C:\\Python\\DataMining\\Eclat\\' 'C:\\Python\\DataMining\\Eclat\\experiments\\size_worker.jl' 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_accidents_pilot_20261117T123438992\\input_4.txt' 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_accidents_pilot_20261117T123438992\\reference_4.txt' 75% 1 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_accidents_pilot_20261117T123438992\\worker_4.toml'`"
+reference_5 = "`'C:\\Users\\nakro\\AppData\\Local\\Temp\\eclat-java25\\jdk-25.0.5+8-jre\\bin\\java.exe' -Xmx2g -XX:ActiveProcessorCount=1 -jar 'C:\\Python\\DataMining\\Eclat\\tools\\spmf.jar' run Eclat 'C:\\Python\\DataMining\\Eclat\\data/processed/accidents.txt' 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_accidents_pilot_20261117T123438992\\reference_5.txt' 75%`"
+worker_2 = "`'C:\\Users\\nakro\\AppData\\Local\\Temp\\eclat-julia-review-1.11.4\\julia-1.11.4\\bin\\julia.exe' -C native '-JC:\\Users\\nakro\\AppData\\Local\\Temp\\eclat-julia-review-1.11.4\\julia-1.11.4\\lib\\julia\\sys.dll' -g1 --startup-file=no --startup-file=no --threads=1 '--project=C:\\Python\\DataMining\\Eclat\\' 'C:\\Python\\DataMining\\Eclat\\experiments\\size_worker.jl' 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_accidents_pilot_20261117T123438992\\input_2.txt' 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_accidents_pilot_20261117T123438992\\reference_2.txt' 75% 1 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_accidents_pilot_20261117T123438992\\worker_2.toml'`"
+worker_3 = "`'C:\\Users\\nakro\\AppData\\Local\\Temp\\eclat-julia-review-1.11.4\\julia-1.11.4\\bin\\julia.exe' -C native '-JC:\\Users\\nakro\\AppData\\Local\\Temp\\eclat-julia-review-1.11.4\\julia-1.11.4\\lib\\julia\\sys.dll' -g1 --startup-file=no --startup-file=no --threads=1 '--project=C:\\Python\\DataMining\\Eclat\\' 'C:\\Python\\DataMining\\Eclat\\experiments\\size_worker.jl' 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_accidents_pilot_20261117T123438992\\input_3.txt' 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_accidents_pilot_20261117T123438992\\reference_3.txt' 75% 1 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_accidents_pilot_20261117T123438992\\worker_3.toml'`"
+reference_4 = "`'C:\\Users\\nakro\\AppData\\Local\\Temp\\eclat-java25\\jdk-25.0.5+8-jre\\bin\\java.exe' -Xmx2g -XX:ActiveProcessorCount=1 -jar 'C:\\Python\\DataMining\\Eclat\\tools\\spmf.jar' run Eclat 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_accidents_pilot_20261117T123438992\\input_4.txt' 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_accidents_pilot_20261117T123438992\\reference_4.txt' 75%`"
+reference_1 = "`'C:\\Users\\nakro\\AppData\\Local\\Temp\\eclat-java25\\jdk-25.0.5+8-jre\\bin\\java.exe' -Xmx2g -XX:ActiveProcessorCount=1 -jar 'C:\\Python\\DataMining\\Eclat\\tools\\spmf.jar' run Eclat 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_accidents_pilot_20261117T123438992\\input_1.txt' 'C:\\Python\\DataMining\\Eclat\\results/metrics/size_runs\\scalability_accidents_pilot_20261117T123438992\\reference_1.txt' 75%`"
+
+[sources]
+"src\\algorithm\\optimized.jl" = "cb93eed8e61a3711c43af7629b12b4e9c338caf685414331bc5f09a37dd6fa0a"
+"src\\algorithm\\baseline.jl" = "22212527aef3df1fd9f238184853c6e892bb4841b3cf9e1d9af7dd4c9aae1d10"
+"experiments/size_benchmarks.jl" = "a2ca568d600330297acab5d2a318ed04e6185a0410456fc55dd6757681d0cd2c"
+"Project.toml" = "0ca4e47370c2532a074d97889e7f50dba73f8d768677b47299363373b90b4009"
+"data/datasets.toml" = "f08986e6bd663732373cf2af78013d9acd0c5e2c2d9c0b6bd546c81cacd45390"
+"src\\EclatMining.jl" = "d06f70d1a5024a195d2b6beab634ea3967f55aa5b5720d5fcd4e2efd06880ba5"
+"experiments/run_scalability.jl" = "4e3af0bf82630a4f6350c39aea3003d5266c1f22d5f2b9b9f5b14b3bc16518e5"
+"src\\io.jl" = "776f8403ebcdaa16578c1f47bb08bac5457bb3888a01d760335085c1e02e3ce6"
+"src\\applications\\biology.jl" = "e2508ec370f48a87fa222976983f3f794ed435fb0524de56bc46feec5ceeb6c8"
+"src\\applications\\association_rules.jl" = "f86b679f7c6e9d251eafd7358be044cc529803b48e44dd76c436b54e0759e65e"
+"experiments/dataset_benchmarks.jl" = "d5b16be0ca8a177725acb099357988fdd7dfc5aaa1cd61731633de0f7320d0b1"
+"experiments/size_worker.jl" = "ceb3a12a78ee00c11e0be6cc258b7ae08cd84c9c09c40bd3ab3add1b0cb0d3f5"
+"src\\applications\\market_basket.jl" = "cd9fb4238c4cb1f91adc355a8f9bad229218a1851c90363b8833c5da5bb7fe22"
+"experiments\\configs\\scalability_accidents.toml" = "74e157e3bfef74f76d05324d7f39d12bf3c5ebdddfb21c676b5b51a7da59df85"
+
+[[cases]]
+source_sha256 = "c2b3762e3f8f0ca241c35359b24e3015fd34ea241d09f94b42ae44ed42914726"
+level = 10
+sha256 = "02bd72ff147b635e4f5fbec5ea4113d264126e1477d15d44a3bb1317ba9515cf"
+status = "exact_match"
+reason = ""
+indices_sha256 = "0e5b6e00a654ac78c246b3686d062f1aeeaed34c8e72a6cf35b578e52e47dec1"
+actual_fraction = 0.09999911812171684
+input = "results\\metrics\\size_runs\\scalability_accidents_pilot_20261117T123438992\\input_1.txt"
+case_id = 1
+threshold = 25514
+n = 34018
+[[cases]]
+source_sha256 = "c2b3762e3f8f0ca241c35359b24e3015fd34ea241d09f94b42ae44ed42914726"
+level = 25
+sha256 = "aeb3736c8594449e745ed54eb5e4c927079f94bf2bb6eeb2aea9f0fd4b01bb8b"
+status = "exact_match"
+reason = ""
+indices_sha256 = "1dc92585ae0d2954a073f968148f2b0fd65bd9da9bb3421fa14c1f8cca85fa6b"
+actual_fraction = 0.24999779530429211
+input = "results\\metrics\\size_runs\\scalability_accidents_pilot_20261117T123438992\\input_2.txt"
+case_id = 2
+threshold = 63784
+n = 85045
+[[cases]]
+source_sha256 = "c2b3762e3f8f0ca241c35359b24e3015fd34ea241d09f94b42ae44ed42914726"
+level = 50
+sha256 = "f7e08462a7fb8c7b669a9c0c720009d1ff6ee55ef286b94a75af4ac8644d2a6d"
+status = "exact_match"
+reason = ""
+indices_sha256 = "7d51b7d013b059584ac67f2eeae875419eed8a8103377286ff9be113bc480b2e"
+actual_fraction = 0.4999985302028614
+input = "results\\metrics\\size_runs\\scalability_accidents_pilot_20261117T123438992\\input_3.txt"
+case_id = 3
+threshold = 127569
+n = 170091
+[[cases]]
+source_sha256 = "c2b3762e3f8f0ca241c35359b24e3015fd34ea241d09f94b42ae44ed42914726"
+level = 75
+sha256 = "142bfcbf1dbad507737ebeb514d0b61c36cc64b3e0cdd866755878b12bbf1a95"
+status = "exact_match"
+reason = ""
+indices_sha256 = "627942d7de5ecf143fbf4c25d4f199e590a62db7e871438d67f15a20b0f1dc03"
+actual_fraction = 0.7499992651014307
+input = "results\\metrics\\size_runs\\scalability_accidents_pilot_20261117T123438992\\input_4.txt"
+case_id = 4
+threshold = 191353
+n = 255137
+[[cases]]
+source_sha256 = "c2b3762e3f8f0ca241c35359b24e3015fd34ea241d09f94b42ae44ed42914726"
+level = 100
+sha256 = "c2b3762e3f8f0ca241c35359b24e3015fd34ea241d09f94b42ae44ed42914726"
+status = "exact_match"
+reason = ""
+indices_sha256 = "064ed258ec0ddd0fdb642b1d10cce70f2aba968ecd634bcd247c1ea14204140e"
+actual_fraction = 1.0
+input = "data\\processed\\accidents.txt"
+case_id = 5
+threshold = 255138
+n = 340183

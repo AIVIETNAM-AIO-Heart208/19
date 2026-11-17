@@ -1,0 +1,6 @@
+"case_id","level","n","items","total_items","mean_length","threshold","minsup","seed","input_sha256","miner","scope","validation","repeats","itemsets","singletons","max_length","median_seconds","q1_seconds","q3_seconds","iqr_seconds"
+"1","8","20000","64","160000","8.0","1000","5%","42","d194790938c0c974dd930841dca2d91c4461e314320118e12361ce5a3d13424d","julia_bitset","warmed_api","exact_match","1","64","64","1","0.0044573","0.0044573","0.0044573","0.0"
+"2","12","20000","64","240000","12.0","1000","5%","42","a2c5f91b91374a69bc6ffa8fd6fbf32df556e355fd827c7b2d3717067bb0bc69","julia_bitset","warmed_api","exact_match","1","64","64","1","0.0066237","0.0066237","0.0066237","0.0"
+"3","16","20000","64","320000","16.0","1000","5%","42","7d67c9b02ae698b389462809440839f14cd5989643fd7d6a2621022ae692b5c1","julia_bitset","warmed_api","exact_match","1","2080","64","2","0.0515587","0.0515587","0.0515587","0.0"
+"4","20","20000","64","400000","20.0","1000","5%","42","1c7e6feff380dd1be74e28dcadf0ed1492dcf7b1463fd40b0bffb3c3eba14a99","julia_bitset","warmed_api","exact_match","1","2080","64","2","0.0538754","0.0538754","0.0538754","0.0"
+"5","24","20000","64","480000","24.0","1000","5%","42","c475b2a42622b23f90fd603b4d9d4c7ca23a1e5a041e47b13045f63fb58e1b07","julia_bitset","warmed_api","exact_match","1","9816","64","3","0.0881841","0.0881841","0.0881841","0.0"

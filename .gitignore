@@ -25,6 +25,7 @@ tools/*.jar
 /results/metrics/benchmark_runs/*/*.log
 .venv-figures/
 __pycache__/
+/results/metrics/size_runs/*/*.txt
 out*.txt
 
 # Ghi chú làm việc và file prompt cho trợ lý AI: chỉ để trên máy, không đưa lên repo
