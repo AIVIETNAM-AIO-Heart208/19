@@ -1,19 +1,19 @@
 # Run after runtime and memory scripts. No measurements are taken here.
-include("goal2_common.jl")
-using .Goal2, TOML
+include("benchmark_common.jl")
+using .BenchmarkSupport, TOML
 function main()
-    dir = joinpath(Goal2.ROOT, "results", "metrics")
-    config = Goal2.validate_runs(dir)
-    runtime = [split(l, ',') for l in readlines(joinpath(dir, "goal2_runtime_summary.csv"))[2:end]]
-    raw = [split(l, ',') for l in readlines(joinpath(dir, "goal2_runtime_raw.csv"))[2:end]]
-    memory = [split(l, ',') for l in readlines(joinpath(dir, "goal2_memory_raw.csv"))[2:end]]
-    open(joinpath(dir, "goal2_comparison.csv"), "w") do io
+    dir = joinpath(BenchmarkSupport.ROOT, "results", "metrics")
+    config = BenchmarkSupport.validate_runs(dir)
+    runtime = [split(l, ',') for l in readlines(joinpath(dir, "optimization_runtime_summary.csv"))[2:end]]
+    raw = [split(l, ',') for l in readlines(joinpath(dir, "optimization_runtime_raw.csv"))[2:end]]
+    memory = [split(l, ',') for l in readlines(joinpath(dir, "optimization_memory_raw.csv"))[2:end]]
+    open(joinpath(dir, "optimization_comparison.csv"), "w") do io
         println(io, "case_id,dataset,n,items,mean_length,minsup,itemsets,baseline_seconds,bitset_seconds,speedup,baseline_allocated_bytes,bitset_allocated_bytes,baseline_peak_rss_bytes,bitset_peak_rss_bytes")
         for id in eachindex(config["case"])
             getrow(name) = only(filter(r -> parse(Int, r[1]) == id && r[2] == name, runtime))
             a, b = getrow("baseline"), getrow("bitset")
             example = first(filter(r -> parse(Int, r[1]) == id, raw))
-            peak(name) = Goal2.percentile([parse(Float64, r[4]) for r in memory
+            peak(name) = BenchmarkSupport.percentile([parse(Float64, r[4]) for r in memory
                                           if parse(Int, r[1]) == id && r[2] == name], .5)
             for name in ("baseline", "bitset")
                 group = filter(r -> parse(Int, r[1]) == id && r[2] == name, memory)

@@ -1,12 +1,11 @@
 # Chạy: julia --project test/runtests.jl
-# Đối chiếu ba bên: eclat (của nhóm) — output thật của SPMF (test/fixtures/spmf_expected) — oracle brute-force.
-# Ghi chú: đề ghi thư mục `tests/`, nhưng lệnh chạy trong đề là `julia --project test/runtests.jl`
-# và khung repo của A dùng `test/`, nên repo dùng `test/`.
+# Đối chiếu ba bên: Eclat — fixture SPMF (test/fixtures/spmf_expected) — oracle brute-force.
+# Thư mục test/ chứa bộ kiểm thử tự động; runtests.jl là điểm vào chung.
 
 using Test
 using EclatMining
 
-include(joinpath(@__DIR__, "reference_miner.jl"))   # reference_mine: oracle, không phải bài nộp
+include(joinpath(@__DIR__, "reference_miner.jl"))   # reference_mine: oracle độc lập, chỉ dùng trong kiểm thử
 
 const FIXTURES = joinpath(@__DIR__, "fixtures")
 const TOY_DIR = joinpath(FIXTURES, "transactions")
@@ -24,7 +23,6 @@ const TOY_40 = Dict{Vector{Int},Int}(
 @testset "EclatMining" begin
     include("test_io.jl")
     include("test_correctness.jl")
-    include("test_goal2_provenance.jl")
-    # test_applications.jl của A mới là placeholder (chỉ có comment, không có test).
-    # Không include để khỏi lẫn vào kết quả; thêm dòng include khi A viết test ứng dụng.
+    include("test_benchmark_provenance.jl")
+    # Kiểm thử ứng dụng chưa triển khai; bổ sung test_applications.jl khi có test thực tế.
 end

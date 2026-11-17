@@ -169,7 +169,7 @@ Output lớn có thể cạn RAM; đệ quy rất sâu có thể chạm giới h
 ## 1.7. Đo tác động tối ưu hóa
 
 Dùng CSDL Bernoulli tổng hợp với seed 42: dense có N=12000, U=24, p=.6;
-sparse có N=20000, U=500, p=.01. Cấu hình ở experiments/configs/goal2.toml.
+sparse có N=20000, U=500, p=.01. Cấu hình ở experiments/configs/optimization.toml.
 Đây là phép đo tối ưu của Chương 1, chưa thay thế benchmark thật của Chương 2.
 
 Runtime gồm validation, dựng dữ liệu dọc, DFS và vật chất hóa output; loại
@@ -182,16 +182,16 @@ output, không phải bộ nhớ riêng lõi thuật toán.
 
 Metadata riêng runtime/memory lưu hash code/cấu hình/môi trường và checksum CSV;
 script tổng hợp từ chối các đợt đo không tương thích hoặc file đã thay đổi.
-Số liệu raw, độ phân tán và môi trường lưu tại results/metrics/goal2_*.
+Số liệu raw, độ phân tán và môi trường lưu tại results/metrics/optimization_*.
 
 **Bảng 2. So sánh tối ưu (median), đơn vị ms và MiB = 2^20 byte.**
 
 | Dữ liệu / minsup | Số mẫu | Baseline / bitset (ms) | Speedup | Allocated baseline / bitset (MiB) | Peak RSS baseline / bitset (MiB) |
 |---|---:|---:|---:|---:|---:|
-| synthetic_dense / 20% | 2324 | 548.77 / 18.13 | 30.27x | 368.96 / 21.43 | 319.55 / 300.44 |
-| synthetic_dense / 35% | 300 | 151.70 / 5.42 | 27.97x | 142.20 / 3.82 | 304.62 / 302.10 |
-| synthetic_sparse / 0.5% | 500 | 289.46 / 167.21 | 1.73x | 17.48 / 317.37 | 301.02 / 317.51 |
-| synthetic_sparse / 1% | 248 | 71.62 / 32.22 | 2.22x | 7.17 / 78.30 | 301.03 / 318.08 |
+| synthetic_dense / 20% | 2324 | 394.13 / 12.54 | 31.43x | 368.96 / 21.43 | 301.64 / 293.73 |
+| synthetic_dense / 35% | 300 | 118.95 / 3.77 | 31.56x | 142.20 / 3.82 | 297.64 / 292.48 |
+| synthetic_sparse / 0.5% | 500 | 204.17 / 117.82 | 1.73x | 17.48 / 317.37 | 309.31 / 325.20 |
+| synthetic_sparse / 1% | 248 | 53.81 / 20.55 | 2.62x | 7.17 / 78.30 | 308.99 / 305.98 |
 
 
 Kết quả cho thấy bitset giảm mạnh runtime và allocation ở dense; ở sparse,
@@ -201,10 +201,10 @@ benchmark thật ở Chương 2. Bảng trên phân biệt tổng cấp phát v�
 
 ## 1.8. Đánh giá mức hoàn thành Chương 1
 
-- Goal 1: có baseline thật, hợp đồng API, lập luận tính đúng và phân tích chi phí.
-- Goal 2: có bitset thật, giữ baseline, có đo runtime/bộ nhớ và nêu đánh đổi.
-- Goal 3: có parser/writer SPMF, CLI và bảo vệ file nguồn trước lỗi alias.
-- Goal 4: đủ CSDL/case, so từng itemset/support và kiểm thử tự động vượt qua.
+- Baseline: có baseline thật, hợp đồng API, lập luận tính đúng và phân tích chi phí.
+- Tối ưu: có bitset thật, giữ baseline, có đo runtime/bộ nhớ và nêu đánh đổi.
+- I/O và CLI: có parser/writer SPMF, CLI và bảo vệ file nguồn trước lỗi alias.
+- Kiểm thử: đủ CSDL/case, so từng itemset/support và kiểm thử tự động vượt qua.
 
 Chương 1 đã đủ nội dung cài đặt và bản viết chung để tích hợp vào báo cáo tổng.
 Bản Markdown này là nguồn nội dung, chưa phải Report.pdf theo IEEE của cả đồ án.

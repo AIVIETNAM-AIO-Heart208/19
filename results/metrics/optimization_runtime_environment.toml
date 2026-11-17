@@ -1,4 +1,4 @@
-commit = "be3da2ea3e809a7797a78e84c12838ef06a37908"
+commit = "65f898137632954772bc5863224d24d69b3b469c"
 dirty = true
 
 [provenance]
@@ -12,14 +12,14 @@ os = "NT"
     "src\\algorithm\\baseline.jl" = "22212527aef3df1fd9f238184853c6e892bb4841b3cf9e1d9af7dd4c9aae1d10"
     "Project.toml" = "0ca4e47370c2532a074d97889e7f50dba73f8d768677b47299363373b90b4009"
     "src\\EclatMining.jl" = "d06f70d1a5024a195d2b6beab634ea3967f55aa5b5720d5fcd4e2efd06880ba5"
-    "experiments/goal2_common.jl" = "622d8752eb8254608dd853e8ea02302b7c316a89e400eb36ee65903cd9a11ddc"
-    "experiments/run_runtime.jl" = "187ad923fdfafb4b6831f86e3da0be518089b5131d132166ce83d211941b5754"
-    "src\\io.jl" = "63f43caa340dbb1f1e3072297700b5e33e245ef7a5374f01d87367e1f0a8400d"
-    "experiments/summarize_goal2.jl" = "8ac6a7507e26733842a542878a29e219fa1c41fc8e5fb8a9878f03e2abe7dcf2"
+    "experiments/summarize_optimization.jl" = "13ac46071b990016618d9933e176c1642c6f1b2bc04282b155e860687129e94b"
+    "experiments/run_runtime.jl" = "b005ac33cd5fbd1997d8a29d0fa148e3b74f74ef9141fc657946c2a56b200779"
+    "src\\io.jl" = "776f8403ebcdaa16578c1f47bb08bac5457bb3888a01d760335085c1e02e3ce6"
+    "experiments/configs/optimization.toml" = "3c04756b74ddcc8b816a0fa34409dd02a5e2257183a785fbfb448160c7450e00"
     "src\\applications\\biology.jl" = "e2508ec370f48a87fa222976983f3f794ed435fb0524de56bc46feec5ceeb6c8"
-    "experiments/configs/goal2.toml" = "3c04756b74ddcc8b816a0fa34409dd02a5e2257183a785fbfb448160c7450e00"
     "src\\applications\\association_rules.jl" = "f86b679f7c6e9d251eafd7358be044cc529803b48e44dd76c436b54e0759e65e"
-    "experiments/run_memory.jl" = "0bf3351cd97a864e67a46221677914bd9f75e460ee20d674ee36d6cba13b5458"
+    "experiments/run_memory.jl" = "c22cc10f101c3b68efd9463cc7e0e28a945ee58594d8588b46474e598fd58a61"
+    "experiments/benchmark_common.jl" = "6b53c108a537261be5eaa4d5599d15eaf3e671ee56f2e02ab244ff88e94e3969"
     "src\\applications\\market_basket.jl" = "cd9fb4238c4cb1f91adc355a8f9bad229218a1851c90363b8833c5da5bb7fe22"
 
 [config]
@@ -53,5 +53,5 @@ memory_repeats = 3
     n = 20000
 
 [artifacts]
-"goal2_runtime_summary.csv" = "6a239adb20c90a3625b4ef4f04cd6dfa8bbaeb4bb6bbba1d386a829f646aa71c"
-"goal2_runtime_raw.csv" = "2aad84f5279f687e72298d884f7cabf3d967184a75541417f470aa8ee3ef7eff"
+"optimization_runtime_summary.csv" = "08eab19f28635b7700df0b6bf156011a09976557128d4b1463162e85b48212f2"
+"optimization_runtime_raw.csv" = "43bdf3cd8cadf983377e619abb0a2671b1c7c1b316fac7c28fcd5dd9306e7ac5"

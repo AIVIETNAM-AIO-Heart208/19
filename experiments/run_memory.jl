@@ -1,13 +1,13 @@
-# Goal 2: each observation uses a fresh worker, one miner and one large call.
-include("goal2_common.jl")
-using .Goal2, EclatMining, TOML
+# Optimization comparison: each observation uses a fresh worker, one miner and one large call.
+include("benchmark_common.jl")
+using .BenchmarkSupport, EclatMining, TOML
 function worker(id, name)
-    config = TOML.parsefile(Goal2.CONFIG)
+    config = TOML.parsefile(BenchmarkSupport.CONFIG)
     c = config["case"][id]
-    f = Goal2.miner(name)
+    f = BenchmarkSupport.miner(name)
     # Compile the same API on a tiny input, never warm up on the measured database.
     f([[1, 2], [1], Int[]], 1)
-    db = Goal2.database(c, config["seed"])
+    db = BenchmarkSupport.database(c, config["seed"])
     threshold = minsup_abs(c["minsup"], length(db))
     GC.gc()
     result = f(db, threshold)
@@ -20,14 +20,14 @@ function main(args)
         worker(parse(Int, args[2]), args[3])
         return
     end
-    config = TOML.parsefile(Goal2.CONFIG)
-    initial = Goal2.begin_run("memory")
-    open(joinpath(Goal2.ROOT, "results", "metrics", "goal2_memory_raw.csv"), "w") do io
+    config = TOML.parsefile(BenchmarkSupport.CONFIG)
+    initial = BenchmarkSupport.begin_run("memory")
+    open(joinpath(BenchmarkSupport.ROOT, "results", "metrics", "optimization_memory_raw.csv"), "w") do io
         println(io, "case_id,miner,repeat,peak_process_rss_bytes,itemsets")
         for id in eachindex(config["case"]), rep in 1:config["memory_repeats"]
             order = isodd(rep) ? ("baseline", "bitset") : ("bitset", "baseline")
             for name in order
-                cmd = `$(Base.julia_cmd()) --startup-file=no --threads=1 --project=$(Goal2.ROOT) $(@__FILE__) --worker $id $name`
+                cmd = `$(Base.julia_cmd()) --startup-file=no --threads=1 --project=$(BenchmarkSupport.ROOT) $(@__FILE__) --worker $id $name`
                 output = strip(read(cmd, String))
                 println(io, id, ',', name, ',', rep, ',', output)
                 flush(io)
@@ -35,6 +35,6 @@ function main(args)
             end
         end
     end
-    Goal2.metadata("memory", config, initial)
+    BenchmarkSupport.metadata("memory", config, initial)
 end
 abspath(PROGRAM_FILE) == (@__FILE__) && main(ARGS)

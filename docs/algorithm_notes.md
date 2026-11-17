@@ -1,11 +1,11 @@
-# Eclat baseline — Goal 1
+# Cài đặt Eclat: baseline và bitset
 
-## Bài báo đã đọc
+## Cơ sở thuật toán
 
 Mohammed J. Zaki, “Scalable Algorithms for Association Mining”, IEEE TKDE,
 12(3), 372–390, 2000. DOI: https://doi.org/10.1109/69.846291.
 [PDF tại Đại học Granada](https://sci2s.ugr.es/keel/pdf/algorithm/articulo/2000%20-%20IEEETKDE%20-%20Zaki%20-%20%28Eclat%29%20ScalableAlgorithms%20for%20Association%20Mining%20.pdf).
-Đã đọc Support Counting (4.1), phân lớp prefix (4.2), Bottom-Up Search
+Các phần làm cơ sở: Support Counting (4.1), phân lớp prefix (4.2), Bottom-Up Search
 trong phần 5 (Fig. 12). Áp dụng giao tid-list và mở rộng lớp bằng đệ quy.
 Bản này bắt đầu từ singleton trong bộ nhớ, không tái tạo toàn bộ pipeline I/O.
 Không tham khảo mã nguồn SPMF hay implementation FIM khác.
@@ -48,7 +48,7 @@ không thể có tập mở rộng phổ biến. So ngưỡng dùng >=, kể c�
 Mỗi output lưu copy(prefix), không chia sẻ vector với input hoặc mẫu khác.
 Sort singleton và giữ thứ tự lớp con làm thứ tự kết quả xác định.
 
-## API bàn giao cho B
+## Giao diện lập trình và hợp đồng dữ liệu
 
 ```julia
 eclat_baseline(db::Vector{Vector{Int}}, minsup_abs::Int)::Vector{Pair{Vector{Int},Int}}
@@ -71,7 +71,7 @@ write_spmf("out.txt", patterns)
 ```
 
 `eclat` hiện gọi `eclat_bitset`; baseline vẫn giữ API riêng làm mốc so sánh.
-Stub đã gỡ, src/ không include oracle. Cả hai bản chạy chung correctness và API tests.
+Oracle chỉ phục vụ kiểm thử, không được gọi từ src/. Cả hai bản chạy chung correctness và API tests.
 
 ## Độ phức tạp và giới hạn
 
@@ -87,7 +87,7 @@ cận thô TID-set đang sống là O(N × sum(Ld)); không giữ toàn bộ câ
 Output lớn có thể cạn RAM; đệ quy rất sâu có thể chạm giới hạn stack.
 Không áp giới hạn nhân tạo 20 item hoặc cắt độ dài mẫu.
 
-## Kiểm chứng Goal 2
+## Kiểm chứng tính đúng
 
 Julia 1.11.4, Windows, ngày 17/11/2026: 3825 pass, 0 fail/error,
 1 skip do Windows không cho tạo symlink. Không skip baseline hoặc bitset.
@@ -119,13 +119,13 @@ và cấp mask cho các giao thất bại. Bộ nhớ dọc khoảng F×ceil(N/8
 bit, cộng overhead, counts O(U), lớp DFS còn sống và output. Chi phí output
 và giới hạn hàm mũ/stack vẫn tồn tại. Không suy ra mọi dataset đều nhanh hơn.
 
-## Phương pháp đo Goal 2
+## Phương pháp đo tối ưu hóa
 
 Chưa có benchmark thật trong data/datasets.toml. Dùng hai CSDL tổng hợp Bernoulli,
-seed 42, cấu hình đầy đủ ở experiments/configs/goal2.toml. Mỗi giao dịch thử độc
+seed 42, cấu hình đầy đủ ở experiments/configs/optimization.toml. Mỗi giao dịch thử độc
 lập từng item với xác suất p. Dense: N=12000, U=24, p=.6; sparse: N=20000,
 U=500, p=.01. Không chọn lại seed để tạo kết quả thuận lợi, không trộn pilot.
-Đây là đánh giá Goal 2, chưa hoàn thành benchmark Chương 2.
+Đây là đánh giá tối ưu hóa, chưa hoàn thành benchmark Chương 2.
 
 Mỗi case kiểm tra hai output khớp từng mẫu/support trước khi đo. Runtime gồm
 validation, dựng dữ liệu dọc, DFS và tạo đầy đủ output; không gồm sinh input,
@@ -141,7 +141,7 @@ không phải bộ nhớ riêng thuật toán. Không lấy hiệu maxrss để 
 Số liệu raw và median giữ nguyên, không báo khác biệt nhỏ là chắc chắn có ý nghĩa.
 
 Môi trường, commit + dirty=true và cấu hình lưu ở
-results/metrics/goal2_runtime_environment.toml và goal2_memory_environment.toml. Không thêm dependency benchmark.
+results/metrics/optimization_runtime_environment.toml và optimization_memory_environment.toml. Không thêm dependency benchmark.
 
 Chạy lại từ repo root (Julia trong PATH):
 
@@ -149,12 +149,17 @@ Chạy lại từ repo root (Julia trong PATH):
 julia --startup-file=no --threads=1 --project=. test/runtests.jl
 julia --startup-file=no --threads=1 --project=. experiments/run_runtime.jl
 julia --startup-file=no --threads=1 --project=. experiments/run_memory.jl
-julia --startup-file=no --threads=1 --project=. experiments/summarize_goal2.jl
+julia --startup-file=no --threads=1 --project=. experiments/summarize_optimization.jl
 ```
 
-Nếu chưa có Julia trong PATH, dùng bản portable đã tải bằng cách thay `julia`
-bằng `& (Join-Path $env:TEMP 'eclat-julia-review-1.11.4/julia-1.11.4/bin/julia.exe')`.
-Các script ghi đè file kết quả Goal 2 tương ứng khi chạy lại.
+Nếu Julia chưa có trong PATH, dùng đường dẫn đến julia.exe đã cài trên máy.
+Ví dụ PowerShell (thay đường dẫn dưới đây bằng đường dẫn thực tế):
+
+```powershell
+$juliaExe = 'C:/Tools/Julia/bin/julia.exe'
+& $juliaExe --startup-file=no --threads=1 --project=. test/runtests.jl
+```
+Các script ghi đè file kết quả đo tương ứng khi chạy lại.
 
 ## Kết quả đo thực tế
 
@@ -163,15 +168,15 @@ IQR runtime và từng lần đo nằm trong CSV raw/summary, không dùng asser
 
 | Dữ liệu / minsup | Số mẫu | Baseline / bitset (ms) | Speedup | Allocated baseline / bitset (MiB) | Peak RSS baseline / bitset (MiB) |
 |---|---:|---:|---:|---:|---:|
-| synthetic_dense / 20% | 2324 | 548.77 / 18.13 | 30.27x | 368.96 / 21.43 | 319.55 / 300.44 |
-| synthetic_dense / 35% | 300 | 151.70 / 5.42 | 27.97x | 142.20 / 3.82 | 304.62 / 302.10 |
-| synthetic_sparse / 0.5% | 500 | 289.46 / 167.21 | 1.73x | 17.48 / 317.37 | 301.02 / 317.51 |
-| synthetic_sparse / 1% | 248 | 71.62 / 32.22 | 2.22x | 7.17 / 78.30 | 301.03 / 318.08 |
+| synthetic_dense / 20% | 2324 | 394.13 / 12.54 | 31.43x | 368.96 / 21.43 | 301.64 / 293.73 |
+| synthetic_dense / 35% | 300 | 118.95 / 3.77 | 31.56x | 142.20 / 3.82 | 297.64 / 292.48 |
+| synthetic_sparse / 0.5% | 500 | 204.17 / 117.82 | 1.73x | 17.48 / 317.37 | 309.31 / 325.20 |
+| synthetic_sparse / 1% | 248 | 53.81 / 20.55 | 2.62x | 7.17 / 78.30 | 308.99 / 305.98 |
 
-Dense: runtime nhanh hơn khoảng 28.0–30.3 lần, allocation giảm rõ. TID-list dense
+Dense: runtime nhanh hơn khoảng 31.4–31.6 lần, allocation giảm rõ. TID-list dense
 phải quét nhiều TID cho mỗi giao, trong khi bitset xử lý theo word. Peak process
 RAM giảm ít hơn allocation vì chứa runtime, JIT và input.
-Sparse: runtime nhanh hơn khoảng 1.7–2.2 lần trong các case này, nhưng allocation
+Sparse: runtime nhanh hơn khoảng 1.7–2.6 lần trong các case này, nhưng allocation
 và peak process RAM đều tăng. Nhiều cặp singleton không có giao đủ ngưỡng vẫn
 cấp mask đầy chiều dài N. Không thể xem đây là tối ưu bộ nhớ cho mọi input.
 Cần đo benchmark thật, nhiều môi trường trước khi tổng quát hóa kết quả.

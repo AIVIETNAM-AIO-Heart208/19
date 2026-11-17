@@ -4,7 +4,7 @@
 
 ## Trạng thái
 
-Đã có baseline TID-list và optimized BitVector; `eclat` mặc định gọi bitset. Cả hai khớp 27/27 case SPMF. Kiểm thử Julia 1.11.4: 3825 pass, 0 fail/error, 1 skip do quyền tạo symlink Windows. Goal 2 có số liệu runtime/allocation/peak RAM trên dữ liệu tổng hợp; benchmark thật Chương 2 chưa thực hiện.
+Đã có baseline TID-list và optimized BitVector; `eclat` mặc định gọi bitset. Cả hai khớp 27/27 case SPMF. Kiểm thử Julia 1.11.4: 3825 pass, 0 fail/error, 1 skip do quyền tạo symlink Windows. Đã có số liệu runtime/allocation/peak RAM trên dữ liệu tổng hợp; benchmark thật Chương 2 chưa thực hiện.
 
 ## Môi trường
 
@@ -56,7 +56,7 @@ julia --project test/runtests.jl
 
 `test/runtests.jl` chạy `test_io.jl` (parser, writer, minsup, `clean_spmf`) và `test_correctness.jl` (toy 15 itemset, edge case, khớp output thật của SPMF trên `test/fixtures/`). Đề ghi thư mục `tests/`, repo dùng `test/` cho khớp lệnh chạy trong đề.
 
-Kết quả kiểm tra Goal 2 ngày 17/11/2026 (Windows, Julia 1.11.4):
+Kết quả kiểm tra hai implementation ngày 17/11/2026 (Windows, Julia 1.11.4):
 
 ```text
 Khớp SPMF: 27/27 case, 7 CSDL, tổng 552 itemset tham chiếu (mỗi bản)
@@ -66,17 +66,17 @@ EclatMining   | 3825       1   3826
 
 Một Broken là @test_skip do Windows thiếu quyền tạo symlink. Không skip bitset/baseline. CLI toy @40% khớp 100%; module không có cảnh báo ghi đè hoặc method ambiguity.
 
-## Đo so sánh Goal 2
+## So sánh hiệu năng
 
 ```powershell
 julia --startup-file=no --threads=1 --project=. experiments/run_runtime.jl
 julia --startup-file=no --threads=1 --project=. experiments/run_memory.jl
-julia --startup-file=no --threads=1 --project=. experiments/summarize_goal2.jl
+julia --startup-file=no --threads=1 --project=. experiments/summarize_optimization.jl
 ```
 
-Cấu hình: `experiments/configs/goal2.toml`; dữ liệu tổng hợp seed 42. Số liệu ở `results/metrics/goal2_*.csv`, môi trường trong `goal2_runtime_environment.toml và goal2_memory_environment.toml`. Chạy lại sẽ ghi đè các kết quả này. Runtime median/IQR sau warm-up (7 lần), peak RAM median của 3 tiến trình mới mỗi case/miner; allocated bytes và peak RAM được ghi riêng. Bảng và phân tích: [algorithm_notes.md](docs/algorithm_notes.md#kết-quả-đo-thực-tế).
+Cấu hình: `experiments/configs/optimization.toml`; dữ liệu tổng hợp seed 42. Số liệu ở `results/metrics/optimization_*.csv`, môi trường trong `optimization_runtime_environment.toml và optimization_memory_environment.toml`. Chạy lại sẽ ghi đè các kết quả này. Runtime median/IQR sau warm-up (7 lần), peak RAM median của 3 tiến trình mới mỗi case/miner; allocated bytes và peak RAM được ghi riêng. Bảng và phân tích: [algorithm_notes.md](docs/algorithm_notes.md#kết-quả-đo-thực-tế).
 
-Dense: bitset nhanh hơn 28.0–30.3x và cấp phát ít hơn. Sparse: 1.7–2.2x nhanh hơn nhưng cấp phát và peak RAM cao hơn. Đây chưa phải kết quả benchmark thật Chương 2.
+Dense: bitset nhanh hơn 31.4–31.6x và cấp phát ít hơn. Sparse: 1.7–2.6x nhanh hơn nhưng cấp phát và peak RAM cao hơn. Đây chưa phải kết quả benchmark thật Chương 2.
 
 ## Chạy SPMF tham chiếu
 

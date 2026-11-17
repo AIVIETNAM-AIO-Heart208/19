@@ -1,4 +1,4 @@
-# Tiện ích của vai B: đọc/ghi định dạng SPMF, quy đổi minsup, so khớp kết quả.
+# Tiện ích đọc/ghi định dạng SPMF, quy đổi minsup và so khớp kết quả.
 #
 # Quy ước chung:
 #   - CSDL giao dịch:  Vector{Vector{Int}}, mỗi giao dịch đã sort tăng dần, không item trùng.
