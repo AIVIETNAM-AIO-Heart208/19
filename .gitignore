@@ -18,3 +18,19 @@ Thumbs.db
 /docs/report/*.fdb_latexmk
 /docs/report/*.synctex.gz
 
+
+# SPMF jar, output tạm của CLI
+tools/*.jar
+out*.txt
+
+# Ghi chú làm việc và file prompt cho trợ lý AI: chỉ để trên máy, không đưa lên repo
+CLAUDE.md
+CLAUDE.local.md
+.claude/
+AGENTS.md
+GEMINI.md
+.cursor/
+.cursorrules
+.github/copilot-instructions.md
+prompts/
+*.prompt.md

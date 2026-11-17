@@ -1,2 +1,168 @@
-# TODO: Khai báo từng test case với input, minsup và đường dẫn kết quả SPMF.
+# Các test case đối chiếu SPMF. File này do experiments/spmf/run_reference.jl ghi, không sửa tay.
+[spmf]
+algorithm = "Eclat"
+version = "2.65"
+java = "openjdk version '25.0.5' 2026-10-20 LTS"
+command = "java -jar tools/spmf.jar run Eclat <input> <expected> <minsup>%"
 
+[[case]]
+input = "transactions/dup_items_comments_clean.txt"
+minsup_percent = 20
+expected = "spmf_expected/dup_items_comments_clean_20.txt"
+n_itemsets = 17
+
+[[case]]
+input = "transactions/dup_items_comments_clean.txt"
+minsup_percent = 40
+expected = "spmf_expected/dup_items_comments_clean_40.txt"
+n_itemsets = 11
+
+[[case]]
+input = "transactions/dup_items_comments_clean.txt"
+minsup_percent = 60
+expected = "spmf_expected/dup_items_comments_clean_60.txt"
+n_itemsets = 2
+
+[[case]]
+input = "transactions/dup_items_comments_cleaned.txt"
+minsup_percent = 20
+expected = "spmf_expected/dup_items_comments_cleaned_20.txt"
+n_itemsets = 17
+
+[[case]]
+input = "transactions/dup_items_comments_cleaned.txt"
+minsup_percent = 40
+expected = "spmf_expected/dup_items_comments_cleaned_40.txt"
+n_itemsets = 6
+
+[[case]]
+input = "transactions/dup_items_comments_cleaned.txt"
+minsup_percent = 60
+expected = "spmf_expected/dup_items_comments_cleaned_60.txt"
+n_itemsets = 2
+
+[[case]]
+input = "transactions/dup_tx.txt"
+minsup_percent = 20
+expected = "spmf_expected/dup_tx_20.txt"
+n_itemsets = 15
+
+[[case]]
+input = "transactions/dup_tx.txt"
+minsup_percent = 40
+expected = "spmf_expected/dup_tx_40.txt"
+n_itemsets = 9
+
+[[case]]
+input = "transactions/dup_tx.txt"
+minsup_percent = 60
+expected = "spmf_expected/dup_tx_60.txt"
+n_itemsets = 4
+
+[[case]]
+input = "transactions/rand_dense.txt"
+minsup_percent = 20
+expected = "spmf_expected/rand_dense_20.txt"
+n_itemsets = 236
+
+[[case]]
+input = "transactions/rand_dense.txt"
+minsup_percent = 40
+expected = "spmf_expected/rand_dense_40.txt"
+n_itemsets = 25
+
+[[case]]
+input = "transactions/rand_dense.txt"
+minsup_percent = 60
+expected = "spmf_expected/rand_dense_60.txt"
+n_itemsets = 5
+
+[[case]]
+input = "transactions/rand_sparse.txt"
+minsup_percent = 2
+expected = "spmf_expected/rand_sparse_2.txt"
+n_itemsets = 90
+
+[[case]]
+input = "transactions/rand_sparse.txt"
+minsup_percent = 5
+expected = "spmf_expected/rand_sparse_5.txt"
+n_itemsets = 16
+
+[[case]]
+input = "transactions/rand_sparse.txt"
+minsup_percent = 10
+expected = "spmf_expected/rand_sparse_10.txt"
+n_itemsets = 15
+
+[[case]]
+input = "transactions/rand_sparse.txt"
+minsup_percent = 20
+expected = "spmf_expected/rand_sparse_20.txt"
+n_itemsets = 1
+
+[[case]]
+input = "transactions/rand_sparse.txt"
+minsup_percent = 40
+expected = "spmf_expected/rand_sparse_40.txt"
+n_itemsets = 0
+
+[[case]]
+input = "transactions/rand_sparse.txt"
+minsup_percent = 60
+expected = "spmf_expected/rand_sparse_60.txt"
+n_itemsets = 0
+
+[[case]]
+input = "transactions/toy.txt"
+minsup_percent = 20
+expected = "spmf_expected/toy_20.txt"
+n_itemsets = 19
+
+[[case]]
+input = "transactions/toy.txt"
+minsup_percent = 21
+expected = "spmf_expected/toy_21.txt"
+n_itemsets = 15
+
+[[case]]
+input = "transactions/toy.txt"
+minsup_percent = 39
+expected = "spmf_expected/toy_39.txt"
+n_itemsets = 15
+
+[[case]]
+input = "transactions/toy.txt"
+minsup_percent = 40
+expected = "spmf_expected/toy_40.txt"
+n_itemsets = 15
+
+[[case]]
+input = "transactions/toy.txt"
+minsup_percent = 60
+expected = "spmf_expected/toy_60.txt"
+n_itemsets = 9
+
+[[case]]
+input = "transactions/ws_line.txt"
+minsup_percent = 40
+expected = "spmf_expected/ws_line_40.txt"
+n_itemsets = 3
+
+[[case]]
+input = "transactions/ws_line.txt"
+minsup_percent = 60
+expected = "spmf_expected/ws_line_60.txt"
+n_itemsets = 3
+
+[[case]]
+input = "transactions/ws_line.txt"
+minsup_percent = 70
+expected = "spmf_expected/ws_line_70.txt"
+n_itemsets = 1
+
+[[case]]
+input = "transactions/ws_line.txt"
+minsup_percent = 80
+expected = "spmf_expected/ws_line_80.txt"
+n_itemsets = 1
