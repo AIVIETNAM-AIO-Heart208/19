@@ -32,6 +32,16 @@ function parse_args(args::Vector{String})::Dict{String,String}
     return opts
 end
 
+# true nếu hai đường dẫn chỉ cùng một file.
+# 1) So dạng chuẩn hóa: abspath gắn thư mục hiện tại, normpath bỏ `.`/`..`/dấu phân cách thừa;
+#    trên Windows thêm lowercase vì NTFS mặc định không phân biệt hoa thường. Không cần file tồn tại.
+# 2) Nếu cả hai đã tồn tại: samefile so (thiết bị, inode), bắt symlink/hard link mà dạng chữ khác hẳn.
+function same_file(a::AbstractString, b::AbstractString)::Bool
+    key(p) = (k = normpath(abspath(p)); Sys.iswindows() ? lowercase(k) : k)
+    key(a) == key(b) && return true
+    return ispath(a) && ispath(b) && samefile(a, b)
+end
+
 # Trả về exit code: 0 thành công, 1 khi tham số thiếu/sai.
 function main(args::Vector{String})::Int
     if "--help" in args || "-h" in args
@@ -44,6 +54,10 @@ function main(args::Vector{String})::Int
         opts = parse_args(args)
         minsup = parse_minsup(opts["--minsup"])
         isfile(opts["--input"]) || throw(ArgumentError("không tìm thấy file input: " * opts["--input"]))
+        # Kiểm trước khi đọc/ghi: nếu trùng thì write_spmf sẽ ghi đè mất dữ liệu gốc.
+        same_file(opts["--input"], opts["--output"]) &&
+            throw(ArgumentError("--input và --output trỏ cùng một file (" * opts["--output"] *
+                                "); chọn file output khác để không ghi đè dữ liệu gốc"))
     catch err
         err isa ArgumentError || rethrow()
         println(stderr, "Lỗi: ", err.msg, "\n")

@@ -155,3 +155,52 @@ end
         @test_throws ArgumentError clean_spmf(crlf, crlf)
     end
 end
+
+# CLI: include script vào module riêng để gọi main(args) ngay trong tiến trình test, không đụng tên trong Main.
+# Khối `if abspath(PROGRAM_FILE) == @__FILE__` cuối script không chạy khi include.
+module CLI
+include(joinpath(@__DIR__, "..", "scripts", "run_eclat.jl"))
+end
+
+@testset "CLI: từ chối --input và --output cùng một file" begin
+    run_cli(input, output) = redirect_stdio(stdout=devnull, stderr=devnull) do
+        CLI.main(["--input", input, "--output", output, "--minsup", "40%"])
+    end
+    mktempdir() do dir
+        cd(dir) do
+            original = read(toy("toy.txt"))
+            write("x.txt", original)
+
+            # Cùng file, khác dạng đường dẫn: đều phải exit ≠ 0, input giữ nguyên, không tạo file nào.
+            pairs = [("x.txt", "x.txt"), ("x.txt", "./x.txt"), ("./x.txt", "x.txt"),
+                     ("x.txt", joinpath(dir, "x.txt")), ("x.txt", joinpath("sub", "..", "x.txt"))]
+            Sys.iswindows() && append!(pairs, [("x.txt", "X.TXT"), ("X.txt", "x.TXT")])
+            @testset "$inp vs $out" for (inp, out) in pairs
+                @test run_cli(inp, out) != 0
+                @test read("x.txt") == original
+                @test readdir(dir) == ["x.txt"]
+            end
+
+            # Symlink: dạng chữ khác hẳn, chỉ samefile bắt được. Windows cần quyền tạo symlink nên có thể bỏ qua.
+            linked = try
+                symlink(joinpath(dir, "x.txt"), "link.txt"); true
+            catch err
+                err isa Base.IOError || rethrow(); false
+            end
+            if linked
+                @test CLI.same_file("x.txt", "link.txt")
+                @test run_cli("x.txt", "link.txt") != 0
+                @test read("x.txt") == original
+                rm("link.txt")
+            else
+                @test_skip run_cli("x.txt", "link.txt") != 0
+            end
+
+            # Đối chứng: output là file khác thì chạy bình thường, input vẫn nguyên.
+            @test !CLI.same_file("x.txt", "y.txt")
+            @test run_cli("x.txt", "y.txt") == 0
+            @test read_spmf_output("y.txt") == TOY_40
+            @test read("x.txt") == original
+        end
+    end
+end
