@@ -4,7 +4,7 @@
 
 ## Trạng thái
 
-Repository có khung dự án Julia, parser/writer SPMF, CLI và bộ kiểm thử (đang pass). Eclat hiện là stub brute-force tạm (`src/algorithm/stub.jl`), nên khớp SPMF hiện là của stub; thực nghiệm chưa được triển khai.
+Đã triển khai Eclat baseline bằng TID-set và DFS, nối vào CLI. `eclat` gọi baseline thật; stub đã gỡ. Kiểm chứng trên Julia 1.11.4: 1950 pass, 0 fail/error, 2 skip có lý do; baseline khớp 27/27 case SPMF. Bitset (Goal 2) báo chưa triển khai. Thực nghiệm chưa triển khai.
 
 ## Môi trường
 
@@ -45,7 +45,7 @@ julia --project experiments/spmf/compare.jl out.txt test/fixtures/spmf_expected/
 ```
 
 Lệnh thứ hai so khớp dạng tập `{(itemset, support)}` và thoát với mã 0 khi khớp 100%.
-Hiện `src/algorithm/stub.jl` là stub brute-force tạm (có cảnh báo STUB khi chạy); xóa nó khi Eclat thật đã có trong `baseline.jl`/`optimized.jl`.
+CLI chạy baseline thật. API và phân tích: [ghi chú thuật toán](docs/algorithm_notes.md).
 Dữ liệu benchmark thật cần đi qua `EclatMining.clean_spmf(in, out)` trước khi đưa cho SPMF và cho CLI.
 
 ## Chạy test
@@ -55,6 +55,16 @@ julia --project test/runtests.jl
 ```
 
 `test/runtests.jl` chạy `test_io.jl` (parser, writer, minsup, `clean_spmf`) và `test_correctness.jl` (toy 15 itemset, edge case, khớp output thật của SPMF trên `test/fixtures/`). Đề ghi thư mục `tests/`, repo dùng `test/` cho khớp lệnh chạy trong đề.
+
+Kết quả kiểm tra ngày 17/11/2026, Windows, Julia 1.11.4 portable (startup file tắt):
+
+```text
+Khớp SPMF: 27/27 case, 7 CSDL, tổng 552 itemset tham chiếu
+Test Summary: | Pass  Broken  Total
+EclatMining   | 1950       2   1952
+```
+
+Hai `Broken` là `@test_skip`: Windows không cho tạo symlink và bitset thuộc Goal 2 chưa triển khai. Baseline không bị skip. Bộ test bao gồm đối chiếu oracle với seed cố định và 1536 phép so sánh vét cạn trên CSDL nhỏ. Module nạp/precompile không có cảnh báo ghi đè method; kiểm tra không có method ambiguity. Chạy CLI trong tiến trình riêng trên toy @40% trả 15 itemset, khớp 100% file tham chiếu (thiếu/thừa/sai support đều bằng 0). SPMF Java chưa được chạy lại; so với fixture đã lưu.
 
 ## Chạy SPMF tham chiếu
 
@@ -74,10 +84,8 @@ Chi tiết (phiên bản, checksum, hành vi SPMF với input bẩn) ở `experi
 
 - Thành viên và mã nhóm.
 - Bài báo gốc Eclat và ít nhất ba tài liệu liên quan.
-- Ví dụ CLI chạy trên Eclat thật (sau khi A cài lõi).
 - Link Colab công khai, nguồn dữ liệu và checksum.
-- Lệnh kiểm thử: julia --project test/runtests.jl (test đã có và pass, chạy trên stub).
-- Output của lần chạy kiểm thử cuối.
+- Lệnh kiểm thử: julia --project test/runtests.jl (baseline thật; bitset có một skip vì Goal 2 pending).
 
 ## Hướng ứng dụng dự kiến
 

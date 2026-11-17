@@ -4,6 +4,10 @@
 using Test
 using TOML
 using EclatMining
+using Random
+
+# Add eclat_bitset here only after Goal 2 implements it.
+const IMPLEMENTED_MINERS = (eclat_baseline,)
 
 @testset "compare_itemsets" begin
     same = compare_itemsets(TOY_40, copy(TOY_40))
@@ -29,7 +33,7 @@ using EclatMining
     @test is_exact_match(empty_result) && match_ratio(empty_result) == 1.0
 end
 
-@testset "toy (contextPasquier99) — $miner" for miner in (eclat_baseline, eclat_bitset)
+@testset "toy (contextPasquier99) — $miner" for miner in IMPLEMENTED_MINERS
     db = read_spmf(toy("toy.txt"))
     r40 = miner(db, minsup_abs(parse_minsup("40%"), length(db)))
     @test length(r40) == 15
@@ -39,7 +43,7 @@ end
     @test all(issorted(first(p)) && allunique(first(p)) for p in r40)
 end
 
-@testset "edge cases — $miner" for miner in (eclat_baseline, eclat_bitset)
+@testset "edge cases — $miner" for miner in IMPLEMENTED_MINERS
     # CSDL rỗng.
     @test isempty(miner(Vector{Int}[], 0))
     @test isempty(reference_mine(Vector{Int}[], 0))
@@ -67,7 +71,7 @@ end
 # không lấy từ những file đang có trong thư mục: mất fixture nào thì case đó fail, không bị bỏ qua.
 const SPMF_CASES = TOML.parsefile(joinpath(FIXTURES, "cases.toml"))["case"]
 
-@testset "khớp SPMF — $miner" for miner in (eclat_baseline, eclat_bitset)
+@testset "khớp SPMF — $miner" for miner in IMPLEMENTED_MINERS
     @test !isempty(SPMF_CASES)
     datasets = Set{String}()
     n_run = 0
@@ -109,5 +113,63 @@ const SPMF_CASES = TOML.parsefile(joinpath(FIXTURES, "cases.toml"))["case"]
     @testset "dup_items_comments (bẩn) @ $pct%" for pct in (20, 40, 60)
         spmf = read_spmf_output(joinpath(EXPECTED_DIR, "dup_items_comments_cleaned_$pct.txt"))
         @test is_exact_match(compare_itemsets(miner(dirty, minsup_abs(pct // 100, length(dirty))), spmf))
+    end
+end
+
+
+@testset "Goal 2 pending: bitset" begin
+    @test_throws ErrorException eclat_bitset([[1]], 1)
+    @test_skip is_exact_match(compare_itemsets(eclat_bitset([[1]], 1), [[1] => 1]))
+end
+
+@testset "baseline API, invariants and oracle" begin
+    @test isempty(eclat_baseline(Vector{Int}[], 3))
+    @test isempty(eclat_baseline([Int[], Int[]], 1))
+    @test isempty(eclat_baseline([[1]], 2))
+    @test eclat_baseline([[0]], 1) == [[0] => 1]
+    @test_throws ArgumentError eclat_baseline(Vector{Int}[], -1)
+    @test_throws ArgumentError eclat_baseline([[1]], 0)
+    for bad in ([[-1]], [[2, 1]], [[1, 1]])
+        @test_throws ArgumentError eclat_baseline(bad, 1)
+        @test_throws ArgumentError eclat_baseline(bad, 100)
+    end
+    db = [[0, 17, 1000], Int[], [0, 17, 1000], [17]]
+    before = deepcopy(db)
+    result = @inferred eclat_baseline(db, 2)
+    @test is_exact_match(compare_itemsets(result, reference_mine(db, 2)))
+    @test result == eclat_baseline(db, 2)
+    @test eclat(db, 2) == result
+    @test db == before
+    @test all(allunique(first(p)) && issorted(first(p)) for p in result)
+    # Changing one returned vector must not affect any other result or input.
+    snapshot = deepcopy(result)
+    push!(first(result[1]), 9999)
+    @test result[2:end] == snapshot[2:end]
+    @test db == before
+
+    # More than 20 distinct items, but only the singleton {0} is frequent.
+    large_universe = [[0, i] for i in 1:30]
+    @test eclat_baseline(large_universe, 2) == [[0] => 30]
+
+    rng = MersenneTwister(20261117)
+    for trial in 1:40
+        random_db = [Int[i for i in 0:6 if rand(rng) < 0.4] for _ in 1:rand(rng, 1:12)]
+        for threshold in unique([1, length(random_db), rand(rng, 1:length(random_db))])
+            actual = eclat_baseline(random_db, threshold)
+            @test is_exact_match(compare_itemsets(actual, reference_mine(random_db, threshold)))
+        end
+    end
+
+    # Exhaust all 3-transaction databases over three items, including extreme IDs.
+    # This covers every pattern of empty/repeated/disjoint transactions and ties.
+    universe = [0, 7, typemax(Int)]
+    transactions = [Int[universe[j] for j in 1:3 if (mask >> (j - 1)) & 1 == 1]
+                    for mask in 0:7]
+    for a in transactions, b in transactions, c in transactions
+        small_db = [a, b, c]
+        for threshold in 1:3
+            @test is_exact_match(compare_itemsets(eclat_baseline(small_db, threshold),
+                                                 reference_mine(small_db, threshold)))
+        end
     end
 end
