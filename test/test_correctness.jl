@@ -99,6 +99,7 @@ const SPMF_CASES = TOML.parsefile(joinpath(FIXTURES, "cases.toml"))["case"]
         end
     end
     @test n_run == length(SPMF_CASES)    # đủ mọi case đã khai báo đều chạy so khớp
+    @test length(datasets) >= 5          # nhóm quy định so khớp SPMF trên ít nhất 5 CSDL khác nhau
     println("Khớp SPMF: ", n_run, "/", length(SPMF_CASES), " case, ", length(datasets),
             " CSDL, tổng ", n_itemsets, " itemset tham chiếu")
 
