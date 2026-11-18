@@ -69,10 +69,10 @@
 ### Người B — Benchmark, correctness và bộ nhớ
 
 **Goal 7. Bộ benchmark chuẩn và kiểm tra correctness**
-- [ ] Chuẩn bị **ít nhất 4 datasets** (gợi ý: Chess, Mushroom, Retail, T10I4D100K), lưu hoặc liên kết dữ liệu để tái chạy.
-- [ ] Kiểm tra định dạng, số giao dịch và cách đọc dữ liệu; thống nhất các minsup với Người A.
-- [ ] Với **mỗi dataset**, đối chiếu số lượng frequent itemset, từng itemset và support với SPMF; ghi **tỉ lệ khớp**.
-- [ ] Ghi nhận và giải thích mọi sai lệch nếu có.
+- [x] Chuẩn bị **ít nhất 4 datasets** (gợi ý: Chess, Mushroom, Retail, T10I4D100K), lưu hoặc liên kết dữ liệu để tái chạy.
+- [x] Kiểm tra định dạng, số giao dịch và cách đọc dữ liệu; thống nhất các minsup với Người A.
+- [x] Với **mỗi dataset**, đối chiếu số lượng frequent itemset, từng itemset và support với SPMF; ghi **tỉ lệ khớp**.
+- [x] Ghi nhận và giải thích mọi sai lệch nếu có.
 
 **Goal 8. Peak memory và tổng hợp đánh giá**
 - [ ] Đo **peak RAM** trên mỗi benchmark ở một mức minsup trung bình.
