@@ -1,12 +1,22 @@
 # Lập bảng correctness theo từng dataset từ một lần chạy runtime đã có.
 #
-# Không chạy lại thuật toán: chỉ đọc `summary.csv` do experiments/run_runtime.jl
-# sinh ra. Trong lần chạy đó, mỗi cấu hình đã được so với SPMF bằng
-# `compare_itemsets` (từng itemset đã sort và support), kết quả ghi ở cột
-# `validation`.
+# Không chạy lại thuật toán: chỉ đọc `summary.csv` do experiments/run_benchmarks.jl
+# (hàm `run_case` trong experiments/dataset_benchmarks.jl) sinh ra. Trong lần
+# chạy đó, mỗi cấu hình được so với SPMF bằng `compare_itemsets` (từng itemset
+# đã sort và support). Cấu hình lệch KHÔNG được ghi vào CSV, nên script còn đối
+# chiếu danh sách cấu hình mong đợi trong `environment.toml` cùng thư mục: thiếu
+# cấu hình nào thì báo lỗi và thoát với mã khác 0.
 #
 # Dùng:
 #   julia --project experiments/run_correctness.jl <summary.csv> <output.md>
+
+using TOML
+
+# Trả về các cặp (dataset, minsup) mà lần chạy đã dự định chạy.
+function expected_configs(env_path::AbstractString)
+    cfg = TOML.parsefile(env_path)["config"]
+    return [(ds, ms) for ds in cfg["dataset_ids"] for ms in cfg["minsup"][ds]]
+end
 
 function read_summary(path::AbstractString)
     lines = filter(!isempty, readlines(path))
@@ -52,6 +62,15 @@ end
 function main(args)
     length(args) == 2 || error("Dùng: run_correctness.jl <summary.csv> <output.md>")
     rows = read_summary(args[1])
+    expected = expected_configs(joinpath(dirname(abspath(args[1])), "environment.toml"))
+    present = Set((r["dataset"], r["minsup"], r["miner"]) for r in rows)
+    missing_cfg = [(ds, ms, m) for (ds, ms) in expected for m in ("julia", "spmf")
+                   if (ds, ms, m) ∉ present]
+    if !isempty(missing_cfg)
+        println(stderr, "Thiếu $(length(missing_cfg)) dòng so với cấu hình dự định: ",
+                join(("$ds $ms $m" for (ds, ms, m) in missing_cfg), "; "))
+        exit(1)
+    end
     table, matched, total = build_table(rows)
     open(args[2], "w") do io
         println(io, join(table, "\n"))
