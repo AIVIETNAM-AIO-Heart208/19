@@ -9,14 +9,21 @@
 - **So sánh:** với mỗi cặp (dataset, minsup), output của Eclat nhóm và của SPMF (ECLAT v2.65)
   được đọc lại, mỗi itemset được sort và so theo cặp (itemset, support). Hai tập phải bằng nhau
   hoàn toàn, nên không chỉ trùng số lượng. Thứ tự dòng trong file không ảnh hưởng.
-- **Ngưỡng tuyệt đối:** `ceil(minsup × |DB|)`, cùng một giá trị cho cả hai miner (script kiểm tra).
+- **Ngưỡng tuyệt đối:** `ceil(minsup × |DB|)` tính bằng số hữu tỉ. SPMF đọc phần trăm bằng số thực
+  nên có thể làm tròn khác ở biên; hàm `levels` trong
+  [experiments/dataset_benchmarks.jl](../../experiments/dataset_benchmarks.jl) loại bỏ mọi mức
+  minsup mà hai cách tính cho ngưỡng khác nhau, nên cả hai miner dùng cùng một ngưỡng.
+- **Nguồn đối chiếu:** `summary.csv` do `experiments/run_benchmarks.jl` tạo ra. Cấu hình nào lệch
+  SPMF thì bị loại, không được ghi vào CSV. Vì vậy script `run_correctness.jl` còn đối chiếu
+  danh sách cấu hình dự định trong `environment.toml`: thiếu dòng nào thì báo lỗi.
 - **Dữ liệu:** tải từ FIMI, cố định bằng SHA-256 trong [data/datasets.toml](../../data/datasets.toml).
   Số giao dịch / số item: Chess 3.196 / 75 · Mushroom 8.124 / 119 · Retail 88.162 / 16.470 ·
   Accidents 340.183 / 468 · T10I4D100K 100.000 / 870.
 - **Miner được kiểm:** cột `julia` trong lần chạy này là bản **bitset**. Bản baseline (TID-list)
   được kiểm riêng trên 27 case nhỏ trong `test/test_correctness.jl`, chưa nằm trong bảng này.
-- **Tỉ lệ khớp:** ở mỗi cấu hình, số itemset khớp / tổng số itemset của SPMF. Nếu hai tập không
-  bằng nhau thì dòng ghi "KHÔNG KHỚP" thay vì một tỉ lệ.
+- **Tỉ lệ khớp:** hai tập kết quả được so nguyên tập (khớp hết hoặc không), không đếm từng
+  itemset. Một cấu hình có mặt trong CSV nghĩa là hai tập bằng nhau, nên ghi "n/n (100%)" với n
+  là số itemset; cấu hình lệch không có trong CSV và bị script báo là thiếu.
 
 ## Kết quả
 
