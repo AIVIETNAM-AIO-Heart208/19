@@ -65,8 +65,11 @@ bitset 386,3 MB so với baseline 314,3 MB. Mask chỉ gọn hơn TID-list khi
 support trung bình lớn hơn khoảng N/64 (1,56% số giao dịch); xem phân tích ở
 [memory_benchmarks.md](memory_benchmarks.md).
 
-**4. Mật độ toàn CSDL không đủ để dự đoán.** Mushroom dày nhưng SPMF nhanh hơn
-ở cả dải đã thử; T10I4D100K thưa nhưng vẫn sinh itemset dài đến 10 item. Ở
+**4. Mật độ toàn CSDL không đủ để dự đoán.** Cùng là Retail (thưa), tỉ lệ cấu
+trúc dọc TID-list / mask đi từ 2,67 ở minsup 0,75% (mask gọn hơn) xuống 0,42 ở
+minsup 0,1% (mask tốn hơn). Yếu tố quyết định là minsup và support của các
+item còn lại sau khi lọc, không phải nhãn dense/sparse của cả CSDL. T10I4D100K
+thưa nhưng vẫn sinh itemset dài đến 10 item. Ở
 scalability, Accidents tăng gần tuyến tính theo N (T/N 0,550–0,569
 µs/giao dịch), còn Retail dao động (98–177 µs/giao dịch). Hành vi phụ thuộc
 số item phổ biến và support của chúng hơn là nhãn dense/sparse.
