@@ -107,7 +107,7 @@ cần đo lại: giao list ∩ list tốn khoảng `|a| + |b|` phép so sánh (t
 khoảng 630) thay vì 1.378 từ máy, nhưng phép trộn có rẽ nhánh nên chưa chắc
 nhanh hơn tương ứng.
 
-### Hướng 2: diffset (dEclat) cho các nút có support rất cao
+### Hướng 2: diffset (dEclat) để thu gọn TID-list trên dữ liệu dày
 
 **Vấn đề.** Trên Accidents 80%, TID-list của mỗi item phổ biến dài khoảng
 300 nghìn phần tử (support trung bình 90,7% của 340.183 giao dịch). Baseline
@@ -131,13 +131,19 @@ trên dữ liệu thưa diffset có thể dài hơn tidset, nên chỉ chuyển 
 khi support của nút đạt ít nhất một nửa support của nút cha (khi đó
 `|d| ≤ |t|`; bài báo gọi đây là điều kiện reduction ratio ≥ 1, mục 4.1).
 
-Hướng này **chỉ cải thiện nhánh TID-list**, không thay cho mask. Diffset lưu
-dạng list chỉ nhỏ hơn mask khi `|d| < N/64`. Ở Accidents 80%, `|d|` khoảng
-9,3% của N, nên list diffset tốn khoảng `0,74N` byte, vẫn lớn hơn mask
-(`N/8 = 0,125N` byte) khoảng 6 lần. Vì vậy, nếu kết hợp với hướng 1, diffset
-chỉ đáng dùng cho các nút đang ở dạng list. Với bản bitset hiện tại, Accidents
-không phải điểm yếu (Julia đã nhanh hơn SPMF ở cả bảy mức); hướng này hữu ích
-cho baseline và cho phần list của bản lai.
+**Phạm vi và quan hệ với Hướng 1.** Hướng này cải thiện **cách lưu TID-list
+trên dữ liệu dày**, tức baseline của nhóm; nó nhắm điểm yếu đo được là baseline
+tăng 305,9 MB khi mining trên Accidents 80%. Nó không cải thiện bản bitset:
+diffset lưu dạng list chỉ nhỏ hơn mask khi `|d| < N/64`, mà ở Accidents 80%
+`|d|` khoảng 9,3% của N, nên list diffset tốn khoảng `0,74N` byte, vẫn lớn hơn
+mask (`N/8 = 0,125N` byte) khoảng 6 lần. Với bản bitset, Accidents cũng không
+phải điểm yếu (Julia đã nhanh hơn SPMF ở cả bảy mức).
+
+Nếu đã làm Hướng 1 thì diffset được thêm rất ít: nút support cao đã là mask,
+còn nút ở dạng list có support dưới N/64, nên tidset của nó vốn đã ngắn hơn
+N/64 phần tử. Vì vậy hai hướng là **hai lựa chọn khác nhau**, không chồng lên
+nhau: Hướng 1 nếu giữ bitset làm bản chính, Hướng 2 nếu muốn giữ biểu diễn
+TID-list như bài báo gốc.
 
 ## Kết luận Chương 2
 
@@ -159,9 +165,10 @@ cho baseline và cho phần list của bản lai.
   chỉ giảm rõ ở Accidents 80%, còn trên Retail 0,1% bitset tốn bộ nhớ hơn
   baseline.
 - **Hướng tiếp theo:** chọn TID-list hay bitset theo support từng nút (nhắm
-  điểm yếu đo được ở Retail 0,1%: chậm hơn SPMF và tốn bộ nhớ hơn baseline),
-  và dùng diffset cho các nút support cao đang lưu dạng list (giảm bộ nhớ của
-  baseline trên Accidents, tăng 305,9 MB khi mining; không áp cho mask).
+  điểm yếu đo được ở Retail 0,1%: chậm hơn SPMF và tốn bộ nhớ hơn baseline);
+  hoặc, nếu giữ biểu diễn TID-list, dùng diffset để thu gọn TID-list trên dữ
+  liệu dày (nhắm baseline tăng 305,9 MB khi mining trên Accidents 80%). Hai
+  hướng là hai lựa chọn khác nhau; làm Hướng 1 rồi thì diffset được thêm rất ít.
 
 ## Giới hạn của phần tổng hợp
 
