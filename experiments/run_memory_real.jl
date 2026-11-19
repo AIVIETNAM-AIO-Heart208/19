@@ -33,6 +33,7 @@ function main()
         d = manifest[c["dataset"]]
         D.filehash(joinpath(D.ROOT, d["processed_path"])) == d["processed_sha256"] || error("Dataset checksum mismatch: ", c["dataset"])
     end
+    dirty = !isempty(read(`git -C $(D.ROOT) status --porcelain`, String))   # before the result folder exists
     runid = "memory_real_" * Dates.format(now(UTC), "yyyymmddTHHMMSS")
     dir = joinpath(D.ROOT, "results", "metrics", "benchmark_runs", runid)
     mkpath(dir)
@@ -73,7 +74,7 @@ function main()
     mismatches = String[]
     open(joinpath(dir, "summary.csv"), "w") do io
         D.csvrow(io, ("dataset", "minsup", "threshold", "miner", "status", "repeats_ok", "median_delta_peak_rss_bytes", "delta_measured_repeats",
-                      "vertical_summarysize_bytes", "vertical_estimate_bytes", "median_seconds", "itemsets"))
+                      "median_rss_before_bytes", "median_peak_rss_bytes", "vertical_summarysize_bytes", "vertical_estimate_bytes", "median_seconds", "itemsets"))
         for c in config["case"]
             counts = Set{Int}()
             for miner in MINERS
@@ -81,14 +82,15 @@ function main()
                 ok = filter(x -> x.status == "success", sel)
                 status = length(ok) == length(sel) ? "success" : any(x -> x.status == "timeout", sel) ? "timeout" : "failed"
                 if isempty(ok)
-                    D.csvrow(io, (c["dataset"], c["minsup"], sel[1].threshold, miner, status, 0, missing, 0, missing, missing, missing, missing))
+                    D.csvrow(io, (c["dataset"], c["minsup"], sel[1].threshold, miner, status, 0, missing, 0, missing, missing, missing, missing, missing, missing))
                     println("NOT COMPARABLE: ", c["dataset"], " ", c["minsup"], " ", miner, " has no successful run")
                     continue
                 end
                 deltas = [x.delta for x in ok if x.dstatus == "measured"]
                 union!(counts, (x.r.itemsets for x in ok))
                 D.csvrow(io, (c["dataset"], c["minsup"], sel[1].threshold, miner, status, length(ok),
-                              isempty(deltas) ? missing : round(Int, median(deltas)), length(deltas), first(ok).r.bytes, first(ok).r.estimate,
+                              isempty(deltas) ? missing : round(Int, median(deltas)), length(deltas),
+                              round(Int, median(x.r.before for x in ok)), round(Int, median(x.r.peak for x in ok)), first(ok).r.bytes, first(ok).r.estimate,
                               median(x.r.seconds for x in ok), first(ok).r.itemsets))
             end
             length(counts) <= 1 || push!(mismatches, c["dataset"] * " " * c["minsup"] * ": " * string(sort!(collect(counts))))
@@ -97,7 +99,7 @@ function main()
     open(io -> TOML.print(io, Dict("config" => config, "julia" => string(VERSION), "os" => string(Sys.KERNEL),
             "cpu" => Sys.cpu_info()[1].model, "ram_bytes" => Sys.total_memory(),
             "commit" => strip(read(`git -C $(D.ROOT) rev-parse HEAD`, String)),
-            "dirty" => !isempty(read(`git -C $(D.ROOT) status --porcelain`, String)),
+            "dirty" => dirty,
             "artifacts" => Dict(f => D.filehash(joinpath(dir, f)) for f in ("raw.csv", "summary.csv")))),
          joinpath(dir, "environment.toml"), "w")
     println("Artifacts: ", dir)

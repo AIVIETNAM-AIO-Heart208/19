@@ -24,9 +24,11 @@ end
 # The core does not expose it and must not be edited, so this is an independent
 # reconstruction. Only the item vectors are summed (no Dict, no recursion).
 # Returns (measured, estimate). Estimate by formula: bitset = items × ceil(N/64) × 8 bytes,
-# TID-list = total support × 8 bytes (a lower bound: lists are grown by push!, whose spare capacity
-# is counted by summarysize, so allow up to 2× plus headers). Bitset must lie in
-# [estimate, estimate + 64 bytes per item] (object headers only). Anything else stops the run.
+# TID-list = total support × 8 bytes, a lower bound: lists are grown by push!, and summarysize counts
+# the spare capacity Julia 1.11 allocates (a few % for long lists, up to ~3× for lists of ~100 entries).
+# The 3× ceiling is empirical (observed 1.7–1.9× on the benchmark cases); a much lower minsup may need it
+# raised. Bitset must lie in [estimate, estimate + 64 bytes per item]; the 64-byte header per item is
+# what Julia 1.11 uses and may differ in other versions. Anything outside the range stops the run.
 function vertical_bytes(db::Vector{Vector{Int}}, threshold::Int, name::String)::Tuple{Int,Int}
     counts = Dict{Int,Int}()
     for transaction in db, item in transaction
@@ -54,7 +56,7 @@ function vertical_bytes(db::Vector{Vector{Int}}, threshold::Int, name::String)::
             total += Base.summarysize(mask)
         end
     end
-    upper = (name == "baseline" ? 2 * estimate : estimate) + 64 * length(frequent)
+    upper = (name == "baseline" ? 3 * estimate : estimate) + 64 * length(frequent)
     estimate <= total <= upper ||
         error("summarysize ", total, " disagrees with formula estimate ", estimate, " (", name, ")")
     return total, estimate
