@@ -1,5 +1,5 @@
 # One memory observation on a real dataset: one fresh process, one miner, one call.
-# Prints a single line: MEMORY_RESULT rss_before peak_rss itemsets seconds vertical_bytes
+# Prints a single line: MEMORY_RESULT rss_before peak_before_mining peak_rss itemsets seconds vertical_bytes
 using EclatMining
 
 "Current resident set size in bytes (not the peak)."
@@ -60,13 +60,14 @@ function main(args)
     threshold = minsup_abs(support, length(db))
     GC.gc()
     before = current_rss()
+    peak_before = Sys.maxrss()   # process peak so far (startup, JIT, loading)
     start = time_ns()
     result = miner(db, threshold)
     seconds = (time_ns() - start) / 1e9
     peak = Sys.maxrss()
     peak > 0 || error("peak RSS unsupported; refusing to report zero")
     bytes = vertical_bytes(db, threshold, name)   # after the peak is read
-    println("MEMORY_RESULT ", before, ' ', peak, ' ', length(result), ' ', seconds, ' ', bytes)
+    println("MEMORY_RESULT ", before, ' ', peak_before, ' ', peak, ' ', length(result), ' ', seconds, ' ', bytes)
 end
 
 abspath(PROGRAM_FILE) == (@__FILE__) && main(ARGS)
