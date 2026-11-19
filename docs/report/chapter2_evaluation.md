@@ -18,8 +18,8 @@ case kiểm thử nhỏ trong `test/`.
 minsup từ 90% xuống 60%, số itemset tăng khoảng 410 lần (622 → 254.944).
 Median Julia chỉ tăng từ 1,469 lên 1,948 giây, còn SPMF tăng từ 0,372 lên
 7,769 giây. So phần tăng thêm (không bị chi phí cố định của mỗi lần chạy làm
-lệch): Julia tăng thêm 0,48 giây, SPMF tăng thêm 7,40 giây. Julia chậm hơn ở 90–75% nhưng nhanh hơn từ 70% trở xuống (gấp
-3,99 lần ở 60%). Trên Accidents, Julia nhanh hơn ở cả bảy mức, từ 1,81 lần
+lệch): Julia tăng thêm 0,48 giây, SPMF tăng thêm 7,40 giây. Julia chậm hơn
+ở 90–75% nhưng nhanh hơn từ 70% trở xuống (gấp 3,99 lần ở 60%). Trên Accidents, Julia nhanh hơn ở cả bảy mức, từ 1,81 lần
 (95%) đến 5,32 lần (65%), và thời gian Julia gần như không đổi (2,73–3,05
 giây) trong khi SPMF tăng từ 5,29 lên 15,26 giây (không đơn điệu: 5,25 giây
 ở 90%).
@@ -72,11 +72,15 @@ support trung bình lớn hơn khoảng N/64 (1,56% số giao dịch); xem phân
 **4. Mật độ toàn CSDL không đủ để dự đoán.** Cùng là Retail (thưa), tỉ lệ cấu
 trúc dọc TID-list / mask đi từ 2,67 ở minsup 0,75% (mask gọn hơn) xuống 0,42 ở
 minsup 0,1% (mask tốn hơn). Yếu tố quyết định là minsup và support của các
-item còn lại sau khi lọc, không phải nhãn dense/sparse của cả CSDL. T10I4D100K
-thưa nhưng vẫn sinh itemset dài đến 10 item. Ở
-scalability, Accidents tăng gần tuyến tính theo N (T/N 0,550–0,569
-µs/giao dịch), còn Retail dao động (98–177 µs/giao dịch). Hành vi phụ thuộc
-số item phổ biến và support của chúng hơn là nhãn dense/sparse.
+item còn lại sau khi lọc, không phải nhãn dense/sparse của cả CSDL. Ở
+scalability, Accidents (minsup 75%) tăng gần tuyến tính theo N (T/N
+0,550–0,569 µs/giao dịch), còn Retail (minsup 0,1%) dao động (98–177
+µs/giao dịch). Khác biệt này đi kèm số item phổ biến rất khác nhau: ở mức
+100%, Retail có 2.117 singleton phổ biến, Accidents chỉ 14
+([scalability.md](scalability.md)). Hai bộ chạy ở minsup khác nhau, nên đây là
+tương quan, chưa phải phép thử có kiểm soát. Ngoài ra T10I4D100K thưa nhưng ở
+minsup 0,1% vẫn sinh itemset dài đến 10 item, nên độ dài pattern cũng không
+suy ra được từ nhãn thưa.
 
 ## Hai hướng tối ưu đề xuất
 
