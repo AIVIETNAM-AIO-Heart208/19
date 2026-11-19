@@ -114,7 +114,8 @@ nhanh hơn tương ứng.
 tăng 305,9 MB RSS trong lúc mining, vì mỗi phép giao lại tạo một danh sách dài
 gần như vậy.
 
-**Cách làm.** Theo Zaki và Gouda (2003), thay vì lưu tập giao dịch **chứa**
+**Cách làm.** Theo Zaki và Gouda (2003, *Fast Vertical Mining Using Diffsets*,
+KDD'03, tr. 326–335, mục 3.1 và 4.1), thay vì lưu tập giao dịch **chứa**
 itemset, lưu tập giao dịch **bị mất** so với nút cha. Với hai nút anh em PX và
 PY cùng tiền tố P:
 
@@ -127,7 +128,8 @@ support 90,7% thì diffset so với toàn CSDL chỉ khoảng 9,3% số giao d�
 hơn tidset gần 10 lần. Phép hiệu hai danh sách đã sắp có cùng chi phí trộn
 `O(|a| + |b|)` như phép giao, nên thời gian cũng giảm theo độ dài. Ngược lại,
 trên dữ liệu thưa diffset có thể dài hơn tidset, nên chỉ chuyển sang diffset
-khi support của nút lớn hơn một nửa support của nút cha (khi đó `|d| < |t|`).
+khi support của nút đạt ít nhất một nửa support của nút cha (khi đó
+`|d| ≤ |t|`; bài báo gọi đây là điều kiện reduction ratio ≥ 1, mục 4.1).
 
 Hướng này **chỉ cải thiện nhánh TID-list**, không thay cho mask. Diffset lưu
 dạng list chỉ nhỏ hơn mask khi `|d| < N/64`. Ở Accidents 80%, `|d|` khoảng
