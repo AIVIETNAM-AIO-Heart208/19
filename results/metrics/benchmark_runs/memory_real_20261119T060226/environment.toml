@@ -1,0 +1,33 @@
+julia = "1.11.9"
+ram_bytes = 0x07d9d4d000
+cpu = "AMD Ryzen 7 5800H with Radeon Graphics         "
+commit = "e3831d896635a1aac11a650e6d6f007cc7787a77"
+dirty = false
+os = "NT"
+
+[config]
+repeats = 3
+timeout_seconds = 600
+
+    [[config.case]]
+    minsup = "75%"
+    dataset = "chess"
+    [[config.case]]
+    minsup = "30%"
+    dataset = "mushroom"
+    [[config.case]]
+    minsup = "0.75%"
+    dataset = "retail"
+    [[config.case]]
+    minsup = "0.1%"
+    dataset = "retail"
+    [[config.case]]
+    minsup = "80%"
+    dataset = "accidents"
+    [[config.case]]
+    minsup = "0.75%"
+    dataset = "t10i4d100k"
+
+[artifacts]
+"summary.csv" = "2f361296f2dbd054bb46df36061d6477d230f2ee94e322f77741f6e67284c44d"
+"raw.csv" = "7f292dfd34e69e63f1acb98c0c270cff4e3db2c89ffeefa0955391776ffb0f00"
