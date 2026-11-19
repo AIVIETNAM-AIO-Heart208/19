@@ -108,7 +108,9 @@ Bảng cấu trúc dọc khớp quy luật này **về chiều** (bên nào nh�
 cấu hình. Tỉ lệ đo được lớn hơn công thức (ví dụ Accidents: công thức khoảng
 58, đo 99,0; Retail 0,1%: công thức 0,23, đo 0,42), đúng bằng hệ số cấp dư
 1,4–1,9 lần của TID-list dựng bằng `push!`. Vì vậy với cách dựng hiện tại,
-ngưỡng hòa vốn thực tế thấp hơn 1,56% một chút. Chess và Accidents có
+ngưỡng hòa vốn thực tế chỉ khoảng 0,8–1,1% (1,56% chia cho 1,9 và 1,4). Các
+kết luận trên không đổi: Retail 0,75% (2,69%) và T10I4D100K (1,88%) vẫn trên
+ngưỡng, Retail 0,1% (0,36%) vẫn dưới. Chess và Accidents có
 support TB khoảng 91% nên bitset nhỏ hơn 70–99 lần. Mushroom (55%) nhỏ hơn 46
 lần. Hai cấu hình thưa có support TB chỉ hơi trên 1,56% (Retail 0,75%: 2,69%;
 T10I4D100K: 1,88%) nên bitset chỉ nhỏ hơn 1,9–2,7 lần. Retail 0,1% có 2.117
@@ -163,5 +165,5 @@ bộ nhớ cho mọi input.
 - `environment.toml` của run không có cờ `complete`; script vẽ coi run là hoàn
   tất khi đủ mọi cấu hình và đủ số lần lặp, và dừng nếu thiếu.
 
-Tái lập: `julia --project experiments/run_memory_real.jl` (khoảng 5 phút trên máy đo, theo thời điểm ghi các file log của run),
+Tái lập: `julia --project experiments/run_memory_real.jl`,
 sau đó `python experiments/plot_memory_real.py <thư mục run>`.
