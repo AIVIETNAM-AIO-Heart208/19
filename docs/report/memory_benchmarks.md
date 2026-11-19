@@ -104,7 +104,11 @@ support tương đối khoảng **1,56%**. Item phổ biến hơn mức này th�
 hơn; hiếm hơn thì TID-list gọn hơn. Theo công thức, tỉ lệ B / S xấp xỉ
 `64 × support TB`.
 
-Bảng cấu trúc dọc khớp quy luật này ở cả sáu cấu hình. Chess và Accidents có
+Bảng cấu trúc dọc khớp quy luật này **về chiều** (bên nào nhỏ hơn) ở cả sáu
+cấu hình. Tỉ lệ đo được lớn hơn công thức (ví dụ Accidents: công thức khoảng
+58, đo 99,0; Retail 0,1%: công thức 0,23, đo 0,42), đúng bằng hệ số cấp dư
+1,4–1,9 lần của TID-list dựng bằng `push!`. Vì vậy với cách dựng hiện tại,
+ngưỡng hòa vốn thực tế thấp hơn 1,56% một chút. Chess và Accidents có
 support TB khoảng 91% nên bitset nhỏ hơn 70–99 lần. Mushroom (55%) nhỏ hơn 46
 lần. Hai cấu hình thưa có support TB chỉ hơi trên 1,56% (Retail 0,75%: 2,69%;
 T10I4D100K: 1,88%) nên bitset chỉ nhỏ hơn 1,9–2,7 lần. Retail 0,1% có 2.117
@@ -138,10 +142,12 @@ lời gọi hàm: khoảng 146 lần ở Chess, 26 lần ở Mushroom, 4,6 lần
 Retail 0,1% cũng là chỗ bitset tốn bộ nhớ hơn; cả hai cùng xuất phát từ việc
 mask luôn dài N trong khi phần lớn item rất hiếm.
 
-**Tóm lại**, bitset là tối ưu cả về tốc độ và bộ nhớ trên dữ liệu mà các item
-phổ biến có support tương đối cao (Chess, Mushroom, Accidents). Trên dữ liệu
-thưa ở minsup thấp (Retail 0,1%), bitset vẫn nhanh hơn baseline một chút
-nhưng tốn bộ nhớ hơn rõ rệt. Đây không phải tối ưu bộ nhớ cho mọi input.
+**Tóm lại**, bitset nhanh hơn baseline ở cả sáu cấu hình. Về bộ nhớ, chỉ
+Accidents 80% cho thấy peak RSS giảm rõ (665,6 → 433,4 MB). Ở Chess và
+Mushroom, peak RSS gần như bằng nhau và delta của bitset không đo được; lợi
+thế chỉ thấy ở cấu trúc dọc ở gốc, vốn là cận dưới. Trên dữ liệu thưa ở
+minsup thấp (Retail 0,1%), bitset tốn bộ nhớ hơn rõ rệt. Đây không phải tối ưu
+bộ nhớ cho mọi input.
 
 ## Giới hạn
 
@@ -157,5 +163,5 @@ nhưng tốn bộ nhớ hơn rõ rệt. Đây không phải tối ưu bộ nhớ
 - `environment.toml` của run không có cờ `complete`; script vẽ coi run là hoàn
   tất khi đủ mọi cấu hình và đủ số lần lặp, và dừng nếu thiếu.
 
-Tái lập: `julia --project experiments/run_memory_real.jl` (khoảng 5 phút trên máy đo),
+Tái lập: `julia --project experiments/run_memory_real.jl` (khoảng 5 phút trên máy đo, theo thời điểm ghi các file log của run),
 sau đó `python experiments/plot_memory_real.py <thư mục run>`.

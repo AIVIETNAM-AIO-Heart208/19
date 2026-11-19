@@ -20,7 +20,8 @@ Median Julia chỉ tăng từ 1,469 lên 1,948 giây, còn SPMF tăng từ 0,372
 7,769 giây. Julia chậm hơn ở 90–75% nhưng nhanh hơn từ 70% trở xuống (gấp
 3,99 lần ở 60%). Trên Accidents, Julia nhanh hơn ở cả bảy mức, từ 1,81 lần
 (95%) đến 5,32 lần (65%), và thời gian Julia gần như không đổi (2,73–3,05
-giây) trong khi SPMF tăng từ 5,30 lên 15,26 giây.
+giây) trong khi SPMF tăng từ 5,29 lên 15,26 giây (không đơn điệu: 5,25 giây
+ở 90%).
 
 Lý giải theo thuật toán: các CSDL này có ít item phổ biến (Chess 75%: 23 item;
 Accidents 80%: 11 item) nhưng support rất cao, khoảng 91% số giao dịch. Một
@@ -55,7 +56,7 @@ T10I4D100K. Nặng nhất là Retail 0,1%: Julia 10,634 giây, SPMF 1,435 giây
 2.117 item phổ biến, nên ngay mức gốc `_bitset_dfs!` thử
 `2117 × 2116 / 2 = 2.239.786` phép giao. Mỗi phép giao là AND trên mask dài đủ
 N = 88.162 bit (1.378 từ máy) và cấp một mask mới, dù các item này chỉ có
-support trung bình 0,36% (khoảng 314 giao dịch). Phần lớn công sức là xử lý
+support trung bình 0,36% (khoảng 313 giao dịch). Phần lớn công sức là xử lý
 các bit 0.
 
 **3. Bitset không tối ưu bộ nhớ trên dữ liệu thưa.** Cũng ở Retail 0,1%, cấu
@@ -98,8 +99,9 @@ mask mới khi đủ support, để các ứng viên bị loại không cấp b�
 thước đã kiểm chứng: list tốn `8s` byte, mask tốn khoảng `N/8` byte. Sáu cấu
 hình đo bộ nhớ đều khớp ngưỡng này. Với Retail 0,1%, support trung bình 0,36%
 nằm dưới ngưỡng, nên hầu hết item sẽ được lưu dạng list: cấu trúc gốc về mức
-khoảng 5,3 MB (`Int64`, theo công thức) hoặc khoảng 2,7 MB (`Int32`), thay vì
-23,5 MB. Với Chess và Accidents (support trung bình khoảng 91%), mọi nút gốc
+khoảng 5,3 MB (`Int64`) hoặc khoảng 2,7 MB (`Int32`), thay vì 23,5 MB. Hai số
+này giả định list được cấp đúng kích thước (đếm support trước rồi mới cấp);
+nếu dựng bằng `push!` như baseline hiện tại thì số đo là 9,9 MB. Với Chess và Accidents (support trung bình khoảng 91%), mọi nút gốc
 vẫn là mask nên giữ nguyên ưu thế hiện có. Ảnh hưởng tới thời gian trên Retail
 cần đo lại: giao list ∩ list tốn khoảng `|a| + |b|` phép so sánh (trung bình
 khoảng 630) thay vì 1.378 từ máy, nhưng phép trộn có rẽ nhánh nên chưa chắc
@@ -124,10 +126,16 @@ PY cùng tiền tố P:
 support 90,7% thì diffset so với toàn CSDL chỉ khoảng 9,3% số giao dịch, ngắn
 hơn tidset gần 10 lần. Phép hiệu hai danh sách đã sắp có cùng chi phí trộn
 `O(|a| + |b|)` như phép giao, nên thời gian cũng giảm theo độ dài. Ngược lại,
-trên dữ liệu thưa diffset có thể dài hơn tidset; vì vậy nên kết hợp với hướng
-1: chỉ chuyển sang diffset khi support của nút lớn hơn một nửa support của nút
-cha (khi đó `|d| < |t|`). Hướng này chủ yếu cải thiện baseline/TID-list; nó
-không làm mask nhỏ hơn vì mask luôn dài N bit.
+trên dữ liệu thưa diffset có thể dài hơn tidset, nên chỉ chuyển sang diffset
+khi support của nút lớn hơn một nửa support của nút cha (khi đó `|d| < |t|`).
+
+Hướng này **chỉ cải thiện nhánh TID-list**, không thay cho mask. Diffset lưu
+dạng list chỉ nhỏ hơn mask khi `|d| < N/64`. Ở Accidents 80%, `|d|` khoảng
+9,3% của N, nên list diffset tốn khoảng `0,74N` byte, vẫn lớn hơn mask
+(`N/8 = 0,125N` byte) khoảng 6 lần. Vì vậy, nếu kết hợp với hướng 1, diffset
+chỉ đáng dùng cho các nút đang ở dạng list. Với bản bitset hiện tại, Accidents
+không phải điểm yếu (Julia đã nhanh hơn SPMF ở cả bảy mức); hướng này hữu ích
+cho baseline và cho phần list của bản lai.
 
 ## Kết luận Chương 2
 
@@ -144,11 +152,14 @@ không làm mask nhỏ hơn vì mask luôn dài N bit.
   Tăng độ dài giao dịch (L từ 8 lên 24) làm runtime tăng khoảng 25,7 lần, có
   bước nhảy khi xuất hiện cặp item phổ biến.
 - **Bộ nhớ:** peak RSS phần lớn là nền của tiến trình Julia (236–380 MB).
-  Bitset gọn hơn và nhanh hơn baseline khi item phổ biến có support trung bình
-  trên khoảng N/64; trên Retail 0,1% bitset tốn bộ nhớ hơn baseline.
-- **Hướng tiếp theo:** chọn TID-list hay bitset theo support từng nút, và dùng
-  diffset cho các nút support cao. Cả hai nhắm đúng hai điểm yếu đo được:
-  Retail 0,1% (thưa) và bộ nhớ baseline trên Accidents (dày).
+  Bitset nhanh hơn baseline ở cả 6 cấu hình đo. Cấu trúc dọc của bitset chỉ
+  gọn hơn khi item phổ biến có support trung bình trên khoảng N/64; peak RSS
+  chỉ giảm rõ ở Accidents 80%, còn trên Retail 0,1% bitset tốn bộ nhớ hơn
+  baseline.
+- **Hướng tiếp theo:** chọn TID-list hay bitset theo support từng nút (nhắm
+  điểm yếu đo được ở Retail 0,1%: chậm hơn SPMF và tốn bộ nhớ hơn baseline),
+  và dùng diffset cho các nút support cao đang lưu dạng list (giảm bộ nhớ của
+  baseline trên Accidents, tăng 305,9 MB khi mining; không áp cho mask).
 
 ## Giới hạn của phần tổng hợp
 
