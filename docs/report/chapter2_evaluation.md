@@ -108,8 +108,14 @@ hình đo bộ nhớ đều khớp ngưỡng này. Với Retail 0,1%, support tr
 nằm dưới ngưỡng, nên hầu hết item sẽ được lưu dạng list: cấu trúc gốc về mức
 khoảng 5,3 MB (`Int64`) hoặc khoảng 2,7 MB (`Int32`), thay vì 23,5 MB. Hai số
 này giả định list được cấp đúng kích thước (đếm support trước rồi mới cấp);
-nếu dựng bằng `push!` như baseline hiện tại thì số đo là 9,9 MB. Với Chess và Accidents (support trung bình khoảng 91%), mọi nút gốc
-vẫn là mask nên giữ nguyên ưu thế hiện có. Ảnh hưởng tới thời gian trên Retail
+nếu dựng bằng `push!` như baseline hiện tại thì số đo là 9,9 MB.
+
+Bản lai **không đổi gì trên dữ liệu dày**: mọi nút được giữ lại đều có
+support ≥ minsup, nên khi minsup ≥ N/64 (khoảng 1,56%) thì mọi nút đều là mask,
+biểu diễn y như bản hiện tại. Trong dải runtime đã đo, Chess (thấp nhất 60%),
+Mushroom (15%) và Accidents (65%) đều thuộc trường hợp này. Bản lai chỉ thay
+đổi các cấu hình có minsup dưới 1,56%: Retail và T10I4D100K từ 1,5% trở xuống,
+đúng nhóm Julia đang thua SPMF. Ảnh hưởng tới thời gian trên Retail
 cần đo lại: giao list ∩ list tốn khoảng `|a| + |b|` phép so sánh (trung bình
 khoảng 630) thay vì 1.378 từ máy, nhưng phép trộn có rẽ nhánh nên chưa chắc
 nhanh hơn tương ứng.
