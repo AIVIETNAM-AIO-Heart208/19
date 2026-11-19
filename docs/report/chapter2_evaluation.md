@@ -43,8 +43,8 @@ toàn trình của Julia không xuống dưới khoảng 1,37 giây (thấp nh�
 Chess 80%), còn SPMF chỉ khoảng 0,37 giây (Chess 90%, Mushroom 50–60%). Vì
 vậy SPMF nhanh hơn ở mọi mức cao của Chess và cả dải Mushroom (tỉ lệ
 SPMF/Julia từ 0,25 tăng dần lên 0,84 khi hạ minsup). Ở phép đo bộ nhớ, riêng
-lời gọi mining bitset trên Chess 75% chỉ mất 0,009 giây và trên Mushroom 30%
-0,008 giây, trong khi toàn trình ở cùng cấu hình là 1,404 và 1,380 giây. Điều
+lời gọi mining bitset trên Chess 75% chỉ mất 0,0086 giây và trên Mushroom 30%
+0,0075 giây, trong khi toàn trình ở cùng cấu hình là 1,404 và 1,380 giây. Điều
 này cho thấy phần lớn thời gian toàn trình ở các tác vụ nhỏ nằm ngoài mining
 (khởi động Julia, biên dịch JIT, đọc và ghi file). Hai phép đo chạy trên hai
 máy khác nhau và chưa profile riêng từng pha, nên đây là ước lượng độ lớn,

@@ -61,12 +61,13 @@ thời gian ở bảng dưới với các bảng runtime.
 ## Kết quả
 
 Run: `memory_real_20261119T060226`. MB = 10^6 byte. "B" = baseline TID-list,
-"S" = bitset. Delta có ghi số lần đo được trong ngoặc khi khác 3.
+"S" = bitset. Delta có ghi số lần đo được trong ngoặc khi khác 3. Thời gian
+bitset ở Chess và Mushroom ghi 4 chữ số thập phân để tính lại được tỉ lệ.
 
 | Dataset / minsup | Peak RSS B / S (MB) | RSS trước mining B / S (MB) | Delta RSS B / S (MB) | Thời gian mining B / S (s) |
 |---|---:|---:|---:|---:|
-| Chess 75% | 260,8 / 254,6 | 240,7 / 241,6 | 20,1 / — | 1,253 / 0,009 |
-| Mushroom 30% | 254,8 / 254,6 | 236,6 / 236,5 | 18,1 (2/3) / — | 0,198 / 0,008 |
+| Chess 75% | 260,8 / 254,6 | 240,7 / 241,6 | 20,1 / — | 1,253 / 0,0086 |
+| Mushroom 30% | 254,8 / 254,6 | 236,6 / 236,5 | 18,1 (2/3) / — | 0,198 / 0,0075 |
 | Retail 0,75% | 275,1 / 286,9 | 258,2 / 260,6 | 17,2 / 26,6 | 0,260 / 0,128 |
 | Retail 0,1% | 314,3 / **386,3** | 258,5 / 257,1 | 56,0 / **129,2** | 12,622 / 10,119 |
 | Accidents 80% | **665,6** / 433,4 | 359,9 / 379,9 | **305,9** / — | 1,812 / 0,397 |
