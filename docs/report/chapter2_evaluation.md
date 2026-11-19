@@ -105,17 +105,21 @@ mask mới khi đủ support, để các ứng viên bị loại không cấp b�
 **Lý do kỹ thuật và căn cứ số liệu.** Ngưỡng N/64 rút ra từ hai công thức kích
 thước đã kiểm chứng: list tốn `8s` byte, mask tốn khoảng `N/8` byte. Sáu cấu
 hình đo bộ nhớ đều khớp ngưỡng này. Với Retail 0,1%, support trung bình 0,36%
-nằm dưới ngưỡng, nên hầu hết item sẽ được lưu dạng list: cấu trúc gốc về mức
-khoảng 5,3 MB (`Int64`) hoặc khoảng 2,7 MB (`Int32`), thay vì 23,5 MB. Hai số
+nằm dưới ngưỡng, nên hầu hết item sẽ được lưu dạng list: cấu trúc gốc còn tối
+đa khoảng 5,3 MB (`Int64`) hoặc 2,7 MB (`Int32`), thay vì 23,5 MB (tối đa, vì
+các item có support ≥ N/64 sẽ thành mask và còn nhỏ hơn). Hai số
 này giả định list được cấp đúng kích thước (đếm support trước rồi mới cấp);
 nếu dựng bằng `push!` như baseline hiện tại thì số đo là 9,9 MB.
 
-Bản lai **không đổi gì trên dữ liệu dày**: mọi nút được giữ lại đều có
-support ≥ minsup, nên khi minsup ≥ N/64 (khoảng 1,56%) thì mọi nút đều là mask,
-biểu diễn y như bản hiện tại. Trong dải runtime đã đo, Chess (thấp nhất 60%),
-Mushroom (15%) và Accidents (65%) đều thuộc trường hợp này. Bản lai chỉ thay
-đổi các cấu hình có minsup dưới 1,56%: Retail và T10I4D100K từ 1,5% trở xuống,
-đúng nhóm Julia đang thua SPMF. Ảnh hưởng tới thời gian trên Retail
+Trên dữ liệu dày, bản lai **giữ nguyên biểu diễn**: mọi nút được giữ lại đều
+có support ≥ minsup, nên khi minsup ≥ N/64 (khoảng 1,56%) thì mọi nút vẫn là
+mask như bản hiện tại. Trong dải runtime đã đo, Chess (thấp nhất 60%), Mushroom
+(15%) và Accidents (65%) đều thuộc trường hợp này. (Chi tiết đếm bit 1 trước
+khi cấp mask là thay đổi riêng, áp cho mọi cấu hình.) Việc chọn list hay mask
+chỉ có tác dụng ở các cấu hình có minsup dưới 1,56%: Retail và T10I4D100K từ
+1,5% trở xuống. Đây là 12 trong 25 cấu hình Julia thua SPMF; các cấu hình thua
+còn lại (Retail và T10I4D100K ở 2%, cả dải Mushroom, Chess 90–75%) không được
+hướng này chạm tới. Ảnh hưởng tới thời gian trên Retail
 cần đo lại: giao list ∩ list tốn khoảng `|a| + |b|` phép so sánh (trung bình
 khoảng 630) thay vì 1.378 từ máy, nhưng phép trộn có rẽ nhánh nên chưa chắc
 nhanh hơn tương ứng.
