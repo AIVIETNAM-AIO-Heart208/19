@@ -1,5 +1,5 @@
 # One memory observation on a real dataset: one fresh process, one miner, one call.
-# Prints a single line: MEMORY_RESULT rss_before peak_before_mining peak_rss itemsets seconds vertical_bytes
+# Prints a single line: MEMORY_RESULT rss_before peak_before_mining peak_rss itemsets seconds vertical_bytes estimate_bytes
 using EclatMining
 
 "Current resident set size in bytes (not the peak)."
@@ -23,12 +23,18 @@ end
 # Rebuild the vertical structure the miner builds for single frequent items.
 # The core does not expose it and must not be edited, so this is an independent
 # reconstruction. Only the item vectors are summed (no Dict, no recursion).
-function vertical_bytes(db::Vector{Vector{Int}}, threshold::Int, name::String)::Int
+# Returns (measured, estimate). Estimate by formula: bitset = items × ceil(N/64) × 8 bytes,
+# TID-list = total support × 8 bytes (a lower bound: lists are grown by push!, whose spare capacity
+# is counted by summarysize, so allow up to 2× plus headers). Bitset must lie in
+# [estimate, estimate + 64 bytes per item] (object headers only). Anything else stops the run.
+function vertical_bytes(db::Vector{Vector{Int}}, threshold::Int, name::String)::Tuple{Int,Int}
     counts = Dict{Int,Int}()
     for transaction in db, item in transaction
         counts[item] = get(counts, item, 0) + 1
     end
     total = 0
+    frequent = [c for c in values(counts) if c >= threshold]
+    estimate = name == "baseline" ? 8 * sum(frequent; init=0) : length(frequent) * cld(length(db), 64) * 8
     if name == "baseline"
         lists = Dict{Int,Vector{Int}}(item => Int[] for (item, c) in counts if c >= threshold)
         for (tid, transaction) in enumerate(db), item in transaction
@@ -48,10 +54,23 @@ function vertical_bytes(db::Vector{Vector{Int}}, threshold::Int, name::String)::
             total += Base.summarysize(mask)
         end
     end
-    return total
+    upper = (name == "baseline" ? 2 * estimate : estimate) + 64 * length(frequent)
+    estimate <= total <= upper ||
+        error("summarysize ", total, " disagrees with formula estimate ", estimate, " (", name, ")")
+    return total, estimate
 end
 
-function main(args)
+"Stop early if the size measurement disagrees with the formula on a database with known answer."
+function self_check()
+    # 130 transactions: item 1 in all, item 2 in 65, item 3 in 2 (infrequent at threshold 3).
+    db = [t <= 2 ? [1, 2, 3] : iseven(t) ? [1, 2] : [1] for t in 1:130]
+    bits, bits_formula = vertical_bytes(db, 3, "bitset")
+    tids, tids_formula = vertical_bytes(db, 3, "baseline")
+    bits_formula == 2 * 3 * 8 && tids_formula == (130 + 66) * 8 || error("self-check: formula wrong")
+    return (; bits, bits_formula, tids, tids_formula)
+end
+
+function worker_main(args)
     length(args) == 3 || error("Expected input, minsup, miner")
     input, support, name = args
     miner = name == "baseline" ? eclat_baseline : name == "bitset" ? eclat_bitset : error("unknown miner")
@@ -66,8 +85,8 @@ function main(args)
     seconds = (time_ns() - start) / 1e9
     peak = Sys.maxrss()
     peak > 0 || error("peak RSS unsupported; refusing to report zero")
-    bytes = vertical_bytes(db, threshold, name)   # after the peak is read
-    println("MEMORY_RESULT ", before, ' ', peak_before, ' ', peak, ' ', length(result), ' ', seconds, ' ', bytes)
+    bytes, estimate = vertical_bytes(db, threshold, name)   # after the peak is read
+    println("MEMORY_RESULT ", before, ' ', peak_before, ' ', peak, ' ', length(result), ' ', seconds, ' ', bytes, ' ', estimate)
 end
 
-abspath(PROGRAM_FILE) == (@__FILE__) && main(ARGS)
+abspath(PROGRAM_FILE) == (@__FILE__) && worker_main(ARGS)

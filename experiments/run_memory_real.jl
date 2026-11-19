@@ -2,6 +2,7 @@
 # Every observation is a fresh Julia process (memory_real_worker.jl); never warmed on the measured data.
 # Usage: julia --project experiments/run_memory_real.jl
 include("dataset_benchmarks.jl")
+include("memory_real_worker.jl")   # for self_check only; the worker itself runs in fresh processes
 using .DatasetBenchmarks, EclatMining, TOML, Dates, Statistics
 
 const D = DatasetBenchmarks
@@ -14,12 +15,15 @@ function parse_result(log)
         startswith(line, "MEMORY_RESULT ") || continue
         f = split(line)[2:end]
         return (; before=parse(Int, f[1]), peak_before=parse(Int, f[2]), peak=parse(Int, f[3]),
-                  itemsets=parse(Int, f[4]), seconds=parse(Float64, f[5]), bytes=parse(Int, f[6]))
+                  itemsets=parse(Int, f[4]), seconds=parse(Float64, f[5]), bytes=parse(Int, f[6]), estimate=parse(Int, f[7]))
     end
     return nothing
 end
 
 function main()
+    check = self_check()
+    println("Self-check ok: bitset ", check.bits, " vs formula ", check.bits_formula,
+            "; TID-list ", check.tids, " vs formula ", check.tids_formula)
     config = TOML.parsefile(CONFIG)
     grid = TOML.parsefile(D.CONFIG)["minsup"]
     manifest = Dict(d["id"] => d for d in TOML.parsefile(joinpath(D.ROOT, "data", "datasets.toml"))["dataset"])
@@ -35,7 +39,7 @@ function main()
     rows = NamedTuple[]
     open(joinpath(dir, "raw.csv"), "w") do raw
         D.csvrow(raw, ("dataset", "minsup", "threshold", "miner", "repeat", "status", "rss_before_bytes",
-                       "peak_rss_before_mining_bytes", "peak_rss_bytes", "delta_peak_rss_bytes", "delta_status", "vertical_summarysize_bytes",
+                       "peak_rss_before_mining_bytes", "peak_rss_bytes", "delta_peak_rss_bytes", "delta_status", "vertical_summarysize_bytes", "vertical_estimate_bytes",
                        "seconds", "itemsets", "log"))
         for c in config["case"]
             d = manifest[c["dataset"]]
@@ -58,7 +62,7 @@ function main()
                 D.csvrow(raw, (c["dataset"], c["minsup"], threshold, miner, rep, status,
                                r === nothing ? missing : r.before, r === nothing ? missing : r.peak_before,
                                r === nothing ? missing : r.peak, delta, dstatus,
-                               r === nothing ? missing : r.bytes, r === nothing ? missing : r.seconds,
+                               r === nothing ? missing : r.bytes, r === nothing ? missing : r.estimate, r === nothing ? missing : r.seconds,
                                r === nothing ? missing : r.itemsets, relpath(log, D.ROOT)))
                 push!(rows, (; dataset=c["dataset"], minsup=c["minsup"], threshold, miner, status, r, delta, dstatus))
                 println(c["dataset"], " ", c["minsup"], " ", miner, " #", rep, ": ", status)
@@ -69,7 +73,7 @@ function main()
     mismatches = String[]
     open(joinpath(dir, "summary.csv"), "w") do io
         D.csvrow(io, ("dataset", "minsup", "threshold", "miner", "status", "repeats_ok", "median_delta_peak_rss_bytes", "delta_measured_repeats",
-                      "vertical_summarysize_bytes", "median_seconds", "itemsets"))
+                      "vertical_summarysize_bytes", "vertical_estimate_bytes", "median_seconds", "itemsets"))
         for c in config["case"]
             counts = Set{Int}()
             for miner in MINERS
@@ -77,14 +81,14 @@ function main()
                 ok = filter(x -> x.status == "success", sel)
                 status = length(ok) == length(sel) ? "success" : any(x -> x.status == "timeout", sel) ? "timeout" : "failed"
                 if isempty(ok)
-                    D.csvrow(io, (c["dataset"], c["minsup"], sel[1].threshold, miner, status, 0, missing, 0, missing, missing, missing))
+                    D.csvrow(io, (c["dataset"], c["minsup"], sel[1].threshold, miner, status, 0, missing, 0, missing, missing, missing, missing))
                     println("NOT COMPARABLE: ", c["dataset"], " ", c["minsup"], " ", miner, " has no successful run")
                     continue
                 end
                 deltas = [x.delta for x in ok if x.dstatus == "measured"]
                 union!(counts, (x.r.itemsets for x in ok))
                 D.csvrow(io, (c["dataset"], c["minsup"], sel[1].threshold, miner, status, length(ok),
-                              isempty(deltas) ? missing : round(Int, median(deltas)), length(deltas), first(ok).r.bytes,
+                              isempty(deltas) ? missing : round(Int, median(deltas)), length(deltas), first(ok).r.bytes, first(ok).r.estimate,
                               median(x.r.seconds for x in ok), first(ok).r.itemsets))
             end
             length(counts) <= 1 || push!(mismatches, c["dataset"] * " " * c["minsup"] * ": " * string(sort!(collect(counts))))
