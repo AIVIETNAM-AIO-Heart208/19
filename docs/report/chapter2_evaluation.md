@@ -172,7 +172,8 @@ TID-list như bài báo gốc.
   Retail ở 0,1% tăng nhưng T/N dao động, chưa đủ để kết luận tuyến tính.
   Tăng độ dài giao dịch (L từ 8 lên 24) làm runtime tăng khoảng 25,7 lần, có
   bước nhảy khi xuất hiện cặp item phổ biến.
-- **Bộ nhớ:** peak RSS phần lớn là nền của tiến trình Julia (236–380 MB).
+- **Bộ nhớ:** peak RSS phần lớn là runtime Julia cùng dữ liệu đã đọc (236–380
+  MB trước khi mining; Accidents cao hơn hẳn chính vì dữ liệu lớn).
   Bitset nhanh hơn baseline ở cả 6 cấu hình đo. Cấu trúc dọc của bitset chỉ
   gọn hơn khi item phổ biến có support trung bình trên khoảng N/64; peak RSS
   chỉ giảm rõ ở Accidents 80%, còn trên Retail 0,1% bitset tốn bộ nhớ hơn

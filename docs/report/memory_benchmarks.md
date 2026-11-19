@@ -62,7 +62,9 @@ thời gian ở bảng dưới với các bảng runtime.
 
 Run: `memory_real_20261119T060226`. MB = 10^6 byte. "B" = baseline TID-list,
 "S" = bitset. Delta có ghi số lần đo được trong ngoặc khi khác 3. Thời gian
-bitset ở Chess và Mushroom ghi 4 chữ số thập phân để tính lại được tỉ lệ.
+bitset ở Chess và Mushroom ghi 4 chữ số thập phân để tính lại được tỉ lệ. Mỗi
+cột lấy trung vị riêng, nên "Peak − RSS trước" có thể lệch cột Delta vài phần
+mười MB (ví dụ Accidents B: 665,6 − 359,9 = 305,7 so với 305,9).
 
 | Dataset / minsup | Peak RSS B / S (MB) | RSS trước mining B / S (MB) | Delta RSS B / S (MB) | Thời gian mining B / S (s) |
 |---|---:|---:|---:|---:|
@@ -132,7 +134,9 @@ chênh nhau không quá 12 MB. Chênh lệch rõ chỉ xuất hiện ở hai c�
   MB so với 56,0 MB. Ngoài 23,5 MB mask ở gốc, mỗi phép giao trong
   `_bitset_dfs!` cấp một mask mới dài đủ N = 88.162 bit (khoảng 11 KB), kể cả
   khi kết quả chỉ có vài trăm bit 1 hoặc bị loại vì không đủ support; TID-list
-  con thì ngắn theo support. Đây là giải thích từ cấu trúc code và số đo, chưa
+  con thì ngắn theo support. Retail 0,75% cũng ủng hộ giải thích này: cấu trúc
+  gốc của bitset nhỏ hơn 2,67 lần, nhưng delta bitset vẫn cao hơn baseline
+  (26,6 so với 17,2 MB). Đây là giải thích từ cấu trúc code và số đo, chưa
   phải kết quả profile cấp phát từng pha.
 
 Ở các ô "—" (Chess, Mushroom, Accidents bản bitset; một lần Mushroom bản
