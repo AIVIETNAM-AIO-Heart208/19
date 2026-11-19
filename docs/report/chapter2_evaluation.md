@@ -146,17 +146,19 @@ khi support của nút đạt ít nhất một nửa support của nút cha (khi
 
 **Phạm vi và quan hệ với Hướng 1.** Hướng này cải thiện **cách lưu TID-list
 trên dữ liệu dày**, tức baseline của nhóm; nó nhắm điểm yếu đo được là baseline
-tăng 305,9 MB khi mining trên Accidents 80%. Nó không cải thiện bản bitset:
-diffset lưu dạng list chỉ nhỏ hơn mask khi `|d| < N/64`, mà ở Accidents 80%
-`|d|` khoảng 9,3% của N, nên list diffset tốn khoảng `0,74N` byte, vẫn lớn hơn
-mask (`N/8 = 0,125N` byte) khoảng 6 lần. Với bản bitset, Accidents cũng không
-phải điểm yếu (Julia đã nhanh hơn SPMF ở cả bảy mức).
+tăng 305,9 MB khi mining trên Accidents 80%. Với bản bitset, lợi ích không
+rõ: diffset lưu dạng list chỉ nhỏ hơn mask khi `|d| < N/64`. Ở mức item đơn
+của Accidents 80%, `|d|` khoảng 9,3% của N, nên list diffset tốn khoảng `0,74N`
+byte, vẫn lớn hơn mask (`N/8 = 0,125N` byte) khoảng 6 lần. Ở các mức sâu hơn,
+diffset có thể co lại rất nhanh (Zaki và Gouda, Hình 10–11) và khi đó có thể
+nhỏ hơn mask; nhóm chưa đo điều này. Với bản bitset, Accidents cũng không phải
+điểm yếu (Julia đã nhanh hơn SPMF ở cả bảy mức).
 
-Nếu đã làm Hướng 1 thì diffset được thêm rất ít: nút support cao đã là mask,
-còn nút ở dạng list có support dưới N/64, nên tidset của nó vốn đã ngắn hơn
-N/64 phần tử. Vì vậy hai hướng là **hai lựa chọn khác nhau**, không chồng lên
-nhau: Hướng 1 nếu giữ bitset làm bản chính, Hướng 2 nếu muốn giữ biểu diễn
-TID-list như bài báo gốc.
+Với các điểm yếu đã đo, nếu đã làm Hướng 1 thì diffset không giải quyết thêm
+điểm nào: nút support cao đã là mask, còn nút ở dạng list có support dưới
+N/64, nên tidset của nó vốn đã ngắn hơn N/64 phần tử. Vì vậy hai hướng được
+trình bày như **hai lựa chọn khác nhau**: Hướng 1 nếu giữ bitset làm bản chính,
+Hướng 2 nếu muốn giữ biểu diễn TID-list như bài báo gốc.
 
 ## Kết luận Chương 2
 
@@ -182,7 +184,8 @@ TID-list như bài báo gốc.
   điểm yếu đo được ở Retail 0,1%: chậm hơn SPMF và tốn bộ nhớ hơn baseline);
   hoặc, nếu giữ biểu diễn TID-list, dùng diffset để thu gọn TID-list trên dữ
   liệu dày (nhắm baseline tăng 305,9 MB khi mining trên Accidents 80%). Hai
-  hướng là hai lựa chọn khác nhau; làm Hướng 1 rồi thì diffset được thêm rất ít.
+  hướng là hai lựa chọn khác nhau; với các điểm yếu đã đo, làm Hướng 1 rồi thì
+  diffset không giải quyết thêm điểm nào.
 
 ## Giới hạn của phần tổng hợp
 
