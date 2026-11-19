@@ -1,0 +1,72 @@
+# One memory observation on a real dataset: one fresh process, one miner, one call.
+# Prints a single line: MEMORY_RESULT rss_before peak_rss itemsets seconds vertical_bytes
+using EclatMining
+
+"Current resident set size in bytes (not the peak)."
+function current_rss()::Int
+    if Sys.iswindows()
+        # PROCESS_MEMORY_COUNTERS: cb + PageFaultCount (2 DWORD), then 8 SIZE_T fields.
+        buf = zeros(UInt64, 9)
+        buf[1] = sizeof(buf)
+        process = ccall((:GetCurrentProcess, "kernel32"), Ptr{Cvoid}, ())
+        ok = ccall((:K32GetProcessMemoryInfo, "kernel32"), Int32,
+                   (Ptr{Cvoid}, Ptr{UInt64}, UInt32), process, buf, sizeof(buf))
+        ok != 0 || error("GetProcessMemoryInfo failed")
+        return Int(buf[3])          # WorkingSetSize
+    elseif Sys.islinux()
+        pages = parse(Int, split(read("/proc/self/statm", String))[2])
+        return pages * 4096
+    end
+    error("current RSS unsupported on this platform")
+end
+
+# Rebuild the vertical structure the miner builds for single frequent items.
+# The core does not expose it and must not be edited, so this is an independent
+# reconstruction. Only the item vectors are summed (no Dict, no recursion).
+function vertical_bytes(db::Vector{Vector{Int}}, threshold::Int, name::String)::Int
+    counts = Dict{Int,Int}()
+    for transaction in db, item in transaction
+        counts[item] = get(counts, item, 0) + 1
+    end
+    total = 0
+    if name == "baseline"
+        lists = Dict{Int,Vector{Int}}(item => Int[] for (item, c) in counts if c >= threshold)
+        for (tid, transaction) in enumerate(db), item in transaction
+            list = get(lists, item, nothing)
+            list === nothing || push!(list, tid)
+        end
+        for list in values(lists)
+            total += Base.summarysize(list)
+        end
+    else
+        masks = Dict{Int,BitVector}(item => falses(length(db)) for (item, c) in counts if c >= threshold)
+        for (tid, transaction) in enumerate(db), item in transaction
+            mask = get(masks, item, nothing)
+            mask === nothing || (mask[tid] = true)
+        end
+        for mask in values(masks)
+            total += Base.summarysize(mask)
+        end
+    end
+    return total
+end
+
+function main(args)
+    length(args) == 3 || error("Expected input, minsup, miner")
+    input, support, name = args
+    miner = name == "baseline" ? eclat_baseline : name == "bitset" ? eclat_bitset : error("unknown miner")
+    miner([[1, 2], [1], Int[]], 1)          # compile on a tiny input, never on the measured data
+    db = read_spmf(input)
+    threshold = minsup_abs(support, length(db))
+    GC.gc()
+    before = current_rss()
+    start = time_ns()
+    result = miner(db, threshold)
+    seconds = (time_ns() - start) / 1e9
+    peak = Sys.maxrss()
+    peak > 0 || error("peak RSS unsupported; refusing to report zero")
+    bytes = vertical_bytes(db, threshold, name)   # after the peak is read
+    println("MEMORY_RESULT ", before, ' ', peak, ' ', length(result), ' ', seconds, ' ', bytes)
+end
+
+abspath(PROGRAM_FILE) == (@__FILE__) && main(ARGS)
