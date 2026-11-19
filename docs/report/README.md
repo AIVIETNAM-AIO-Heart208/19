@@ -14,3 +14,5 @@ Phần runtime và số lượng itemset: [runtime_benchmarks.md](runtime_benchm
 Scalability và độ dài giao dịch: [scalability.md](scalability.md).
 
 Bộ nhớ baseline và bitset trên dữ liệu thật: [memory_benchmarks.md](memory_benchmarks.md).
+
+Điểm mạnh/yếu so với SPMF, hai hướng tối ưu và kết luận Chương 2: [chapter2_evaluation.md](chapter2_evaluation.md).
