@@ -17,7 +17,8 @@ case kiểm thử nhỏ trong `test/`.
 **2. Thời gian tăng chậm khi output lớn trên dữ liệu dày.** Trên Chess, khi hạ
 minsup từ 90% xuống 60%, số itemset tăng khoảng 410 lần (622 → 254.944).
 Median Julia chỉ tăng từ 1,469 lên 1,948 giây, còn SPMF tăng từ 0,372 lên
-7,769 giây. Julia chậm hơn ở 90–75% nhưng nhanh hơn từ 70% trở xuống (gấp
+7,769 giây. So phần tăng thêm (không bị chi phí cố định của mỗi lần chạy làm
+lệch): Julia tăng thêm 0,48 giây, SPMF tăng thêm 7,40 giây. Julia chậm hơn ở 90–75% nhưng nhanh hơn từ 70% trở xuống (gấp
 3,99 lần ở 60%). Trên Accidents, Julia nhanh hơn ở cả bảy mức, từ 1,81 lần
 (95%) đến 5,32 lần (65%), và thời gian Julia gần như không đổi (2,73–3,05
 giây) trong khi SPMF tăng từ 5,29 lên 15,26 giây (không đơn điệu: 5,25 giây
@@ -57,7 +58,10 @@ T10I4D100K. Nặng nhất là Retail 0,1%: Julia 10,634 giây, SPMF 1,435 giây
 `2117 × 2116 / 2 = 2.239.786` phép giao. Mỗi phép giao là AND trên mask dài đủ
 N = 88.162 bit (1.378 từ máy) và cấp một mask mới, dù các item này chỉ có
 support trung bình 0,36% (khoảng 313 giao dịch). Phần lớn công sức là xử lý
-các bit 0.
+các bit 0. Hầu hết các phép giao này cũng vô ích: output có 7.589 − 2.117 =
+5.472 itemset dài từ 2 trở lên, nên có nhiều nhất 5.472 cặp phổ biến, tức ít
+nhất 99,7% trong 2.239.786 phép giao ở gốc cho kết quả bị loại (nhưng vẫn
+được cấp mask).
 
 **3. Bitset không tối ưu bộ nhớ trên dữ liệu thưa.** Cũng ở Retail 0,1%, cấu
 trúc mask ở gốc lớn gấp 2,4 lần TID-list (23,5 MB so với 9,9 MB), peak RSS
