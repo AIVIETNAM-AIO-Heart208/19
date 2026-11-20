@@ -4,6 +4,7 @@ using EclatMining, TOML, SHA, Dates, Statistics
 const ROOT = normpath(joinpath(@__DIR__, ".."))
 const CONFIG = joinpath(@__DIR__, "configs", "benchmarks.toml")
 filehash(path) = bytes2hex(open(sha256, path))
+csvhash(path) = bytes2hex(sha256(replace(read(path, String), "\r\n" => "\n")))
 
 function levels(values, n)
     ratios = parse_minsup.(values)
@@ -227,7 +228,7 @@ function main(args)
     end
     inputs_unchanged = all(filehash(joinpath(ROOT, d["processed_path"])) == d["processed_sha256"] for d in datasets)
     metadata["complete"] = complete && inputs_unchanged && initial == source_snapshot() && metadata["jar_sha256"] == filehash(jar)
-    metadata["artifacts"] = Dict(f => filehash(joinpath(dir, f)) for f in ("raw.csv", "summary.csv"))
+    metadata["artifacts"] = Dict(f => csvhash(joinpath(dir, f)) for f in ("raw.csv", "summary.csv"))
     save()
     println("Artifacts: ", dir)
     metadata["complete"] || error("Incomplete benchmark run")

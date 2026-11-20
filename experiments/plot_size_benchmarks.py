@@ -15,13 +15,17 @@ import matplotlib.pyplot as plt
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def digest(path):
+    return hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+
+
 def read_run(directory):
     metadata = tomllib.loads((directory / "environment.toml").read_text(encoding="utf-8"))
     if not metadata["complete"] or metadata["pilot"]:
         raise ValueError("Need completed official run")
     for file in ("raw.csv", "summary.csv"):
         expected = metadata["artifacts"][file]
-        if hashlib.sha256((directory / file).read_bytes()).hexdigest() != expected:
+        if digest(directory / file) != expected:
             raise ValueError("Artifact checksum mismatch")
     with (directory / "summary.csv").open(newline="", encoding="utf-8") as stream:
         rows = list(csv.DictReader(stream))
@@ -91,7 +95,12 @@ def plot(directory):
         for extension in ("png","svg","pdf"):
             fig.savefig(output/f"{metric}.{extension}",dpi=180)
         plt.close(fig)
-    (output/"environment.json").write_text(json.dumps({"matplotlib":matplotlib.__version__,"script_sha256":hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),"summary_sha256":hashlib.sha256((directory/"summary.csv").read_bytes()).hexdigest()},indent=2),encoding="utf-8")
+    environment = {
+        "matplotlib": matplotlib.__version__,
+        "script_sha256": digest(Path(__file__)),
+        "summary_sha256": digest(directory / "summary.csv"),
+    }
+    (output / "environment.json").write_text(json.dumps(environment, indent=2), encoding="utf-8")
     print(output)
 
 

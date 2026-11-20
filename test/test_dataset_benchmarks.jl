@@ -13,9 +13,19 @@ import SHA, TOML
                         "artifacts" => Dict("summary.csv" => bytes2hex(SHA.sha256(contents))),
                         "complete" => true)
         cmd = `$(Base.julia_cmd()) --startup-file=no --project=$(dirname(@__DIR__)) $script $csv $report`
+        open(io -> TOML.print(io, metadata), joinpath(dir, "environment.toml"), "w")
+        crlf = replace(contents, "\n" => "\r\n")
+        for input in (contents, crlf)
+            write(csv, input)
+            @test DatasetBenchmarks.csvhash(csv) == metadata["artifacts"]["summary.csv"]
+            @test success(pipeline(cmd; stdout=devnull))
+            @test occursin("**1/1**", read(report, String))
+            rm(report)
+        end
         for (complete, input, message) in (
             (false, contents, "Lần benchmark chưa hoàn tất"),
             (true, replace(contents, "622" => "623"), "SHA-256 của summary.csv không khớp"),
+            (true, replace(crlf, "622" => "623"), "SHA-256 của summary.csv không khớp"),
         )
             metadata["complete"] = complete
             open(io -> TOML.print(io, metadata), joinpath(dir, "environment.toml"), "w")

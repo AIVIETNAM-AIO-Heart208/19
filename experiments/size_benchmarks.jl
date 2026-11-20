@@ -191,7 +191,7 @@ function main(kind,args)
         end
     end
     info["complete"] = all_ok && initial == snapshot(kind;configpath) && hashfile(jar) == info["jar_sha256"] && all(hashfile(joinpath(ROOT,x["input"])) == x["sha256"] for x in info["cases"])
-    info["artifacts"] = Dict(f=>hashfile(joinpath(dir,f)) for f in ("raw.csv","summary.csv"))
+    info["artifacts"] = Dict(f => DatasetBenchmarks.csvhash(joinpath(dir, f)) for f in ("raw.csv", "summary.csv"))
     save(); println("Artifacts: ",dir)
     info["complete"] || error("Incomplete run: $dir")
 end

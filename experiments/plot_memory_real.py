@@ -86,8 +86,8 @@ def plot(directory):
     environment = {
         "python": platform.python_version(),
         "matplotlib": matplotlib.__version__,
-        "script_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
-        "summary_sha256": hashlib.sha256((directory / "summary.csv").read_bytes()).hexdigest(),
+        "script_sha256": digest(Path(__file__)),
+        "summary_sha256": digest(directory / "summary.csv"),
     }
     (output / "environment.json").write_text(json.dumps(environment, indent=2) + "\n", encoding="utf-8")
     print(output)

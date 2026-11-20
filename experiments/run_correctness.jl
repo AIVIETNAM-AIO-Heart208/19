@@ -62,7 +62,7 @@ function main(args)
     length(args) == 2 || error("Dùng: run_correctness.jl <summary.csv> <output.md>")
     metadata = TOML.parsefile(joinpath(dirname(abspath(args[1])), "environment.toml"))
     get(metadata, "complete", false) === true || error("Lần benchmark chưa hoàn tất.")
-    summary = read(args[1])
+    summary = replace(read(args[1], String), "\r\n" => "\n")
     bytes2hex(sha256(summary)) == metadata["artifacts"]["summary.csv"] ||
         error("SHA-256 của summary.csv không khớp với environment.toml.")
     rows = read_summary(IOBuffer(summary))

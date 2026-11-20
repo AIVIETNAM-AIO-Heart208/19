@@ -128,7 +128,7 @@ function main()
             "cpu" => Sys.cpu_info()[1].model, "ram_bytes" => Sys.total_memory(),
             "commit" => strip(read(`git -C $(D.ROOT) rev-parse HEAD`, String)),
             "dirty" => dirty,
-            "artifacts" => Dict(f => D.filehash(joinpath(dir, f)) for f in ("raw.csv", "summary.csv")))),
+            "artifacts" => Dict(f => D.csvhash(joinpath(dir, f)) for f in ("raw.csv", "summary.csv")))),
          joinpath(dir, "environment.toml"), "w")
     println("Artifacts: ", dir)
     check_run(rows, config["case"], config["repeats"], mismatches)

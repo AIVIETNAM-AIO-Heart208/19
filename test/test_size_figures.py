@@ -38,7 +38,7 @@ def metadata(directory, count=5):
     text += '[config]\nrepeats = 5\nlengths = '+json.dumps(list(range(1,count+1)))+'\n'
     text += '[artifacts]\n'
     for name in ("raw.csv", "summary.csv"):
-        digest = hashlib.sha256((directory/name).read_bytes()).hexdigest()
+        digest = hashlib.sha256((directory/name).read_bytes().replace(b"\r\n", b"\n")).hexdigest()
         text += f'"{name}" = "{digest}"\n'
     for i in range(1,count+1):
         text += f'[[cases]]\ncase_id = {i}\nstatus = "exact_match"\nsha256 = "hash_{i}"\n'
