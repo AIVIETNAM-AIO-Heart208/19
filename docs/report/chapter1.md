@@ -139,7 +139,7 @@ Bảng 1 có 27 case, 7 file input, tổng 552 itemset qua các ngưỡng; con s
 không phải số mẫu duy nhất của một lần mining. Hai file clean/cleaned là các
 biến thể chuẩn hóa; năm CSDL còn lại cung cấp các tình huống kiểm thử khác nhau.
 Manifest cases.toml bắt buộc mọi input/expected tồn tại, đủ số case và ≥5 CSDL.
-Kết quả hiện tại so với fixture đã lưu, không chạy lại Java SPMF trong lần này.
+Bộ kiểm thử đối chiếu kết quả với các tệp tham chiếu đã tạo bằng SPMF.
 
 Ngoài fixture, tests có CSDL rỗng, ngưỡng vượt N, giao dịch lặp, item 0 và ID
 rất lớn, hơn 20 item, input sai và kiểm tra aliasing. Với mỗi miner, đối chiếu
@@ -170,7 +170,7 @@ Output lớn có thể cạn RAM; đệ quy rất sâu có thể chạm giới h
 
 Dùng CSDL Bernoulli tổng hợp với seed 42: dense có N=12000, U=24, p=.6;
 sparse có N=20000, U=500, p=.01. Cấu hình ở experiments/configs/optimization.toml.
-Đây là phép đo tối ưu của Chương 1, chưa thay thế benchmark thật của Chương 2.
+Hai cấu hình kiểm soát mật độ giao dịch để so sánh baseline với bitset.
 
 Runtime gồm validation, dựng dữ liệu dọc, DFS và vật chất hóa output; loại
 sinh input, đọc/ghi file và kiểm tra correctness. Warm-up cả hai trên cùng case,
@@ -194,21 +194,14 @@ Số liệu raw, độ phân tán và môi trường lưu tại results/metrics/
 | synthetic_sparse / 1% | 248 | 53.81 / 20.55 | 2.62x | 7.17 / 78.30 | 308.99 / 305.98 |
 
 
-Kết quả cho thấy bitset giảm mạnh runtime và allocation ở dense; ở sparse,
-allocation và peak RSS tăng dù runtime thấp hơn trong các case đo này. Không
-tổng quát hóa speedup sang mọi CSDL. Các kết luận cần được kiểm tra tiếp trên
-benchmark thật ở Chương 2. Bảng trên phân biệt tổng cấp phát và RAM đỉnh.
+Ở cả hai cấu hình dữ liệu dày, bitset giảm thời gian chạy và tổng dung lượng cấp phát.
+Trên dữ liệu thưa, bitset vẫn chạy nhanh hơn nhưng cấp phát nhiều bộ nhớ hơn. Peak RSS
+tăng ở minsup 0,5% và giảm nhẹ ở minsup 1%.
 
-## 1.8. Đánh giá mức hoàn thành Chương 1
+## 1.8. Kết luận
 
-- Baseline: có baseline thật, hợp đồng API, lập luận tính đúng và phân tích chi phí.
-- Tối ưu: có bitset thật, giữ baseline, có đo runtime/bộ nhớ và nêu đánh đổi.
-- I/O và CLI: có parser/writer SPMF, CLI và bảo vệ file nguồn trước lỗi alias.
-- Kiểm thử: đủ CSDL/case, so từng itemset/support và kiểm thử tự động vượt qua.
-
-Chương 1 đã đủ nội dung cài đặt và bản viết chung để tích hợp vào báo cáo tổng.
-Bản Markdown này là nguồn nội dung, chưa phải Report.pdf theo IEEE của cả đồ án.
-Việc hoàn thiện định dạng IEEE, tài liệu liên quan còn lại, benchmark Chương 2
-và hai ứng dụng Chương 3 thuộc các giai đoạn sau. Kết quả kiểm thử hữu hạn không
-bảo đảm không còn lỗi trên mọi input; chưa phát hiện lỗi chặn nghiệm thu trong
-phạm vi hiện thực và kiểm chứng ở đây.
+Hai phiên bản Eclat trả về cùng các cặp itemset và support trên 27 trường hợp
+đối chiếu với SPMF. TID-list lưu danh sách các giao dịch chứa một itemset, còn
+bitset dùng một bit cho mỗi giao dịch. Sự khác biệt này ảnh hưởng đến cả chi phí
+phép giao và dung lượng cấp phát. [Thực nghiệm trên năm bộ dữ liệu](memory_benchmarks.md)
+đánh giá hai cách biểu diễn ở quy mô lớn hơn.

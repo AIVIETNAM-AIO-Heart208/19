@@ -3,8 +3,8 @@
 ## Thiết kế thực nghiệm
 
 Thực nghiệm dùng toàn bộ năm CSDL Chess, Mushroom, Retail, Accidents và
-T10I4D100K. Input là các file processed có SHA-256 cố định trong
-`data/datasets.toml`, chung cho Julia và SPMF. Không lấy mẫu giao dịch,
+T10I4D100K. Julia và SPMF đọc cùng các tệp giao dịch đã tiền xử lý. Giá trị
+SHA-256 của từng tệp được lưu trong `data/datasets.toml`. Không lấy mẫu giao dịch,
 lọc item hoặc loại giao dịch trùng. Retail giữ nguyên item 0.
 
 Để phân biệt dữ liệu dày và thưa, dùng mật độ giao dịch trung bình
@@ -59,8 +59,8 @@ Máy đo: AMD Ryzen 7 7735HS, Windows; RAM và thông tin môi trường đầy 
 
 Trước đo, kiểm tra checksum và số transaction. Support tuyệt đối tính bằng
 `ceil(minsup × N)` với số hữu tỉ ở Julia; cấu hình bị từ chối nếu chuyển đổi
-binary64 phía SPMF cho ngưỡng khác. Smoke test thật kiểm tra cả ngưỡng 21%
-và 39% trên toy. Sau đo đối chiếu mỗi itemset/support của lượt đầu, các lượt
+binary64 phía SPMF cho ngưỡng khác. Phép kiểm tra sơ bộ với SPMF bao gồm ngưỡng 21%
+và 39% trên bộ dữ liệu mẫu. Sau đo đối chiếu mỗi itemset/support của lượt đầu, các lượt
 tiếp theo phải khớp checksum output đã xác nhận của từng miner. Thứ tự dòng
 giữa Julia và SPMF có thể khác nhau.
 
@@ -101,7 +101,7 @@ CSV nguồn: [bảng tổng hợp](../../results/metrics/benchmark_runs/runtime_
 | Accidents | [Hình](../../results/figures/runtime_20261117T101543270/accidents_runtime.png) | [Hình](../../results/figures/runtime_20261117T101543270/accidents_itemsets.png) |
 | T10I4D100K | [Hình](../../results/figures/runtime_20261117T101543270/t10i4d100k_runtime.png) | [Hình](../../results/figures/runtime_20261117T101543270/t10i4d100k_itemsets.png) |
 
-Mỗi hình có thêm bản SVG/PDF cùng tên để chèn báo cáo.
+Mỗi biểu đồ cũng có bản SVG và PDF cùng tên.
 
 ### Phân tích
 

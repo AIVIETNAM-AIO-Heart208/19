@@ -33,6 +33,24 @@ end
     # A configured case with no observation at all.
     @test_throws "chess 75% baseline: 0/3 successful" M.check_run(retail_ok, cases, 3, String[])
 
-    # Disagreeing itemset counts still stop a complete run.
-    @test_throws "Itemset counts differ" M.check_run(vcat(complete("chess", "75%"), retail_ok), cases, 3, ["chess 75%: [100, 101]"])
+end
+
+@testset "Summary rejects inconsistent itemset counts" begin
+    M = MemoryRealRun
+    cases = [Dict("dataset" => "chess", "minsup" => "75%")]
+    rows = [(
+        dataset="chess", minsup="75%", threshold=2397, miner=miner, status="success",
+        r=(itemsets=(miner == "bitset" && rep == 2 ? 20994 : 20993),
+           seconds=1.0, before=100, peak=120, bytes=40, estimate=32),
+        delta=20, dstatus="measured",
+    ) for miner in M.MINERS for rep in 1:3]
+    mktempdir() do dir
+        summary = joinpath(dir, "summary.csv")
+        mismatches = M.write_summary(summary, rows, cases)
+        @test_throws "20993, 20994" M.check_run(rows, cases, 3, mismatches)
+        lines = readlines(summary)[2:end]
+        @test length(lines) == 2
+        @test all(line -> split(line, ',')[5] == "\"validation_failed\"", lines)
+        @test all(line -> endswith(line, ","), lines)
+    end
 end

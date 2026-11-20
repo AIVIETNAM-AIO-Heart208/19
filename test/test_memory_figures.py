@@ -57,6 +57,17 @@ class MemoryFigureTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "incomplete"):
                 figures.read_run(path)
 
+    def test_rejects_failed_count_validation_before_drawing(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory)
+            rows = full_rows()
+            for entry in rows:
+                if entry["dataset"] == "chess":
+                    entry.update(status="validation_failed", itemsets="")
+            make_run(path, rows)
+            with self.assertRaisesRegex(ValueError, "Unvalidated"):
+                figures.plot(path)
+
     def test_draws_both_figures_and_never_a_zero_bar(self):
         rows = full_rows()
         rows[1] = row("chess", "75%", "bitset", delta="")  # delta not measurable, peak still known

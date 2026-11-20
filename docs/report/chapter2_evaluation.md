@@ -3,7 +3,7 @@
 Phần này tổng hợp số liệu đã đo ở [runtime_benchmarks.md](runtime_benchmarks.md),
 [correctness_benchmarks.md](correctness_benchmarks.md), [scalability.md](scalability.md)
 và [memory_benchmarks.md](memory_benchmarks.md).
-Không có phép đo mới. "Julia" ở đây là Eclat BitVector của nhóm, "SPMF" là
+Trong các bảng so sánh, “Julia” chỉ Eclat BitVector của nhóm, "SPMF" là
 Eclat trong SPMF 2.65. So sánh thời gian với SPMF luôn là thời gian **toàn
 trình** (khởi động, đọc, mining, ghi) trong run `runtime_20261117T101543270`.
 
@@ -40,35 +40,36 @@ từ 665,6 xuống 433,4 MB.
 
 ### Điểm yếu
 
-**1. Chi phí cố định khoảng 1,4 giây mỗi lần chạy.** Ở các cấu hình nhỏ, median
+**1. Thời gian toàn trình ở các cấu hình nhẹ.** Ở các cấu hình nhỏ, median
 toàn trình của Julia không xuống dưới khoảng 1,37 giây (thấp nhất 1,374 giây,
 Chess 80%), còn SPMF chỉ khoảng 0,37 giây (Chess 90%, Mushroom 50–60%). Vì
 vậy SPMF nhanh hơn ở mọi mức cao của Chess và cả dải Mushroom (tỉ lệ
 SPMF/Julia từ 0,25 tăng dần lên 0,84 khi hạ minsup). Ở phép đo bộ nhớ, riêng
 lời gọi mining bitset trên Chess 75% chỉ mất 0,0086 giây và trên Mushroom 30%
-0,0075 giây, trong khi toàn trình ở cùng cấu hình là 1,404 và 1,380 giây. Điều
-này cho thấy phần lớn thời gian toàn trình ở các tác vụ nhỏ nằm ngoài mining
-(khởi động Julia, biên dịch JIT, đọc và ghi file). Hai phép đo chạy trên hai
-máy khác nhau và chưa profile riêng từng pha, nên đây là ước lượng độ lớn,
-không phải số chính xác.
+0,0075 giây, trong khi toàn trình ở cùng cấu hình là 1,404 và 1,380 giây.
+Thời gian toàn trình bao gồm cả khởi động Julia, biên dịch JIT và đọc, ghi
+dữ liệu. Hai thí nghiệm chạy trên hai máy khác nhau, nên muốn định lượng
+đóng góp của từng pha cần đo chúng trên cùng một máy.
 
 **2. Dữ liệu thưa, minsup thấp.** SPMF nhanh hơn ở cả 7 mức của Retail và
-T10I4D100K. Nặng nhất là Retail 0,1%: Julia 10,634 giây, SPMF 1,435 giây
+T10I4D100K. Chênh lệch lớn nhất xuất hiện ở Retail 0,1%: Julia 10,634 giây, SPMF 1,435 giây
 (SPMF nhanh hơn khoảng 7,41 lần), dù chỉ có 7.589 itemset. Retail 0,1% có
 2.117 item phổ biến, nên ngay mức gốc `_bitset_dfs!` thử
 `2117 × 2116 / 2 = 2.239.786` phép giao. Mỗi phép giao là AND trên mask dài đủ
 N = 88.162 bit (1.378 từ máy) và cấp một mask mới, dù các item này chỉ có
 support trung bình 0,36% (khoảng 313 giao dịch). Phần lớn công sức là xử lý
-các bit 0. Hầu hết các phép giao này cũng vô ích: output có 7.589 − 2.117 =
+các bit 0. Số ứng viên bị loại có thể ước tính từ kết quả. Có 7.589 − 2.117 =
 5.472 itemset dài từ 2 trở lên, nên có nhiều nhất 5.472 cặp phổ biến, tức ít
 nhất 99,7% trong 2.239.786 phép giao ở gốc cho kết quả bị loại (nhưng vẫn
 được cấp mask).
 
 **3. Bitset không tối ưu bộ nhớ trên dữ liệu thưa.** Cũng ở Retail 0,1%, cấu
 trúc mask ở gốc lớn gấp 2,4 lần TID-list (23,5 MB so với 9,9 MB), peak RSS
-bitset 386,3 MB so với baseline 314,3 MB. Mask chỉ gọn hơn TID-list khi
-support trung bình lớn hơn khoảng N/64 (1,56% số giao dịch); xem phân tích ở
-[memory_benchmarks.md](memory_benchmarks.md).
+bitset 386,3 MB so với baseline 314,3 MB. Với TID-list `Int64` cấp vừa đủ,
+ngưỡng hòa vốn lý thuyết của phần dữ liệu là khoảng N/64 giao dịch cho mỗi
+item (support tương đối 1,56%). Khi dựng list bằng `push!`, dung lượng dự
+phòng quan sát được cho ngưỡng ước tính khoảng 0,8–1,1%.
+[Phân tích kích thước cấu trúc dọc](memory_benchmarks.md).
 
 **4. Mật độ toàn CSDL không đủ để dự đoán.** Cùng là Retail (thưa), tỉ lệ cấu
 trúc dọc TID-list / mask đi từ 2,67 ở minsup 0,75% (mask gọn hơn) xuống 0,42 ở
@@ -103,8 +104,7 @@ DFS), chọn cách lưu theo support s của nút:
 Cần ba kiểu giao: mask & mask (AND từng từ máy), list ∩ list (trộn hai danh
 sách đã sắp, như baseline), và list ∩ mask (với mỗi TID trong list, kiểm tra
 bit tương ứng, chi phí `O(|list|)`). Kết quả giao có support không lớn hơn
-input, nên một nhánh chỉ đi từ mask sang list, không cần chuyển ngược. Thêm
-một chi tiết nhỏ: với mask & mask, đếm số bit 1 của phép AND trước, chỉ cấp
+input, nên một nhánh chỉ đi từ mask sang list, không cần chuyển ngược. Với hai mask, có thể đếm số bit 1 của phép AND trước và chỉ cấp
 mask mới khi đủ support, để các ứng viên bị loại không cấp bộ nhớ.
 
 **Lý do kỹ thuật và căn cứ số liệu.** Ngưỡng N/64 rút ra từ hai công thức kích
@@ -122,9 +122,8 @@ mask như bản hiện tại. Trong dải runtime đã đo, Chess (thấp nhất
 (15%) và Accidents (65%) đều thuộc trường hợp này. (Chi tiết đếm bit 1 trước
 khi cấp mask là thay đổi riêng, áp cho mọi cấu hình.) Việc chọn list hay mask
 chỉ có tác dụng ở các cấu hình có minsup dưới 1,56%: Retail và T10I4D100K từ
-1,5% trở xuống. Đây là 12 trong 25 cấu hình Julia thua SPMF; các cấu hình thua
-còn lại (Retail và T10I4D100K ở 2%, cả dải Mushroom, Chess 90–75%) không được
-hướng này chạm tới. Ảnh hưởng tới thời gian trên Retail
+1,5% trở xuống. Trong 25 cấu hình Julia chạy chậm hơn SPMF, 12 cấu hình có minsup dưới
+ngưỡng này. Ở 13 cấu hình còn lại, mọi nút phổ biến vẫn dùng mask. Ảnh hưởng tới thời gian trên Retail
 cần đo lại: giao list ∩ list tốn khoảng `|a| + |b|` phép so sánh (trung bình
 khoảng 630) thay vì 1.378 từ máy, nhưng phép trộn có rẽ nhánh nên chưa chắc
 nhanh hơn tương ứng.
@@ -163,11 +162,9 @@ diffset có thể co lại rất nhanh (Zaki và Gouda, Hình 10–11) và khi �
 nhỏ hơn mask; nhóm chưa đo điều này. Với bản bitset, Accidents cũng không phải
 điểm yếu (Julia đã nhanh hơn SPMF ở cả bảy mức).
 
-Với các điểm yếu đã đo, nếu đã làm Hướng 1 thì diffset không giải quyết thêm
-điểm nào: nút support cao đã là mask, còn nút ở dạng list có support dưới
-N/64, nên tidset của nó vốn đã ngắn hơn N/64 phần tử. Vì vậy hai hướng được
-trình bày như **hai lựa chọn khác nhau**: Hướng 1 nếu giữ bitset làm bản chính,
-Hướng 2 nếu muốn giữ biểu diễn TID-list như bài báo gốc.
+Trong phương án lai dùng TID `Int64`, nút có support cao được lưu bằng mask,
+còn nút dùng TID-list có ít hơn N/64 phần tử. Số liệu hiện có chưa cho phép
+ước tính lợi ích của việc kết hợp thêm diffset vào phương án này.
 
 ## Kết luận Chương 2
 
@@ -175,8 +172,9 @@ Hướng 2 nếu muốn giữ biểu diễn TID-list như bài báo gốc.
   support (bảng ở [correctness_benchmarks.md](correctness_benchmarks.md)), cùng
   với 27 case kiểm thử nhỏ cho cả hai miner.
 - **Runtime theo minsup:** bản bitset nhanh hơn SPMF ở 10/35 cấu hình (Chess
-  70–60% và toàn bộ Accidents), chậm hơn ở 25/35. Thua chủ yếu ở tác vụ nhỏ
-  (chi phí cố định khoảng 1,4 giây) và ở dữ liệu thưa có nhiều item phổ biến.
+  70–60% và toàn bộ Accidents), chậm hơn ở 25/35. SPMF có ưu thế ở tác vụ nhỏ
+  (median toàn trình của Julia khoảng 1,4 giây ở Chess 75% và Mushroom 30%)
+  và ở dữ liệu thưa có nhiều item phổ biến.
 - **Số itemset theo minsup:** không giảm khi hạ minsup ở cả 5 CSDL; mức tăng
   phụ thuộc mạnh vào dữ liệu (Chess tăng 410 lần, Accidents 73 lần trong dải
   đã chọn).
@@ -186,16 +184,15 @@ Hướng 2 nếu muốn giữ biểu diễn TID-list như bài báo gốc.
   bước nhảy khi xuất hiện cặp item phổ biến.
 - **Bộ nhớ:** peak RSS phần lớn là runtime Julia cùng dữ liệu đã đọc (236–380
   MB trước khi mining; Accidents cao hơn hẳn chính vì dữ liệu lớn).
-  Bitset nhanh hơn baseline ở cả 6 cấu hình đo. Cấu trúc dọc của bitset chỉ
-  gọn hơn khi item phổ biến có support trung bình trên khoảng N/64; peak RSS
-  chỉ giảm rõ ở Accidents 80%, còn trên Retail 0,1% bitset tốn bộ nhớ hơn
-  baseline.
+  Bitset nhanh hơn baseline ở cả 6 cấu hình đo. Cấu trúc dọc ở gốc của
+  bitset nhỏ hơn ở 5/6 cấu hình. Chênh lệch peak RSS có lợi cho bitset
+  lớn nhất ở Accidents 80% (433,4 so với 665,6 MB). Ở Retail 0,1%, bitset
+  dùng nhiều bộ nhớ hơn baseline ở cả cấu trúc gốc và peak RSS.
 - **Hướng tiếp theo:** chọn TID-list hay bitset theo support từng nút (nhắm
   điểm yếu đo được ở Retail 0,1%: chậm hơn SPMF và tốn bộ nhớ hơn baseline);
   hoặc, nếu giữ biểu diễn TID-list, dùng diffset để thu gọn TID-list trên dữ
-  liệu dày (nhắm baseline tăng 305,9 MB khi mining trên Accidents 80%). Hai
-  hướng là hai lựa chọn khác nhau; với các điểm yếu đã đo, làm Hướng 1 rồi thì
-  diffset không giải quyết thêm điểm nào.
+  liệu dày, nơi baseline tăng 305,9 MB RSS trong lúc khai phá Accidents ở
+  minsup 80%.
 
 ## Giới hạn của phần tổng hợp
 

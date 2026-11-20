@@ -1,36 +1,36 @@
-# Correctness trên bộ benchmark: Eclat của nhóm so với SPMF
+# Kiểm tra tính đúng đắn của Eclat trên năm bộ dữ liệu
 
 ## Phương pháp
 
-- **Nguồn số liệu:** lần chạy runtime `runtime_20261117T101543270` do trưởng nhóm thực hiện
+- **Nguồn số liệu:** lần chạy runtime `runtime_20261117T101543270`
   ([summary.csv](../../results/metrics/benchmark_runs/runtime_20261117T101543270/summary.csv),
   [môi trường](../../results/metrics/benchmark_runs/runtime_20261117T101543270/environment.toml)).
-  Bảng dưới chỉ trình bày lại kết quả đối chiếu đã có trong lần chạy đó, không chạy lại thuật toán.
-- **So sánh:** với mỗi cặp (dataset, minsup), output của Eclat nhóm và của SPMF (ECLAT v2.65)
-  được đọc lại, mỗi itemset được sort và so theo cặp (itemset, support). Hai tập phải bằng nhau
-  hoàn toàn, nên không chỉ trùng số lượng. Thứ tự dòng trong file không ảnh hưởng.
+  Bảng kết quả sử dụng phép đối chiếu thực hiện trong cùng lần đo thời gian.
+- **So sánh:** với mỗi bộ dữ liệu và mức minsup, chương trình đọc kết quả của Eclat BitVector
+  và của Eclat trong SPMF 2.65, sắp xếp các item trong từng itemset rồi đối chiếu toàn bộ
+  các cặp (itemset, support). Thứ tự dòng trong tệp kết quả không ảnh hưởng đến phép so sánh.
 - **Ngưỡng tuyệt đối:** `ceil(minsup × |DB|)` tính bằng số hữu tỉ. SPMF đọc phần trăm bằng số thực
-  nên có thể làm tròn khác ở biên; hàm `levels` trong
-  [experiments/dataset_benchmarks.jl](../../experiments/dataset_benchmarks.jl) loại bỏ mọi mức
-  minsup mà hai cách tính cho ngưỡng khác nhau, nên cả hai miner dùng cùng một ngưỡng.
+  nên có thể làm tròn khác ở biên. Trước khi đo, hàm `levels` so sánh hai cách tính
+  tại từng mức minsup. Nếu bất kỳ ngưỡng nào khác nhau, chương trình báo lỗi và dừng
+  cả lần chạy. [Mã kiểm tra ngưỡng](../../experiments/dataset_benchmarks.jl).
 - **Nguồn đối chiếu:** `summary.csv` do `experiments/run_benchmarks.jl` tạo ra. Cấu hình nào lệch
-  SPMF thì bị loại, không được ghi vào CSV. Vì vậy script `run_correctness.jl` còn đối chiếu
-  danh sách cấu hình dự định trong `environment.toml`: thiếu dòng nào thì báo lỗi.
+  SPMF thì bị loại, không được ghi vào CSV. Trước khi lập bảng, `run_correctness.jl`
+  kiểm tra trạng thái hoàn tất và SHA-256 của CSV theo `environment.toml`, rồi kiểm tra
+  có đủ dòng cho cả hai miner ở từng cấu hình dự kiến.
 - **Dữ liệu:** tải từ FIMI, cố định bằng SHA-256 trong [data/datasets.toml](../../data/datasets.toml).
   Số giao dịch / số item: Chess 3.196 / 75 · Mushroom 8.124 / 119 · Retail 88.162 / 16.470 ·
   Accidents 340.183 / 468 · T10I4D100K 100.000 / 870.
-- **Miner được kiểm:** cột `julia` trong lần chạy này là bản **bitset**. Bản baseline (TID-list)
-  được kiểm riêng trên 27 case nhỏ trong `test/test_correctness.jl`, chưa nằm trong bảng này.
-- **Tỉ lệ khớp:** hai tập kết quả được so nguyên tập (khớp hết hoặc không), không đếm từng
-  itemset. Một cấu hình có mặt trong CSV nghĩa là hai tập bằng nhau, nên ghi "n/n (100%)" với n
-  là số itemset; cấu hình lệch không có trong CSV và bị script báo là thiếu.
+- **Phạm vi kiểm thử:** cột `julia` trong lần chạy này là bản **bitset**. Bản baseline (TID-list)
+  được kiểm riêng trên 27 trường hợp kiểm thử nhỏ trong `test/test_correctness.jl`, chưa nằm trong bảng này.
+- **Tỉ lệ khớp:** ký hiệu `n/n (100%)` cho biết cả hai chương trình tìm được cùng
+  `n` itemset và giá trị support trùng nhau ở từng itemset.
 
 ## Kết quả
 
 Bảng sinh bằng:
 
 ```
-julia --project experiments/run_correctness.jl results/metrics/benchmark_runs/runtime_20261117T101543270/summary.csv <output.md>
+julia --project=. experiments/run_correctness.jl results/metrics/benchmark_runs/runtime_20261117T101543270/summary.csv correctness_table.md
 ```
 
 | Dataset | minsup | Ngưỡng tuyệt đối | Itemset Julia | Itemset SPMF | Tỉ lệ khớp itemset + support |
@@ -73,10 +73,6 @@ julia --project experiments/run_correctness.jl results/metrics/benchmark_runs/ru
 
 Tổng: **35/35** cấu hình khớp hoàn toàn với SPMF.
 
-## Sai lệch
-
-Không có. Cả 35 cấu hình (5 dataset × 7 mức minsup) khớp từng itemset và support với SPMF,
-tỉ lệ khớp 100% ở mọi dòng, nên không có sai lệch nào cần giải thích.
-
-Giới hạn cần nêu: lần chạy có `dirty = true` trong `environment.toml` (cây làm việc lúc đó có
-thay đổi chưa commit), nên kết quả gắn với commit 391ce1a cộng thay đổi cục bộ.
+**Khả năng tái lập.** Kết quả gắn với commit `391ce1a` và các thay đổi cục bộ tại thời
+điểm đo (`dirty = true`). File `environment.toml` lưu checksum để đối chiếu mã nguồn,
+cấu hình và các bảng số liệu của lần chạy.

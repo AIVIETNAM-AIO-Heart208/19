@@ -1,13 +1,13 @@
-# Nguồn báo cáo
+# Báo cáo khai phá tập mục phổ biến bằng Eclat
 
-Đặt nguồn LaTeX theo mẫu IEEE conference tại đây. Báo cáo tiếng Việt dài 10–15 trang, không tính tài liệu tham khảo và phụ lục.
+Báo cáo gồm ba chương về cài đặt thuật toán, đánh giá thực nghiệm và hai ứng dụng.
+Bản nộp dùng mẫu IEEE conference, dài 10–15 trang tiếng Việt (không tính tài liệu tham khảo và phụ lục), trích dẫn bài báo gốc và ít nhất ba tài liệu liên quan. Đường dẫn của bản nộp là `docs/Report.pdf`.
 
-Ba chương: cài đặt; thực nghiệm và đánh giá; hai ứng dụng thực tế.
-Trích bài báo gốc và ít nhất 3 tài liệu liên quan; giải thích ký hiệu, thêm caption và tham chiếu hình/bảng.
-Xuất bản hoàn chỉnh thành docs/Report.pdf. Chưa tạo PDF rỗng.
+## Chương 1. Cài đặt Eclat
 
+[Thuật toán, giao diện dòng lệnh và kiểm thử](chapter1.md).
 
-Bản viết chung Chương 1: [chapter1.md](chapter1.md), gồm thuật toán, tối ưu, I/O, CLI, correctness và số liệu. Dùng làm nguồn ghép vào IEEE của báo cáo tổng.
+## Chương 2. Thực nghiệm và đánh giá
 
 Phần runtime và số lượng itemset: [runtime_benchmarks.md](runtime_benchmarks.md).
 

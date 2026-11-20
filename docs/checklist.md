@@ -82,10 +82,10 @@
 - [x] Viết phần correctness, bộ nhớ và kết luận Chương 2.
 
 **Nghiệm thu cuối tuần 2**
-- [ ] Có kết quả trên ít nhất 4 benchmark, correctness theo từng itemset và support.
-- [ ] Đủ biểu đồ runtime–minsup, số itemset–minsup, peak RAM và scalability.
-- [ ] Có thực nghiệm độ dài giao dịch nếu phù hợp.
-- [ ] Chương 2 có phân tích số liệu và ít nhất 2 đề xuất tối ưu.
+- [x] Có kết quả trên ít nhất 4 benchmark, correctness theo từng itemset và support.
+- [x] Đủ biểu đồ runtime–minsup, số itemset–minsup, peak RAM và scalability.
+- [x] Có thực nghiệm độ dài giao dịch nếu phù hợp.
+- [x] Chương 2 có phân tích số liệu và ít nhất 2 đề xuất tối ưu.
 - [ ] **Cả hai người đã chốt dataset và thử chuyển đổi dữ liệu cho ứng dụng mình phụ trách ở tuần 3.**
 
 ---

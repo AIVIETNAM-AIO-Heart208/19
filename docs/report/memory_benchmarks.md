@@ -2,10 +2,10 @@
 
 ## Thiết kế đo
 
-Đề yêu cầu đo RAM tối đa (peak memory) cho mỗi tập dữ liệu tại một minsup
-trung bình và so sánh bản cơ bản với bản tối ưu. Thực nghiệm dùng cả năm CSDL
-của phần runtime, cùng file processed có SHA-256 cố định trong
-`data/datasets.toml`.
+Thực nghiệm so sánh bộ nhớ thường trú tối đa (peak RSS) của baseline và bitset
+ở mức minsup giữa dải đã khảo sát trên mỗi CSDL. Cả hai phiên bản đọc cùng các
+tệp giao dịch đã tiền xử lý dùng trong phép đo thời gian. Giá trị SHA-256 của
+từng tệp được lưu trong `data/datasets.toml`.
 
 | Dataset | Minsup | Ngưỡng tuyệt đối | Lý do chọn |
 |---|---:|---:|---|
@@ -35,7 +35,7 @@ phần runtime: 20.993, 2.735, 277, 7.589, 149, 561.
 
 Ba đại lượng được báo cáo, theo thứ tự từ rộng đến hẹp:
 
-1. **Peak RSS của tiến trình**: đại lượng đề yêu cầu. Nó gồm cả runtime Julia,
+1. **Peak RSS của tiến trình** gồm cả runtime Julia,
    mã đã biên dịch và CSDL đã đọc (khoảng 236–380 MB trước khi mining), nên
    không phải bộ nhớ riêng của thuật toán.
 2. **Delta RSS** `= peak − rss_before`, chỉ ghi khi mining đẩy đỉnh lên cao hơn
@@ -146,8 +146,8 @@ mining dùng không vượt đỉnh đã có lúc khởi động/đọc dữ li�
 **Thời gian mining.** Bitset nhanh hơn baseline ở cả sáu cấu hình khi chỉ đo
 lời gọi hàm: khoảng 146 lần ở Chess, 26 lần ở Mushroom, 4,6 lần ở Accidents,
 6,5 lần ở T10I4D100K, 2,0 lần ở Retail 0,75%, nhưng chỉ 1,25 lần ở Retail 0,1%.
-Retail 0,1% cũng là chỗ bitset tốn bộ nhớ hơn; cả hai cùng xuất phát từ việc
-mask luôn dài N trong khi phần lớn item rất hiếm.
+Ở Retail 0,1%, bitset cũng có peak RSS cao hơn baseline. Kết quả này phù hợp
+với đặc điểm của cấu hình: mỗi mask vẫn dài N bit dù phần lớn item có support thấp.
 
 **Tóm lại**, bitset nhanh hơn baseline ở cả sáu cấu hình. Về bộ nhớ, chỉ
 Accidents 80% cho thấy peak RSS giảm rõ (665,6 → 433,4 MB). Ở Chess và
@@ -171,8 +171,8 @@ bộ nhớ cho mọi input.
   tất khi đủ mọi cấu hình và đủ số lần lặp, và dừng nếu thiếu. Runner
   `run_memory_real.jl` cũng thoát với mã lỗi khi bất kỳ cặp CSDL–minsup–miner
   nào thiếu lượt đo thành công (timeout hoặc lỗi), sau khi đã ghi CSV và log để
-  chẩn đoán. Run dùng ở đây được đo trước khi runner có kiểm tra này, nhưng đủ
-  3/3 lượt thành công cho mọi cặp nên vẫn qua kiểm tra.
+  chẩn đoán. Trong bộ số liệu công bố, mỗi tổ hợp CSDL, minsup và phiên bản Eclat
+  đều có đủ ba lượt đo thành công.
 
 Tái lập: `julia --project experiments/run_memory_real.jl`,
 sau đó `python experiments/plot_memory_real.py <thư mục run>`.

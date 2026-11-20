@@ -11,9 +11,8 @@ bên trong API vẫn được tính. Báo cáo median và Q1–Q3; thanh Q1–Q3
 tán mẫu, không phải khoảng tin cậy. Không loại mẫu nhanh/chậm tùy ý.
 
 Phạm vi này khác phép đo toàn trình ở phần runtime theo minsup, vốn gồm
-startup/JIT và I/O. Mức 100% được đo lại cùng phương pháp API với bốn mức
-còn lại; không ghép số end-to-end cũ vào đường cong hoặc trừ hai phép đo để
-ước tính riêng chi phí I/O.
+startup/JIT và I/O. Cả năm điểm trên mỗi đường cong, kể cả mức 100%, đều được đo bằng
+cùng một lời gọi API sau khi làm nóng.
 
 Retail lấy từ processed input có checksum cố định trong data/datasets.toml.
 Sử dụng RNG cục bộ MersenneTwister, seed 42 và một hoán vị trên chỉ số giao
@@ -68,7 +67,7 @@ SPMF 2.65 và Temurin Java 25.0.5+8. Java dùng -Xmx2g và
 -XX:ActiveProcessorCount=1 để sinh tham chiếu; không đo speedup Julia/SPMF
 trong thí nghiệm này. Timeout 900 giây áp cho từng tiến trình SPMF và toàn
 worker, gồm startup, warm-up, năm mẫu và validation. Parent quản lý timeout,
-timer API nằm trong worker. Các benchmark chính thức chạy tuần tự sau test.
+timer API nằm trong worker. Các phép đo chính thức chạy tuần tự.
 
 Metadata lưu seed, RNG/Julia, cấu hình, input/index/source hashes, câu lệnh,
 commit/dirty, mã nguồn và môi trường. Seed không bảo đảm input giống hệt
@@ -220,5 +219,5 @@ Không mặc định runtime phải tăng ở mọi điểm, cũng không suy ra
 nhanh hoặc chậm hơn sparse. Chưa profiling riêng các pha nên không gán
 dao động cho JIT/GC/cache như một nguyên nhân đã được chứng minh.
 
-Hướng dẫn tái lập và kiểm tra từng yêu cầu:
+Quy trình tái lập thí nghiệm được trình bày trong
 [SIZE_EXPERIMENTS.md](../../experiments/SIZE_EXPERIMENTS.md).
