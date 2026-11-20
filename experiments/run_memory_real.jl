@@ -20,6 +20,24 @@ function parse_result(log)
     return nothing
 end
 
+"""
+Stop unless every dataset/minsup/miner pair has exactly `repeats` successful repeats and the itemset
+counts agree. The count check alone is not enough: a pair whose repeats all timed out has no counts
+that could disagree. Called after raw.csv, summary.csv and the logs are written, so they stay for diagnosis.
+"""
+function check_run(rows, cases, repeats::Integer, mismatches::Vector{String})
+    short = String[]
+    for c in cases, miner in MINERS
+        ok = count(x -> x.dataset == c["dataset"] && x.minsup == c["minsup"] && x.miner == miner && x.status == "success", rows)
+        ok == repeats || push!(short, string(c["dataset"], " ", c["minsup"], " ", miner, ": ", ok, "/", repeats, " successful"))
+    end
+    problems = String[]
+    isempty(short) || push!(problems, "Missing successful repeats (timeout or failed run; see raw.csv and the logs): " * join(short, "; "))
+    isempty(mismatches) || push!(problems, "Itemset counts differ between baseline and bitset (or between repeats): " * join(mismatches, "; "))
+    isempty(problems) || error(join(problems, "\n"))
+    return nothing
+end
+
 function main()
     check = self_check()
     println("Self-check ok: bitset ", check.bits, " vs formula ", check.bits_formula,
@@ -103,7 +121,7 @@ function main()
             "artifacts" => Dict(f => D.filehash(joinpath(dir, f)) for f in ("raw.csv", "summary.csv")))),
          joinpath(dir, "environment.toml"), "w")
     println("Artifacts: ", dir)
-    isempty(mismatches) || error("Itemset counts differ between baseline and bitset (or between repeats): ", join(mismatches, "; "))
+    check_run(rows, config["case"], config["repeats"], mismatches)
     return dir
 end
 

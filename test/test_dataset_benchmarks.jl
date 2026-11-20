@@ -1,5 +1,33 @@
 include(joinpath(@__DIR__, "..", "experiments", "dataset_benchmarks.jl"))
 using .DatasetBenchmarks
+import SHA, TOML
+
+@testset "Correctness report input validation" begin
+    script = joinpath(@__DIR__, "..", "experiments", "run_correctness.jl")
+    mktempdir() do dir
+        csv = joinpath(dir, "summary.csv")
+        report = joinpath(dir, "report.md")
+        contents = "dataset,minsup,threshold,miner,itemsets,validation\n" *
+                   "toy,50%,2,julia,622,exact_match\ntoy,50%,2,spmf,622,exact_match\n"
+        metadata = Dict("config" => Dict("dataset_ids" => ["toy"], "minsup" => Dict("toy" => ["50%"])),
+                        "artifacts" => Dict("summary.csv" => bytes2hex(SHA.sha256(contents))),
+                        "complete" => true)
+        cmd = `$(Base.julia_cmd()) --startup-file=no --project=$(dirname(@__DIR__)) $script $csv $report`
+        for (complete, input, message) in (
+            (false, contents, "Lần benchmark chưa hoàn tất"),
+            (true, replace(contents, "622" => "623"), "SHA-256 của summary.csv không khớp"),
+        )
+            metadata["complete"] = complete
+            open(io -> TOML.print(io, metadata), joinpath(dir, "environment.toml"), "w")
+            write(csv, input)
+            errors = IOBuffer()
+            process = run(pipeline(ignorestatus(cmd); stdout=devnull, stderr=errors))
+            @test !success(process)
+            @test occursin(message, String(take!(errors)))
+            @test !isfile(report)
+        end
+    end
+end
 
 @testset "Dataset benchmark safeguards" begin
     B = DatasetBenchmarks
