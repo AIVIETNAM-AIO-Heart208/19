@@ -168,7 +168,11 @@ bộ nhớ cho mọi input.
 - Một máy, một phiên bản Julia, khác máy đo runtime. Thời gian ở đây là lời gọi
   hàm mining, không phải thời gian toàn trình như phần runtime.
 - `environment.toml` của run không có cờ `complete`; script vẽ coi run là hoàn
-  tất khi đủ mọi cấu hình và đủ số lần lặp, và dừng nếu thiếu.
+  tất khi đủ mọi cấu hình và đủ số lần lặp, và dừng nếu thiếu. Runner
+  `run_memory_real.jl` cũng thoát với mã lỗi khi bất kỳ cặp CSDL–minsup–miner
+  nào thiếu lượt đo thành công (timeout hoặc lỗi), sau khi đã ghi CSV và log để
+  chẩn đoán. Run dùng ở đây được đo trước khi runner có kiểm tra này, nhưng đủ
+  3/3 lượt thành công cho mọi cặp nên vẫn qua kiểm tra.
 
 Tái lập: `julia --project experiments/run_memory_real.jl`,
 sau đó `python experiments/plot_memory_real.py <thư mục run>`.
