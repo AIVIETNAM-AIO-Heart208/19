@@ -1,0 +1,27 @@
+# Memory on real datasets. Each minsup must appear in the runtime grid of benchmarks.toml.
+repeats = 3
+timeout_seconds = 600
+
+[[case]]
+dataset = "chess"
+minsup = "75%"
+
+[[case]]
+dataset = "mushroom"
+minsup = "30%"
+
+[[case]]
+dataset = "retail"
+minsup = "0.75%"
+
+[[case]]
+dataset = "retail"
+minsup = "0.1%"
+
+[[case]]
+dataset = "accidents"
+minsup = "80%"
+
+[[case]]
+dataset = "t10i4d100k"
+minsup = "0.75%"
