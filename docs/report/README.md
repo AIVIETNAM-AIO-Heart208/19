@@ -12,3 +12,9 @@ Bản viết chung Chương 1: [chapter1.md](chapter1.md), gồm thuật toán, 
 Phần runtime và số lượng itemset: [runtime_benchmarks.md](runtime_benchmarks.md).
 
 Scalability và độ dài giao dịch: [scalability.md](scalability.md).
+
+Correctness trên 5 CSDL benchmark so với SPMF: [correctness_benchmarks.md](correctness_benchmarks.md).
+
+Bộ nhớ baseline và bitset trên dữ liệu thật: [memory_benchmarks.md](memory_benchmarks.md).
+
+Điểm mạnh/yếu so với SPMF, hai hướng tối ưu và kết luận Chương 2: [chapter2_evaluation.md](chapter2_evaluation.md).
