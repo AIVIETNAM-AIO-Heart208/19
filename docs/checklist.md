@@ -77,9 +77,9 @@
 **Goal 8. Peak memory và tổng hợp đánh giá**
 - [ ] Đo **peak RAM** trên mỗi benchmark ở một mức minsup trung bình.
 - [ ] So sánh bộ nhớ giữa **baseline và optimized**, lập bảng / biểu đồ.
-- [ ] Tổng hợp các biểu đồ và số liệu từ Người A để viết nhận xét điểm mạnh / yếu của Eclat so với SPMF.
-- [ ] Đề xuất **ít nhất 2 hướng tối ưu hóa tiếp theo** có lý do kỹ thuật.
-- [ ] Viết phần correctness, bộ nhớ và kết luận Chương 2.
+- [x] Tổng hợp các biểu đồ và số liệu từ Người A để viết nhận xét điểm mạnh / yếu của Eclat so với SPMF.
+- [x] Đề xuất **ít nhất 2 hướng tối ưu hóa tiếp theo** có lý do kỹ thuật.
+- [x] Viết phần correctness, bộ nhớ và kết luận Chương 2.
 
 **Nghiệm thu cuối tuần 2**
 - [ ] Có kết quả trên ít nhất 4 benchmark, correctness theo từng itemset và support.
