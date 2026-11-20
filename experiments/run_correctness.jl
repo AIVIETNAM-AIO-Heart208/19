@@ -10,16 +10,15 @@
 # Dùng:
 #   julia --project experiments/run_correctness.jl <summary.csv> <output.md>
 
-using TOML
+using SHA, TOML
 
 # Trả về các cặp (dataset, minsup) mà lần chạy đã dự định chạy.
-function expected_configs(env_path::AbstractString)
-    cfg = TOML.parsefile(env_path)["config"]
+function expected_configs(cfg)
     return [(ds, ms) for ds in cfg["dataset_ids"] for ms in cfg["minsup"][ds]]
 end
 
-function read_summary(path::AbstractString)
-    lines = filter(!isempty, readlines(path))
+function read_summary(io::IO)
+    lines = filter(!isempty, readlines(io))
     header = [strip(f, '"') for f in split(lines[1], ',')]
     rows = Dict{String,String}[]
     for line in lines[2:end]
@@ -61,8 +60,13 @@ end
 
 function main(args)
     length(args) == 2 || error("Dùng: run_correctness.jl <summary.csv> <output.md>")
-    rows = read_summary(args[1])
-    expected = expected_configs(joinpath(dirname(abspath(args[1])), "environment.toml"))
+    metadata = TOML.parsefile(joinpath(dirname(abspath(args[1])), "environment.toml"))
+    get(metadata, "complete", false) === true || error("Lần benchmark chưa hoàn tất.")
+    summary = read(args[1])
+    bytes2hex(sha256(summary)) == metadata["artifacts"]["summary.csv"] ||
+        error("SHA-256 của summary.csv không khớp với environment.toml.")
+    rows = read_summary(IOBuffer(summary))
+    expected = expected_configs(metadata["config"])
     present = Set((r["dataset"], r["minsup"], r["miner"]) for r in rows)
     missing_cfg = [(ds, ms, m) for (ds, ms) in expected for m in ("julia", "spmf")
                    if (ds, ms, m) ∉ present]
