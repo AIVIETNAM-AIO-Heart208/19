@@ -1,7 +1,8 @@
 # Đánh giá tổng hợp, hướng tối ưu và kết luận Chương 2
 
 Phần này tổng hợp số liệu đã đo ở [runtime_benchmarks.md](runtime_benchmarks.md),
-[scalability.md](scalability.md) và [memory_benchmarks.md](memory_benchmarks.md).
+[correctness_benchmarks.md](correctness_benchmarks.md), [scalability.md](scalability.md)
+và [memory_benchmarks.md](memory_benchmarks.md).
 Không có phép đo mới. "Julia" ở đây là Eclat BitVector của nhóm, "SPMF" là
 Eclat trong SPMF 2.65. So sánh thời gian với SPMF luôn là thời gian **toàn
 trình** (khởi động, đọc, mining, ghi) trong run `runtime_20261117T101543270`.
@@ -171,7 +172,8 @@ Hướng 2 nếu muốn giữ biểu diễn TID-list như bài báo gốc.
 ## Kết luận Chương 2
 
 - **Đúng đắn:** 35/35 cấu hình trên 5 CSDL benchmark khớp SPMF từng itemset và
-  support, cùng với 27 case kiểm thử nhỏ cho cả hai miner.
+  support (bảng ở [correctness_benchmarks.md](correctness_benchmarks.md)), cùng
+  với 27 case kiểm thử nhỏ cho cả hai miner.
 - **Runtime theo minsup:** bản bitset nhanh hơn SPMF ở 10/35 cấu hình (Chess
   70–60% và toàn bộ Accidents), chậm hơn ở 25/35. Thua chủ yếu ở tác vụ nhỏ
   (chi phí cố định khoảng 1,4 giây) và ở dữ liệu thưa có nhiều item phổ biến.
