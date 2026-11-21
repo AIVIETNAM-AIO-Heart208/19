@@ -3,7 +3,10 @@
 Ghi chú thiết kế cho hướng "phân tích dữ liệu sinh học" của Chương 3 (đề: `docs/itemset.md:142–144,
 158–160`). Mỗi quyết định ghi theo mẫu **chọn gì · phương án khác · vì sao không chọn phương án khác ·
 bằng chứng**. Mọi con số dưới đây lấy từ lần chạy đã commit trong `results/applications/splice/`
-(`run_info.toml` ghi commit và `dirty = false`) và hình trong `results/figures/splice/`.
+(`run_info.toml` ghi commit và `dirty = false`; các phép đếm trên dữ liệu gốc chưa làm sạch nằm trong
+`raw_checks.csv`, `non_canonical.csv`) và hình trong `results/figures/splice/`. Câu trích từ hai file mô
+tả `splice.names`, `splice.theory` ghi kèm số dòng; script tải hai file này về `data/raw/` cùng dữ liệu
+và kiểm SHA-256.
 
 | Thành phần | Đường dẫn |
 |---|---|
@@ -25,16 +28,20 @@ acceptor) hoặc N (không phải vị trí cắt nối). Giấy phép CC BY 4.0
 
 **Vì sao:** bộ splice có "đáp án" sinh học để đối chiếu: quy tắc GT-AG và các mẫu chuẩn ghi trong file
 `splice.theory` kèm bộ dữ liệu. Nhờ vậy kiểm được Eclat có tìm ra đúng điều đã biết không, thay vì chỉ
-liệt kê mẫu. File nhỏ (319 KB), tải trong notebook được; cả script (gồm tải dữ liệu và khởi động Julia)
-chạy khoảng 16 s trên laptop Windows của nhóm (đo 21/11/2026). Pfam phải
+liệt kê mẫu. File nhỏ (319 KB), tải trong notebook được; cả script (gồm khởi động Julia) chạy khoảng
+13 s khi dữ liệu đã có sẵn, 16 s khi phải tải về, trên laptop Windows của nhóm (đo 21/11/2026). Pfam phải
 tải và lọc dữ liệu lớn qua API, diễn giải phải tra từng domain. Tập k-mer của protein không có đáp án
 để đối chiếu.
 
 **Bằng chứng:** 759/767 chuỗi EI có GT ngay sau ranh giới, 764/768 chuỗi IE có AG ngay trước ranh giới
-(dữ liệu gốc, chưa làm sạch).
+(dữ liệu gốc, `raw_checks.csv`).
 
-**Lưu ý về tài liệu dữ liệu:** mục 3(b) của `splice.names` gọi ngược donor/acceptor. Mục 4 của cùng file
-và tên mẫu cho thấy EI là donor: cả 767 mẫu EI có tên chứa `DONOR`, cả 768 mẫu IE có tên chứa `ACCEPTOR`.
+**Lưu ý về tài liệu dữ liệu:** `splice.names` tự mâu thuẫn. Dòng 40–41 (mục 3(b)) ghi
+`a) "intron -> exon" boundary (ie) [These are sometimes called "donors"]` và
+`b) "exon -> intron" boundary (ei) [These are sometimes called "acceptors"]`, còn dòng 57–58 (mục 4) ghi
+"IE borders are referred to a ``acceptors'' while EI borders are referred to as ``donors''". Mục 4 đúng với
+sinh học (donor là đầu 5' của intron, tức ranh giới exon → intron) và đúng với tên mẫu: cả 767 mẫu EI có
+tên chứa `DONOR`, cả 768 mẫu IE có tên chứa `ACCEPTOR` (`raw_checks.csv`). Ghi chú này theo mục 4.
 
 ## 2. Mã hóa: item = (vị trí, nucleotide)
 
@@ -46,7 +53,8 @@ giao dịch có đúng 60 item (trừ chỗ có ký tự mơ hồ, xem mục 8).
 lớp vào làm một item rồi khai thác một lần (xem mục 4).
 
 **Vì sao không chọn (a):** tín hiệu cắt nối nằm ở vị trí cố định so với ranh giới. Bỏ vị trí thì mẫu mất
-nghĩa: trên dữ liệu gốc, 1541/1655 chuỗi N (93%) có "GT" ở đâu đó, gần bằng EI (765/767). Ngược lại,
+nghĩa: trên dữ liệu gốc, 1541/1655 chuỗi N (93%) có "GT" ở đâu đó, gần bằng EI (765/767;
+`raw_checks.csv`, dòng `gt_anywhere`). Ngược lại,
 "GT đúng tại +1,+2" có ở 98,8% chuỗi EI nhưng chỉ 5,9% chuỗi N (dữ liệu đã làm sạch, `consensus.csv`).
 
 **Vì sao hợp với Eclat:** TID-set của item (p, b) là tập chuỗi có base b tại vị trí p. Giao các TID-set
@@ -62,7 +70,8 @@ liệu mà bản bitset của nhóm chạy tốt nhất (Chương 2).
 **Phương án khác:** chỉ dùng mã hóa nucleotide; hoặc thêm item Y vào chung mã hóa nucleotide.
 
 **Vì sao:** trước acceptor có một vùng giàu pyrimidin, nhưng ở từng vị trí base có thể là C hoặc T, nên
-mỗi item nucleotide ở -15..-5 chỉ chiếm 34–46% chuỗi IE và tổ hợp của chúng hiếm khi đạt minsup. Gộp C/T thành Y
+mỗi item C hoặc T ở -15..-5 đạt minsup chỉ chiếm 33,8–46,1% chuỗi IE (item đơn trong `patterns.csv`)
+và tổ hợp của chúng hiếm khi đạt minsup. Gộp C/T thành Y
 làm tín hiệu lộ ra: `-7Y -6Y -5Y -3Y -2R -1R` có ở 64,6% chuỗi IE, 1,4% chuỗi N. Không gộp chung item Y
 với item nucleotide, vì "C tại p" luôn kéo theo "Y tại p": số itemset sẽ phình ra bởi các tổ hợp hiển
 nhiên. Không bỏ mã hóa nucleotide, vì R/Y làm mất phân biệt A với G (GT thành RY).
@@ -105,7 +114,7 @@ N 1655→1654 trước bước 7).
 **Phương án khác:** giữ nguyên dữ liệu gốc như các bài học máy dùng bộ này.
 
 **Vì sao:** support nên đếm số vị trí cắt nối khác nhau. 107/124 nhóm trùng gồm các locus GenBank khác
-nhau, ví dụ `BABAPOE`/`HUMAPOE4`, `HUMHBBGG`/`GIBHBGGL`/`ORAHBG2F`: thường là cùng một gen ở nhiều loài
+nhau (`run_info.toml`, mục `cleaning`), ví dụ `BABAPOE`/`HUMAPOE4`, `HUMHBBGG`/`GIBHBGGL`/`ORAHBG2F`: thường là cùng một gen ở nhiều loài
 linh trưởng hoặc các bản sao gen (suy từ tên locus). Giữ cả thì gen nào được giải trình tự ở nhiều loài
 sẽ được đếm nhiều lần.
 
@@ -184,20 +193,26 @@ nên không thêm thông tin về motif. Lọc tối đại là bước hậu x�
 
 ## 13. Lấy dữ liệu: tải và ghim SHA-256
 
-**Chọn:** script tải `splice.data` từ UCI vào `data/raw/` (đã bị `.gitignore`), dừng nếu SHA-256 khác bản
-đã ghim. Đây cũng là cách `scripts/prepare_benchmarks.jl` làm với dữ liệu benchmark.
+**Chọn:** script tải `splice.data`, `splice.names`, `splice.theory` từ UCI vào `data/raw/` (đã bị
+`.gitignore`), dừng nếu SHA-256 của file nào khác bản đã ghim. Đây cũng là cách
+`scripts/prepare_benchmarks.jl` làm với dữ liệu benchmark.
 
 **Phương án khác:** commit file vào repo (giấy phép CC BY 4.0 cho phép, file chỉ 319 KB).
 
 **Vì sao:** giữ một quy ước cho mọi dữ liệu của dự án. Link tải trực tiếp là đường dẫn cũ `/ml/` của UCI;
-ngày 21/11/2026 đã kiểm file tải từ đó có cùng SHA-256 với file trong bản zip chính thức. Nếu link này
-hỏng trước khi nộp, phương án dự phòng là commit file.
+ngày 21/11/2026 đã kiểm cả ba file tải từ đó có cùng SHA-256 với file trong bản zip chính thức. Nếu link
+này hỏng trước khi nộp, phương án dự phòng là commit file.
 
 ## 14. Chỗ đặt code
 
 **Chọn:** hàm ở `src/applications/biology.jl` (file đã có sẵn trong khung repo), script ở `scripts/`.
-Notebook gọi script và hiển thị bảng/hình. Đề cho phép mã chuẩn bị dữ liệu "viết trực tiếp hoặc import từ
-file phụ trợ trong repo" (`docs/itemset.md:227–228`).
+Đề cho phép mã chuẩn bị dữ liệu "viết trực tiếp hoặc import từ file phụ trợ trong repo"
+(`docs/itemset.md:227–228`), nên notebook có thể gọi script và hàm ở đây.
+
+**Chưa làm:** phần notebook. Đề yêu cầu phần chuyển đổi dữ liệu nằm trong notebook
+(`docs/itemset.md:142–144`), và rubric mức Xuất sắc đòi "kết quả tái thực hiện được qua notebook demo"
+(`docs/itemset.md:284–286`). Notebook phải tải dữ liệu, chạy `scripts/splice_patterns.jl`, cho xem một
+chuỗi được mã hóa thành giao dịch thế nào, rồi hiển thị bảng và hình.
 
 **Còn chờ:** trưởng nhóm chọn để ứng dụng trong `applications/` hay trong notebook. Cách đặt hiện tại dùng
 được với cả hai.
@@ -206,14 +221,14 @@ file phụ trợ trong repo" (`docs/itemset.md:227–228`).
 
 | Quan sát | Số liệu |
 |---|---|
-| Motif donor dài nhất ở 30% | `-1G +1G +2T +4A +5G`: 318/679 chuỗi EI (46,8%), 0/1653 chuỗi N |
+| Motif donor 5 item có support cao nhất ở 30% (EI có 7 itemset 5 item, không có itemset dài hơn) | `-1G +1G +2T +4A +5G`: 318/679 chuỗi EI (46,8%), 0/1653 chuỗi N |
 | Mười item đơn của EI có tỉ lệ ≥ 1,5 lần so với N | đều nằm trong -3..+6, khớp mẫu chuẩn `MAG\|GTRAGT` (hình `position_enrichment`) |
 | Chỉ GT chưa đủ | `+1G +2T → EI`: confidence 0,77; `-1G +1G +2T +4A +5G → EI`: confidence 0,98 |
-| Mẫu chuẩn đầy đủ hiếm gặp | `MAGGTRAGT` từ -3 khớp 27/679 chuỗi EI (4,0%); gần với con số "4% of the EI examples" mà `splice.theory` ghi cho luật của nó (luật đó còn thêm điều kiện không có codon dừng, tính trên dữ liệu gốc) |
+| Mẫu chuẩn đầy đủ hiếm gặp | `MAGGTRAGT` từ -3 khớp 27/679 chuỗi EI (4,0%); gần với câu ở `splice.theory` dòng 66–67: "If exact matches are required, then this set of rules correctly identifies 40% of the IE examples, 4% of the EI examples" (luật đó còn thêm điều kiện không có codon dừng, tính trên dữ liệu gốc) |
 | Lõi acceptor | `-3C -2A -1G`: 78,0% chuỗi IE, 2,2% chuỗi N |
 | Vùng giàu pyrimidin (R/Y) | `-7Y -6Y -5Y -3Y -2R -1R`: 64,6% chuỗi IE, 1,4% chuỗi N |
 | Đối chứng N | 0 itemset từ 2 item trở lên ở mọi minsup đã chạy, cả hai mã hóa |
-| Ngoại lệ GT | 8/767 donor không có GT; 4 trong số đó là GC (`+1G +2C`): HUMAPRTA, HUMFVII, HUMKER18, HUMTHB |
+| Ngoại lệ GT | 8/767 donor không có GT; 4 trong số đó là GC (`+1G +2C`): HUMAPRTA, HUMFVII, HUMKER18, HUMTHB (`non_canonical.csv`) |
 
 Ý nghĩa khi đọc: mẫu chuẩn kiểu `MAG|GTRAGT` là hình mẫu lý tưởng, còn vị trí cắt nối thật chỉ khớp
 từng phần. Eclat cho biết những tổ hợp nào của mẫu chuẩn thực sự hay đi cùng nhau và với tần suất bao
@@ -223,11 +238,13 @@ nhiêu, điều mà một chuỗi đồng thuận không cho biết. Điều nà
 ## Không kết luận được
 
 - Đồng xuất hiện không chứng minh cơ chế: dữ liệu không cho biết vì sao các vị trí phụ thuộc nhau.
-- Dữ liệu từ GenBank 64.1 (khoảng 1991), chỉ linh trưởng, chỉ cửa sổ 60 nucleotide: không thấy được điểm
-  nhánh (branch point) nằm xa hơn, không đại diện cho genome hiện nay.
+- Dữ liệu chỉ gồm linh trưởng, lấy từ GenBank 64.1 (`splice.names` dòng 7: "all examples taken from
+  Genbank 64.1"; bộ dữ liệu được tặng năm 1991), chỉ cửa sổ 60 nucleotide: không thấy được điểm nhánh
+  (branch point) nằm xa hơn, không đại diện cho genome hiện nay.
 - Confidence và lift theo tỉ lệ lớp của bộ dữ liệu, không theo genome thật (mục 10).
 - 2 trong 4 chuỗi IE không có AG lại có AG ngay sau ranh giới (`HUMAK1-ACCEPTOR-3918`,
-  `HUMAK1-ACCEPTOR-10488`); có thể ranh giới bị ghi lệch, nhưng đây chỉ là giả thuyết, chưa kiểm.
+  `HUMAK1-ACCEPTOR-10488`; cột `ag_at_+1` trong `non_canonical.csv`); có thể ranh giới bị ghi lệch, nhưng
+  đây chỉ là giả thuyết, chưa kiểm.
 
 ## Nguồn đã kiểm chứng
 
