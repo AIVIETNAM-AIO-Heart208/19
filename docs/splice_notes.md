@@ -167,7 +167,7 @@ không phụ thuộc tỉ lệ lớp nên dùng để xếp hạng.
 
 **Chọn:** với mỗi 2-itemset phổ biến, tính lift và χ² của bảng 2×2. Chỉ đọc những cặp có mọi ô kỳ vọng
 ≥ 5 (quy tắc Cochran). Hiệu chỉnh Bonferroni theo số cặp *có thể* được kiểm: m = 2642, nên một cặp chỉ
-được coi là phụ thuộc khi p < 0,05 / 2642 = 1,89·10⁻⁵, tức χ² > 18,30 (1 bậc tự do).
+được coi là phụ thuộc khi p < 0,05 / 2642 = 1,89·10⁻⁵, tức χ² > 18,29 (1 bậc tự do).
 
 **Phương án khác:** xem lift là đủ; dùng ngưỡng p < 0,05 cho từng cặp; hoặc chỉ hiệu chỉnh theo số cặp
 đạt minsup (133 cặp).
@@ -180,7 +180,8 @@ Cặp được kiểm là cặp có 2-itemset đạt minsup, tức đã bị ch�
 kỳ vọng ≥ 5, đạt minsup hay không. Con số này chỉ phụ thuộc support của từng item: 858 (EI), 1522 (IE)
 với nucleotide, 18 (EI), 244 (IE) với R/Y, tổng 2642 (`pair_family.csv`). Nếu chỉ chia cho 133 cặp đạt
 minsup thì ngưỡng quá dễ. Giá trị tới hạn kiểm lại được bằng Python:
-`python -c "from statistics import NormalDist as N; print(N().inv_cdf(1 - 0.05/2642/2)**2)"` in ra 18,295.
+`python -c "from statistics import NormalDist as N; print(N().inv_cdf(1 - 0.05/2642/2)**2)"` in ra
+18.294522259916004.
 
 **Kết quả (nucleotide, EI):** 105 cặp đạt minsup, 23 cặp đủ điều kiện kỳ vọng, 6 cặp qua ngưỡng hiệu chỉnh.
 Bốn cặp lift < 1: ba cặp nối một vị trí phía exon với một vị trí phía intron (`-1G,+6T` lift 0,87, χ²
