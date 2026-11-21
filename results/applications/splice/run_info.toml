@@ -1,0 +1,39 @@
+motif_span = [-20, 10]
+
+[cleaning]
+ambiguous_kept = 15
+conflicting_removed = ["HUMCYPIIE-ACCEPTOR-12121", "HUMCYPIIE-NEG-12121"]
+duplicates_removed = 184
+input = 3190
+kept = 3004
+
+    [cleaning.class_counts]
+    EI = 679
+    IE = 672
+    N = 1653
+
+    [cleaning.raw_class_counts]
+    EI = 767
+    IE = 768
+    N = 1655
+
+[data]
+doi = "10.24432/C5M888"
+license = "CC BY 4.0"
+sha256 = "ebbae10c85d3c285e2a2489a37e42bc2ee8d91d15005e391a9962fa3389a114f"
+source_page = "https://archive.ics.uci.edu/dataset/69/molecular+biology+splice+junction+gene+sequences"
+source_url = "https://archive.ics.uci.edu/ml/machine-learning-databases/molecular-biology/splice-junction-gene-sequences/splice.data"
+window = 60
+
+[environment]
+commit = "f0114b3ce7f94d0bb647a5eb8f776aa2dc457205"
+dirty = false
+julia = "1.11.9"
+
+[mining.nucleotide]
+minsup_grid = ["90%", "80%", "70%", "60%", "50%", "40%", "30%", "25%", "20%"]
+minsup_main = "30%"
+
+[mining.purine_pyrimidine]
+minsup_grid = ["90%", "80%", "70%", "60%", "50%"]
+minsup_main = "60%"
