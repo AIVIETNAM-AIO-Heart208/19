@@ -15,7 +15,7 @@ export SPLICE_CLASSES, SpliceRecord, read_splice, SpliceCleaning, clean_splice, 
 export SequenceEncoding, NucleotideEncoding, PurinePyrimidineEncoding
 export n_items, item_label, item_id, encode, class_transactions, mine_class
 export maximal_itemsets, transaction_bits, support_count, class_contrast
-export pair_dependence, pair_table, pattern_string, matches_consensus
+export pair_dependence, pair_table, candidate_pair_count, pattern_string, matches_consensus
 
 "Ba lớp của bộ dữ liệu: EI = donor (exon -> intron), IE = acceptor (intron -> exon), N = không phải."
 const SPLICE_CLASSES = ("EI", "IE", "N")
@@ -302,8 +302,29 @@ function pair_dependence(sup_ab::Int, sup_a::Int, sup_b::Int, n::Int)
     denom = Float64(sup_a) * (n - sup_a) * sup_b * (n - sup_b)
     chi2 = denom == 0 ? NaN : n * (Float64(a) * d - Float64(b) * c)^2 / denom
     lift = sup_a * sup_b == 0 ? NaN : n * sup_ab / (Float64(sup_a) * sup_b)
-    min_expected = min(sup_a, n - sup_a) * Float64(min(sup_b, n - sup_b)) / n
-    return (lift=lift, chi2=chi2, min_expected=min_expected)
+    return (lift=lift, chi2=chi2, min_expected=min_expected(sup_a, sup_b, n))
+end
+
+# Số đếm kỳ vọng nhỏ nhất của bảng 2×2 khi độc lập: tích hai lề nhỏ nhất chia n. Không phụ thuộc sup_ab.
+min_expected(sup_a::Int, sup_b::Int, n::Int)::Float64 = min(sup_a, n - sup_a) * Float64(min(sup_b, n - sup_b)) / n
+
+"""
+    candidate_pair_count(itemsets, n, enc) -> Int
+
+Số cặp item đơn phổ biến ở hai vị trí khác nhau có mọi ô kỳ vọng ≥ 5: mọi cặp *có thể* được kiểm χ²
+nếu 2-itemset của nó đạt minsup. Cặp thật sự được kiểm đã bị chọn theo chính số lần cùng xuất hiện,
+đại lượng mà χ² đo, nên khi hiệu chỉnh Bonferroni phải đếm cả họ này chứ không chỉ các cặp đạt minsup.
+"""
+function candidate_pair_count(itemsets::Vector{Pair{Vector{Int},Int}}, n::Int, enc::SequenceEncoding)::Int
+    k = length(symbols(enc))
+    singles = [(only(X), s) for (X, s) in itemsets if length(X) == 1]
+    total = 0
+    for i in eachindex(singles), j in (i + 1):lastindex(singles)
+        (a, sa), (b, sb) = singles[i], singles[j]
+        (a - 1) ÷ k == (b - 1) ÷ k && continue   # cùng vị trí: không bao giờ cùng có mặt
+        total += min_expected(sa, sb, n) >= 5
+    end
+    return total
 end
 
 """

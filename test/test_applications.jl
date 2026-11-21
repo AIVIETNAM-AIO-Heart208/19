@@ -173,6 +173,16 @@ end
     @test isnan(pair_dependence(5, 10, 5, 10).chi2)                  # a có ở mọi chuỗi: χ² không xác định
     @test_throws ArgumentError pair_dependence(6, 5, 7, 10)          # sup(ab) > sup(a)
 
+    # Số phép kiểm cho Bonferroni: mọi cặp item đơn phổ biến khác vị trí có mọi ô kỳ vọng ≥ 5,
+    # không phụ thuộc cặp đó có đạt minsup hay không. n = 100; -2A và -2C cùng vị trí; +2T có ở 99 chuỗi.
+    nt4 = NucleotideEncoding(4)
+    fam = [ids(nt4, "-2A") => 50, ids(nt4, "-1G") => 50, ids(nt4, "-2C") => 50, ids(nt4, "+2T") => 99,
+           ids(nt4, "-2A", "-1G") => 30]
+    # Cặp hợp lệ: (-2A,-1G) và (-1G,-2C), kỳ vọng nhỏ nhất 50·50/100 = 25. (-2A,-2C) cùng vị trí;
+    # mọi cặp có +2T có ô kỳ vọng 50·1/100 = 0,5 < 5.
+    @test candidate_pair_count(fam, 100, nt4) == 2
+    @test candidate_pair_count(Pair{Vector{Int},Int}[], 100, nt4) == 0
+
     nt = NucleotideEncoding(4)
     rows = pair_table(mine_class(class_transactions(read_splice(IOBuffer(
         "EI, a, AGGT\nEI, b, AGGT\nEI, c, CGGA\nEI, d, AGTA\n"); window=4), "EI", nt), 1 // 2), 4)
