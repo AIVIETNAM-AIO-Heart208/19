@@ -140,7 +140,9 @@ tự R và Y có nghĩa xác định (R = A/G là purin) nên vẫn sinh item.
 **Phương án khác:** bỏ cả chuỗi; hoặc đoán base (ví dụ base hay gặp nhất).
 
 **Vì sao:** đoán base thì tạo ra item không có thật. Bỏ item chỉ có thể làm support giảm, không bao giờ tạo
-ra mẫu giả. Bỏ cả chuỗi cũng đúng nhưng mất dữ liệu không cần thiết. Ảnh hưởng tối đa: 15/3004 chuỗi.
+ra itemset giả. Bỏ cả chuỗi cũng đúng nhưng mất dữ liệu không cần thiết. Ảnh hưởng tối đa: 15/3004 chuỗi.
+Riêng phép kiểm χ² (mục 11), chuỗi có vị trí mơ hồ rơi vào ô "không có item đó", nên có thể làm lệch nhẹ
+bảng 2×2 (ví dụ `HUMALPI1-DONOR-42` toàn N quanh ranh giới); ảnh hưởng tối đa cũng là 15 chuỗi.
 
 ## 9. Tra support ở lớp khác bằng cách đếm lại
 
@@ -170,7 +172,8 @@ không phụ thuộc tỉ lệ lớp nên dùng để xếp hạng.
 được coi là phụ thuộc khi p < 0,05 / 2642 = 1,89·10⁻⁵, tức χ² > 18,29 (1 bậc tự do).
 
 **Phương án khác:** xem lift là đủ; dùng ngưỡng p < 0,05 cho từng cặp; hoặc chỉ hiệu chỉnh theo số cặp
-đạt minsup (133 cặp).
+thật sự được kiểm, tức đạt minsup và đủ điều kiện kỳ vọng (133 cặp, cột `tested_pairs` trong
+`pair_family.csv`; tổng số cặp đạt minsup là 396).
 
 **Vì sao:** lift không cho biết độ lệch có vượt dao động ngẫu nhiên không. Cặp như `+1G,+2T` có mặt ở gần
 mọi chuỗi EI: ô "không có cả hai" kỳ vọng chưa tới 1 chuỗi, nên χ² ra 168 dù lift = 1,003; đó là ảo giác
@@ -178,8 +181,8 @@ của phép xấp xỉ, nên bị loại. Kiểm nhiều cặp cùng lúc thì p
 Cặp được kiểm là cặp có 2-itemset đạt minsup, tức đã bị chọn theo chính số lần hai vị trí cùng xuất hiện,
 đại lượng mà χ² đo. Vì vậy số phép kiểm phải là mọi cặp item đơn phổ biến ở hai vị trí khác nhau có mọi ô
 kỳ vọng ≥ 5, đạt minsup hay không. Con số này chỉ phụ thuộc support của từng item: 858 (EI), 1522 (IE)
-với nucleotide, 18 (EI), 244 (IE) với R/Y, tổng 2642 (`pair_family.csv`). Nếu chỉ chia cho 133 cặp đạt
-minsup thì ngưỡng quá dễ. Giá trị tới hạn kiểm lại được bằng Python:
+với nucleotide, 18 (EI), 244 (IE) với R/Y, tổng 2642 (`pair_family.csv`). Nếu chỉ chia cho 133 cặp
+thật sự được kiểm thì ngưỡng quá dễ. Giá trị tới hạn kiểm lại được bằng Python:
 `python -c "from statistics import NormalDist as N; print(N().inv_cdf(1 - 0.05/2642/2)**2)"` in ra
 18.294522259916004.
 
@@ -187,9 +190,11 @@ minsup thì ngưỡng quá dễ. Giá trị tới hạn kiểm lại được b�
 Bốn cặp lift < 1: ba cặp nối một vị trí phía exon với một vị trí phía intron (`-1G,+6T` lift 0,87, χ²
 44,4; `-1G,+4A` 0,95, χ² 21,7; `-2A,+5G` 0,94, χ² 20,4) và cặp `+3A,+5G` (0,91, χ² 28,9). Hai cặp lift > 1
 đều đi với `+3G` (`+3G,+5G` 1,09; `+3G,+4A` 1,12). Hai cặp khác cũng nối exon với intron nhưng không qua
-ngưỡng hiệu chỉnh: `-2A,+4A` (χ² 18,26) và `-1G,+5G` (χ² 16,49). Đọc đúng như dữ liệu cho thấy: các vị trí
-phía exon và phía intron của mẫu chuẩn *cùng khớp ít hơn mức kỳ vọng nếu độc lập* (lift 0,87–0,95); một
-mô hình coi mỗi vị trí độc lập sẽ bỏ sót điều này. Quan sát này phù hợp với nhận xét rằng các vị trí của
+ngưỡng hiệu chỉnh: `-2A,+4A` (χ² 18,26) và `-1G,+5G` (χ² 16,49). Xu hướng này rộng hơn ba cặp qua ngưỡng:
+trong 23 cặp EI đủ điều kiện, có 8 cặp nối một vị trí phía exon với một vị trí phía intron trong vùng
+mẫu chuẩn -3..+6, và 7/8 cặp đó có lift < 1 (0,87–0,97); cặp duy nhất ngược lại là `-1G,+3G` (lift 1,009,
+χ² 0,22, không có ý nghĩa). Đọc đúng như dữ liệu cho thấy: các vị trí phía exon và phía intron của mẫu
+chuẩn *cùng khớp ít hơn mức kỳ vọng nếu độc lập*; một mô hình coi mỗi vị trí độc lập sẽ bỏ sót điều này. Quan sát này phù hợp với nhận xét rằng các vị trí của
 tín hiệu donor phụ thuộc nhau (Burge & Karlin 1997), nhưng dữ liệu này không cho biết cơ chế.
 
 **Các lớp và mã hóa khác:** IE nucleotide qua ngưỡng một cặp `-8C,-3C` (lift 1,105, χ² 18,68); R/Y qua ngưỡng
