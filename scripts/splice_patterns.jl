@@ -1,7 +1,8 @@
 # Ứng dụng sinh học: khai thác motif quanh vị trí cắt nối (splice junction) bằng Eclat của nhóm.
 #
 # Chạy từ repo root:  julia --project scripts/splice_patterns.jl
-# - Tải data/raw/splice.data từ UCI nếu chưa có, kiểm SHA-256 (sai thì dừng, không ghi đè file cũ).
+# - Tải splice.data cùng hai file mô tả splice.names, splice.theory từ UCI vào data/raw/ nếu chưa có,
+#   kiểm SHA-256 (sai thì dừng, không ghi đè file cũ).
 # - Làm sạch, mã hóa theo hai cách, khai thác từng lớp, ghi bảng CSV và run_info.toml vào
 #   results/applications/splice/.
 # Không có bước ngẫu nhiên: chạy lại trên cùng commit cho ra đúng các file như cũ.
@@ -9,12 +10,17 @@
 using EclatMining, Downloads, SHA, TOML
 
 const ROOT = dirname(@__DIR__)
-const SOURCE_URL = "https://archive.ics.uci.edu/ml/machine-learning-databases/molecular-biology/splice-junction-gene-sequences/splice.data"
+const SOURCE_BASE = "https://archive.ics.uci.edu/ml/machine-learning-databases/molecular-biology/splice-junction-gene-sequences/"
 const SOURCE_PAGE = "https://archive.ics.uci.edu/dataset/69/molecular+biology+splice+junction+gene+sequences"
 const SOURCE_DOI = "10.24432/C5M888"
 const SOURCE_LICENSE = "CC BY 4.0"
-const DATA_SHA256 = "ebbae10c85d3c285e2a2489a37e42bc2ee8d91d15005e391a9962fa3389a114f"
-const DATA_PATH = joinpath(ROOT, "data", "raw", "splice.data")
+# File dữ liệu và hai file mô tả đi kèm (định nghĩa lớp, mẫu chuẩn), ghim bằng SHA-256.
+const SOURCE_FILES = (
+    "splice.data" => "ebbae10c85d3c285e2a2489a37e42bc2ee8d91d15005e391a9962fa3389a114f",
+    "splice.names" => "dd67d612a9c57a1230fbeed1e6e0a2130559f419b01765799627236bc7f6fff1",
+    "splice.theory" => "9d090c73b9279e5e88531a03f45e04bacc508bffe0c2defebe5225f9f61f12c5",
+)
+const RAW_DIR = joinpath(ROOT, "data", "raw")
 const OUT_DIR = joinpath(ROOT, "results", "applications", "splice")
 const WINDOW = 60
 
@@ -40,18 +46,25 @@ const CONSENSUS = (
 
 file_sha256(path::AbstractString)::String = bytes2hex(open(sha256, path))
 
-function ensure_data()::String
-    if !isfile(DATA_PATH)
-        mkpath(dirname(DATA_PATH))
-        tmp = DATA_PATH * ".download"
-        Downloads.download(SOURCE_URL, tmp)
+function ensure_file(name::String, expected::String)::String
+    path = joinpath(RAW_DIR, name)
+    if !isfile(path)
+        mkpath(RAW_DIR)
+        tmp = path * ".download"
+        Downloads.download(SOURCE_BASE * name, tmp)
         got = file_sha256(tmp)
-        got == DATA_SHA256 || (rm(tmp); error("SHA-256 của file tải về ($got) khác bản đã ghim ($DATA_SHA256)"))
-        mv(tmp, DATA_PATH)
+        got == expected || (rm(tmp); error("SHA-256 của $name tải về ($got) khác bản đã ghim ($expected)"))
+        mv(tmp, path)
     end
-    got = file_sha256(DATA_PATH)
-    got == DATA_SHA256 || error("$DATA_PATH có SHA-256 $got, khác bản đã ghim $DATA_SHA256; không dùng file này")
-    return DATA_PATH
+    got = file_sha256(path)
+    got == expected || error("$path có SHA-256 $got, khác bản đã ghim $expected; không dùng file này")
+    return path
+end
+
+# Tải (nếu thiếu) và kiểm cả ba file; trả về đường dẫn splice.data.
+function ensure_data()::String
+    paths = [ensure_file(name, sha) for (name, sha) in SOURCE_FILES]
+    return paths[1]
 end
 
 fmt(x::AbstractFloat)::String = isfinite(x) ? string(round(x; digits=4)) : string(x)
@@ -119,6 +132,55 @@ end
 jaccard(a::Set{Vector{Int}}, b::Set{Vector{Int}})::Float64 =
     isempty(a) && isempty(b) ? 1.0 : length(intersect(a, b)) / length(union(a, b))
 
+# Tên locus GenBank là phần trước dấu '-' đầu tiên của tên mẫu, ví dụ HUMAPOE4-DONOR-1061 -> HUMAPOE4.
+locus(name::AbstractString)::String = String(first(split(name, '-')))
+
+# Đoạn -6..+6 quanh ranh giới, có '|' ở giữa.
+function around_boundary(seq::AbstractString)::String
+    half = length(seq) ÷ 2
+    return string(seq[(half - 5):half], '|', seq[(half + 1):(half + 6)])
+end
+
+# Các phép đếm trên dữ liệu gốc (chưa làm sạch) mà ghi chú thiết kế dẫn ra.
+function raw_check_rows(raw::Vector{SpliceRecord})::Vector{Vector{String}}
+    checks = (
+        ("gt_at_+1", r -> matches_consensus(r.seq, "GT", 1)),
+        ("ag_at_-2", r -> matches_consensus(r.seq, "AG", -2)),
+        ("gt_anywhere", r -> occursin("GT", r.seq)),
+        ("name_contains_DONOR", r -> occursin("DONOR", r.name)),
+        ("name_contains_ACCEPTOR", r -> occursin("ACCEPTOR", r.name)),
+    )
+    rows = Vector{String}[]
+    for (name, f) in checks, cls in SPLICE_CLASSES
+        recs = [r for r in raw if r.class == cls]
+        push!(rows, [name, cls, fmt(count(f, recs)), fmt(length(recs))])
+    end
+    return rows
+end
+
+# Donor không có GT tại +1,+2 và acceptor không có AG tại -2,-1 (dữ liệu gốc).
+function non_canonical_rows(raw::Vector{SpliceRecord})::Vector{Vector{String}}
+    rows = Vector{String}[]
+    for r in raw
+        lacks = (r.class == "EI" && !matches_consensus(r.seq, "GT", 1)) ||
+                (r.class == "IE" && !matches_consensus(r.seq, "AG", -2))
+        lacks || continue
+        push!(rows, [r.class, r.name, around_boundary(r.seq),
+                     fmt(matches_consensus(r.seq, "GC", 1)), fmt(matches_consensus(r.seq, "AG", 1))])
+    end
+    return rows
+end
+
+# Nhóm chuỗi trùng trong cùng lớp và số nhóm gồm nhiều locus GenBank khác nhau.
+function duplicate_groups(raw::Vector{SpliceRecord})::Tuple{Int,Int}
+    groups = Dict{Tuple{String,String},Vector{String}}()
+    for r in raw
+        push!(get!(Vector{String}, groups, (r.class, r.seq)), r.name)
+    end
+    dups = [names for names in values(groups) if length(names) > 1]
+    return length(dups), count(g -> length(unique(locus.(g))) > 1, dups)
+end
+
 function main()
     isempty(ARGS) || error("script không nhận tham số; chạy: julia --project scripts/splice_patterns.jl")
     path = ensure_data()
@@ -174,14 +236,19 @@ function main()
               ["name", "pattern", "start", "class", "matches", "transactions", "fraction"], consensus)
     write_csv(joinpath(OUT_DIR, "cleaning_sensitivity.csv"),
               ["encoding", "class", "minsup", "itemsets_cleaned", "itemsets_raw", "common", "jaccard"], sensitivity)
+    write_csv(joinpath(OUT_DIR, "raw_checks.csv"), ["check", "class", "matches", "transactions"], raw_check_rows(raw))
+    write_csv(joinpath(OUT_DIR, "non_canonical.csv"), ["class", "name", "around_boundary", "gc_at_+1", "ag_at_+1"],
+              non_canonical_rows(raw))
 
     raw_sizes = class_counts(raw)
+    n_groups, n_groups_loci = duplicate_groups(raw)
     info = Dict{String,Any}(
         "data" => Dict{String,Any}(
-            "source_url" => SOURCE_URL, "source_page" => SOURCE_PAGE, "doi" => SOURCE_DOI,
-            "license" => SOURCE_LICENSE, "sha256" => DATA_SHA256, "window" => WINDOW),
+            "source_base" => SOURCE_BASE, "source_page" => SOURCE_PAGE, "doi" => SOURCE_DOI,
+            "license" => SOURCE_LICENSE, "sha256" => Dict{String,Any}(SOURCE_FILES...), "window" => WINDOW),
         "cleaning" => Dict{String,Any}(
             "input" => length(raw), "duplicates_removed" => cleaning.n_duplicates,
+            "duplicate_groups" => n_groups, "duplicate_groups_spanning_loci" => n_groups_loci,
             "conflicting_removed" => [r.name for r in cleaning.conflicting], "kept" => length(records),
             "ambiguous_kept" => count(r -> any(c -> !(c in "ACGT"), r.seq), records),
             "raw_class_counts" => raw_sizes, "class_counts" => sizes),
