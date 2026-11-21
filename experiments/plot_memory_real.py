@@ -44,13 +44,16 @@ def read_run(directory):
     return cases, {(r["dataset"], r["minsup"], r["miner"]): r for r in rows}
 
 
+MINER_LABELS = {"baseline": "Cơ bản (TID-list)", "bitset": "Tối ưu (bitset)"}
+
+
 def bars(axis, cases, values, ylabel, title):
     width = 0.38
     for k, miner in enumerate(MINERS):
         axis.bar([i + (k - 0.5) * width for i in range(len(cases))],
-                 [values[(c, miner)] for c in cases], width, label=miner)
+                 [values[(c, miner)] for c in cases], width, label=MINER_LABELS[miner])
     axis.set_xticks(range(len(cases)), [f"{d}\n{m}" for d, m in cases], fontsize=8)
-    axis.set_xlabel("Dataset and minimum support")
+    axis.set_xlabel("CSDL và minsup")
     axis.set_ylabel(ylabel)
     axis.set_title(title)
     axis.grid(axis="y", alpha=0.25)
@@ -65,19 +68,19 @@ def plot(directory):
     # (a) Summed summarysize of the single-item TID structures (root only): lower bound, log scale.
     fig, axis = plt.subplots(figsize=(6.4, 4.0), layout="constrained")
     sizes = {(c, m): int(rows[(*c, m)]["vertical_summarysize_bytes"]) for c in cases for m in MINERS}
-    bars(axis, cases, sizes, "Root vertical structure, summarysize (bytes, log)",
-         "MEMORY — vertical structure (TID-list vs BitVector)")
+    bars(axis, cases, sizes, "Cấu trúc dọc gốc, summarysize (byte, thang log)",
+         "Bộ nhớ: cấu trúc dọc (TID-list và BitVector)")
     axis.set_yscale("log")
     axis.legend()
     # (b) Absolute peak RSS of the whole process; black ticks mark the RSS right before mining.
     fig2, axis2 = plt.subplots(figsize=(6.4, 4.0), layout="constrained")
     peaks = {(c, m): int(rows[(*c, m)]["median_peak_rss_bytes"]) / 1e6 for c in cases for m in MINERS}
-    bars(axis2, cases, peaks, "Process peak RSS (MB, median of repeats)", "MEMORY — peak RSS")
+    bars(axis2, cases, peaks, "Đỉnh RSS của tiến trình (MB, trung vị các lần chạy)", "Bộ nhớ: đỉnh RSS")
     for k, miner in enumerate(MINERS):
         axis2.scatter([i + (k - 0.5) * 0.38 for i in range(len(cases))],
                       [int(rows[(*c, miner)]["median_rss_before_bytes"]) / 1e6 for c in cases],
                       marker="_", s=300, color="black", zorder=3,
-                      label="RSS before mining" if k == 0 else None)
+                      label="RSS trước khi khai thác" if k == 0 else None)
     axis2.legend()
     for figure, name in ((fig, "vertical_structure"), (fig2, "peak_rss")):
         for extension in ("png", "svg", "pdf"):

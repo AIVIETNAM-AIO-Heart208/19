@@ -49,8 +49,8 @@ class SizeFigureTests(unittest.TestCase):
     def test_dataset_titles(self):
         for dataset in ("retail", "accidents"):
             self.assertEqual(figures.plot_title({"kind":"scalability","config":{"dataset":dataset}}),
-                             dataset.capitalize()+" scalability")
-        self.assertEqual(figures.plot_title({"kind":"transaction_length"}), "Synthetic transaction length")
+                             "Khả năng mở rộng trên "+dataset.capitalize())
+        self.assertEqual(figures.plot_title({"kind":"transaction_length"}), "Độ dài giao dịch trên CSDL tổng hợp")
 
     def test_six_length_levels_and_unicode(self):
         with tempfile.TemporaryDirectory(prefix="thử nghiệm ") as directory:

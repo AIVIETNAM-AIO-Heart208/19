@@ -67,8 +67,8 @@ def read_run(directory):
 
 def plot_title(metadata):
     if metadata["kind"] == "scalability":
-        return f"{metadata['config']['dataset'].capitalize()} scalability"
-    return "Synthetic transaction length"
+        return f"Khả năng mở rộng trên {metadata['config']['dataset'].capitalize()}"
+    return "Độ dài giao dịch trên CSDL tổng hợp"
 
 
 def plot(directory):
@@ -83,12 +83,12 @@ def plot(directory):
             y = [float(r["median_seconds"]) for r in rows]
             errors = [[float(r["median_seconds"])-float(r["q1_seconds"]) for r in rows],
                       [float(r["q3_seconds"])-float(r["median_seconds"]) for r in rows]]
-            axis.errorbar(x,y,yerr=errors,marker="o",capsize=3,label="Julia Eclat bitset (median, Q1–Q3)")
-            axis.set_ylabel("Warmed API runtime (seconds)")
+            axis.errorbar(x,y,yerr=errors,marker="o",capsize=3,label="Eclat của nhóm, bitset (trung vị, Q1–Q3)")
+            axis.set_ylabel("Thời gian gọi hàm khai thác, sau khởi động JIT (giây)")
         else:
-            axis.plot(x,[int(r["itemsets"]) for r in rows],marker="o",label="Exact match with SPMF")
-            axis.set_ylabel("Frequent itemsets")
-        axis.set_xlabel("Transactions" if scalability else "Mean transaction length (items)")
+            axis.plot(x,[int(r["itemsets"]) for r in rows],marker="o",label="Khớp hoàn toàn với SPMF")
+            axis.set_ylabel("Số itemset phổ biến")
+        axis.set_xlabel("Số giao dịch" if scalability else "Độ dài giao dịch trung bình (item)")
         axis.set_xticks(x)
         axis.set_title(plot_title(metadata))
         axis.grid(alpha=.25); axis.legend(fontsize=8)

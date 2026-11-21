@@ -54,8 +54,8 @@ def plot(directory):
     for dataset in dict.fromkeys(r["dataset"] for r in rows):
         for metric in ("runtime", "itemsets"):
             fig, axis = plt.subplots(figsize=(6.4, 4.0), layout="constrained")
-            for miner, label, marker in (("julia", "Julia Eclat (bitset)", "o"),
-                                         ("spmf", "SPMF Eclat", "x")):
+            for miner, label, marker in (("julia", "Eclat của nhóm (Julia, bitset)", "o"),
+                                         ("spmf", "Eclat của SPMF", "x")):
                 group = [r for r in rows if r["dataset"] == dataset and r["miner"] == miner]
                 x = [float(r["minsup"].removesuffix("%")) for r in group]
                 if metric == "runtime":
@@ -68,9 +68,9 @@ def plot(directory):
                               linestyle="--" if miner == "spmf" else "-", label=label)
             axis.invert_xaxis()
             axis.set_xticks(x, [f"{value:g}" for value in x], rotation=35, ha="right", fontsize=9)
-            axis.set_xlabel("Minimum support (%) — high to low")
-            axis.set_ylabel("End-to-end runtime (seconds)" if metric == "runtime" else "Frequent itemsets")
-            axis.set_title(f"{dataset.upper()} — {metric}")
+            axis.set_xlabel("minsup (%), từ cao xuống thấp")
+            axis.set_ylabel("Thời gian chạy toàn trình (giây)" if metric == "runtime" else "Số itemset phổ biến")
+            axis.set_title(f"{dataset.upper()} — " + ("thời gian chạy" if metric == "runtime" else "số itemset phổ biến"))
             axis.grid(alpha=0.25)
             axis.legend()
             for extension in ("png", "svg", "pdf"):
