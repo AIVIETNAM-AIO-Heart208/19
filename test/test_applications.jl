@@ -17,6 +17,12 @@ ids(enc, labels...) = [item_id(enc, l) for l in labels]
     @test recs[1] == SpliceRecord("EI", "A-DONOR-1", "CAGGTA")
     @test recs[2] == SpliceRecord("N", "B-NEG-2", "ACGTNN")
     @test read_splice(IOBuffer("IE, x, acgtac"); window=6)[1].seq == "ACGTAC"   # chữ thường -> hoa
+    # Đọc từ đường dẫn file cho cùng kết quả như đọc từ IO.
+    mktempdir() do dir
+        path = joinpath(dir, "mini.data")
+        write(path, "EI, A-DONOR-1,  CAGGTA\r\nN,  B-NEG-2, ACGTNN\n")
+        @test read_splice(path; window=6) == recs
+    end
 
     @test_throws ArgumentError read_splice(IOBuffer("XX, a, ACGTAC"); window=6)   # lớp lạ
     @test_throws ArgumentError read_splice(IOBuffer("EI, a, ACGTA"); window=6)    # sai độ dài
@@ -101,6 +107,9 @@ end
         got = mine_class(db, ms)
         @test EclatMining.itemset_dict(got) == EclatMining.itemset_dict(reference_mine(db, minsup_abs(ms, length(db))))
     end
+    # minsup dạng chuỗi đi qua parse_minsup: "75%" và "0.75" giống 3//4.
+    @test mine_class(db_ei, "75%") == mine_class(db_ei, 3 // 4)
+    @test mine_class(db_ei, "0.75") == mine_class(db_ei, 3 // 4)
     @test EclatMining.itemset_dict(mine_class(db_ei, 3 // 4)) == Dict(
         ids(nt, "-2A") => 3, ids(nt, "-1G") => 4, ids(nt, "+1G") => 4, ids(nt, "+2T") => 3,
         ids(nt, "-2A", "-1G") => 3, ids(nt, "-2A", "+1G") => 3, ids(nt, "-1G", "+1G") => 4,
