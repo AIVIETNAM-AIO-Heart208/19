@@ -1,0 +1,16 @@
+check,class,matches,transactions
+gt_at_+1,EI,759,767
+gt_at_+1,IE,108,768
+gt_at_+1,N,98,1655
+ag_at_-2,EI,389,767
+ag_at_-2,IE,764,768
+ag_at_-2,N,127,1655
+gt_anywhere,EI,765,767
+gt_anywhere,IE,709,768
+gt_anywhere,N,1541,1655
+name_contains_DONOR,EI,767,767
+name_contains_DONOR,IE,0,768
+name_contains_DONOR,N,0,1655
+name_contains_ACCEPTOR,EI,0,767
+name_contains_ACCEPTOR,IE,768,768
+name_contains_ACCEPTOR,N,0,1655

@@ -3,6 +3,8 @@ motif_span = [-20, 10]
 [cleaning]
 ambiguous_kept = 15
 conflicting_removed = ["HUMCYPIIE-ACCEPTOR-12121", "HUMCYPIIE-NEG-12121"]
+duplicate_groups = 124
+duplicate_groups_spanning_loci = 107
 duplicates_removed = 184
 input = 3190
 kept = 3004
@@ -20,13 +22,17 @@ kept = 3004
 [data]
 doi = "10.24432/C5M888"
 license = "CC BY 4.0"
-sha256 = "ebbae10c85d3c285e2a2489a37e42bc2ee8d91d15005e391a9962fa3389a114f"
+source_base = "https://archive.ics.uci.edu/ml/machine-learning-databases/molecular-biology/splice-junction-gene-sequences/"
 source_page = "https://archive.ics.uci.edu/dataset/69/molecular+biology+splice+junction+gene+sequences"
-source_url = "https://archive.ics.uci.edu/ml/machine-learning-databases/molecular-biology/splice-junction-gene-sequences/splice.data"
 window = 60
 
+    [data.sha256]
+    "splice.data" = "ebbae10c85d3c285e2a2489a37e42bc2ee8d91d15005e391a9962fa3389a114f"
+    "splice.names" = "dd67d612a9c57a1230fbeed1e6e0a2130559f419b01765799627236bc7f6fff1"
+    "splice.theory" = "9d090c73b9279e5e88531a03f45e04bacc508bffe0c2defebe5225f9f61f12c5"
+
 [environment]
-commit = "f0114b3ce7f94d0bb647a5eb8f776aa2dc457205"
+commit = "9333f2222bf7a74ff65040a1875058cfa31b0abc"
 dirty = false
 julia = "1.11.9"
 
