@@ -105,10 +105,15 @@ function pattern_rows(name::String, enc::SequenceEncoding, ms::Rational{Int}, db
     bits = Dict(c => transaction_bits(dbs[c], n_items(enc)) for c in SPLICE_CLASSES)
     rows = Vector{String}[]
     pairs = Vector{String}[]
+    family = Vector{String}[]
     mined = Dict{String,Vector{Pair{Vector{Int},Int}}}()
     for cls in SPLICE_CLASSES
         res = mine_class(dbs[cls], ms)
         mined[cls] = res
+        # Số phép kiểm cho Bonferroni: mọi cặp có thể được kiểm, không chỉ các cặp đạt minsup.
+        tested = count(p -> p.min_expected >= 5, pair_table(res, sizes[cls]))
+        push!(family, [name, cls, pct(ms), fmt(count(p -> length(first(p)) == 1, res)),
+                       fmt(candidate_pair_count(res, sizes[cls], enc)), fmt(tested)])
         maximal = Set(first.(maximal_itemsets(res)))
         stats = map(res) do (X, s)
             counts = Dict(c => support_count(bits[c], X) for c in SPLICE_CLASSES)
@@ -126,7 +131,7 @@ function pattern_rows(name::String, enc::SequenceEncoding, ms::Rational{Int}, db
                           fmt(p.sup_a), fmt(p.sup_b), fmt(sizes[cls]), fmt(p.lift), fmt(p.chi2), fmt(p.min_expected)])
         end
     end
-    return rows, pairs, mined
+    return rows, pairs, mined, family
 end
 
 jaccard(a::Set{Vector{Int}}, b::Set{Vector{Int}})::Float64 =
@@ -195,13 +200,15 @@ function main()
     counts_rows = Vector{String}[]
     patterns = Vector{String}[]
     pairs = Vector{String}[]
+    family = Vector{String}[]
     sensitivity = Vector{String}[]
     for st in SETTINGS
         dbs = class_dbs(records, st.enc)
         append!(counts_rows, count_rows(st.name, st.enc, st.grid, dbs))
-        rows, prs, mined = pattern_rows(st.name, st.enc, st.main, dbs, sizes)
+        rows, prs, mined, fam = pattern_rows(st.name, st.enc, st.main, dbs, sizes)
         append!(patterns, rows)
         append!(pairs, prs)
+        append!(family, fam)
         # Độ nhạy với bước làm sạch: khai thác lại trên dữ liệu gốc ở cùng minsup tương đối.
         raw_dbs = class_dbs(raw, st.enc)
         for cls in SPLICE_CLASSES
@@ -232,6 +239,8 @@ function main()
               ["encoding", "class", "minsup", "item_a", "item_b", "sup_ab", "sup_a", "sup_b", "transactions", "lift", "chi2",
                "min_expected"],
               pairs)
+    write_csv(joinpath(OUT_DIR, "pair_family.csv"),
+              ["encoding", "class", "minsup", "frequent_singles", "candidate_pairs", "tested_pairs"], family)
     write_csv(joinpath(OUT_DIR, "consensus.csv"),
               ["name", "pattern", "start", "class", "matches", "transactions", "fraction"], consensus)
     write_csv(joinpath(OUT_DIR, "cleaning_sensitivity.csv"),
