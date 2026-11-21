@@ -29,7 +29,8 @@ acceptor) hoặc N (không phải vị trí cắt nối). Giấy phép CC BY 4.0
 **Vì sao:** bộ splice có "đáp án" sinh học để đối chiếu: quy tắc GT-AG và các mẫu chuẩn ghi trong file
 `splice.theory` kèm bộ dữ liệu. Nhờ vậy kiểm được Eclat có tìm ra đúng điều đã biết không, thay vì chỉ
 liệt kê mẫu. File nhỏ (319 KB), tải trong notebook được; cả script (gồm khởi động Julia) chạy khoảng
-13 s khi dữ liệu đã có sẵn, 16 s khi phải tải về, trên laptop Windows của nhóm (đo 21/11/2026). Pfam phải
+13 s khi dữ liệu đã có sẵn, 16 s khi phải tải về, trên laptop Windows của nhóm (đo bằng tay ngày
+21/11/2026, không ghi vào file kết quả). Pfam phải
 tải và lọc dữ liệu lớn qua API, diễn giải phải tra từng domain. Tập k-mer của protein không có đáp án
 để đối chiếu.
 
@@ -165,23 +166,36 @@ không phụ thuộc tỉ lệ lớp nên dùng để xếp hạng.
 ## 11. Phụ thuộc giữa hai vị trí
 
 **Chọn:** với mỗi 2-itemset phổ biến, tính lift và χ² của bảng 2×2. Chỉ đọc những cặp có mọi ô kỳ vọng
-≥ 5 (quy tắc Cochran). Ngưỡng χ² > 15,14 tương ứng p < 10⁻⁴ (1 bậc tự do).
+≥ 5 (quy tắc Cochran). Hiệu chỉnh Bonferroni theo số cặp *có thể* được kiểm: m = 2642, nên một cặp chỉ
+được coi là phụ thuộc khi p < 0,05 / 2642 = 1,89·10⁻⁵, tức χ² > 18,30 (1 bậc tự do).
 
-**Phương án khác:** xem lift là đủ; hoặc dùng ngưỡng p < 0,05 cho từng cặp.
+**Phương án khác:** xem lift là đủ; dùng ngưỡng p < 0,05 cho từng cặp; hoặc chỉ hiệu chỉnh theo số cặp
+đạt minsup (133 cặp).
 
 **Vì sao:** lift không cho biết độ lệch có vượt dao động ngẫu nhiên không. Cặp như `+1G,+2T` có mặt ở gần
 mọi chuỗi EI: ô "không có cả hai" kỳ vọng chưa tới 1 chuỗi, nên χ² ra 168 dù lift = 1,003; đó là ảo giác
-của phép xấp xỉ, nên bị loại. Kiểm nhiều cặp cùng lúc thì phải hiệu chỉnh. Tổng số cặp đủ điều kiện ở mọi
-lớp và mã hóa là 133, nên với ngưỡng 10⁻⁴, theo Bonferroni, xác suất có ít nhất một kết luận sai
-≤ 133 × 10⁻⁴ ≈ 1,3%.
+của phép xấp xỉ, nên bị loại. Kiểm nhiều cặp cùng lúc thì phải hiệu chỉnh, và phải đếm đúng số phép kiểm.
+Cặp được kiểm là cặp có 2-itemset đạt minsup, tức đã bị chọn theo chính số lần hai vị trí cùng xuất hiện,
+đại lượng mà χ² đo. Vì vậy số phép kiểm phải là mọi cặp item đơn phổ biến ở hai vị trí khác nhau có mọi ô
+kỳ vọng ≥ 5, đạt minsup hay không. Con số này chỉ phụ thuộc support của từng item: 858 (EI), 1522 (IE)
+với nucleotide, 18 (EI), 244 (IE) với R/Y, tổng 2642 (`pair_family.csv`). Nếu chỉ chia cho 133 cặp đạt
+minsup thì ngưỡng quá dễ. Giá trị tới hạn kiểm lại được bằng Python:
+`python -c "from statistics import NormalDist as N; print(N().inv_cdf(1 - 0.05/2642/2)**2)"` in ra 18,295.
 
-**Kết quả (nucleotide, EI):** 105 cặp, 23 cặp đủ điều kiện, 8 cặp vượt ngưỡng. Sáu cặp lift < 1: năm cặp
-nối một vị trí phía exon (-2A, -1G) với một vị trí phía intron (+4A, +5G, +6T), ví dụ `-1G,+6T` (lift
-0,87, χ² 44,4); cặp thứ sáu là `+3A,+5G` (lift 0,91). Hai cặp lift > 1 đều đi với `+3G` (`+3G,+5G` 1,09;
-`+3G,+4A` 1,12). Diễn giải thận trọng: một vị trí donor khớp mẫu chuẩn ở phía này thường không cần khớp
-đủ ở phía kia. Điều này phù hợp với nhận
-xét rằng các vị trí của tín hiệu donor phụ thuộc nhau (Burge & Karlin 1997), nhưng dữ liệu này không cho
-biết cơ chế.
+**Kết quả (nucleotide, EI):** 105 cặp đạt minsup, 23 cặp đủ điều kiện kỳ vọng, 6 cặp qua ngưỡng hiệu chỉnh.
+Bốn cặp lift < 1: ba cặp nối một vị trí phía exon với một vị trí phía intron (`-1G,+6T` lift 0,87, χ²
+44,4; `-1G,+4A` 0,95, χ² 21,7; `-2A,+5G` 0,94, χ² 20,4) và cặp `+3A,+5G` (0,91, χ² 28,9). Hai cặp lift > 1
+đều đi với `+3G` (`+3G,+5G` 1,09; `+3G,+4A` 1,12). Hai cặp khác cũng nối exon với intron nhưng không qua
+ngưỡng hiệu chỉnh: `-2A,+4A` (χ² 18,26) và `-1G,+5G` (χ² 16,49). Đọc đúng như dữ liệu cho thấy: các vị trí
+phía exon và phía intron của mẫu chuẩn *cùng khớp ít hơn mức kỳ vọng nếu độc lập* (lift 0,87–0,95); một
+mô hình coi mỗi vị trí độc lập sẽ bỏ sót điều này. Quan sát này phù hợp với nhận xét rằng các vị trí của
+tín hiệu donor phụ thuộc nhau (Burge & Karlin 1997), nhưng dữ liệu này không cho biết cơ chế.
+
+**Các lớp và mã hóa khác:** IE nucleotide qua ngưỡng một cặp `-8C,-3C` (lift 1,105, χ² 18,68); R/Y qua ngưỡng
+`+4R,+5R` ở EI và `-12Y,-7Y`, `-6Y,-5Y` ở IE, đều lift 1,03–1,04, tức độ lệch rất nhỏ dù có ý nghĩa thống kê.
+
+**Giới hạn:** chỉ những cặp có 2-itemset đạt minsup mới được tính χ². Hai vị trí né nhau mạnh (hiếm khi
+cùng có mặt) có thể không đạt minsup nên không xuất hiện trong bảng.
 
 ## 12. Trình bày bằng itemset tối đại
 
@@ -228,7 +242,7 @@ chuỗi được mã hóa thành giao dịch thế nào, rồi hiển thị bả
 | Lõi acceptor | `-3C -2A -1G`: 78,0% chuỗi IE, 2,2% chuỗi N |
 | Vùng giàu pyrimidin (R/Y) | `-7Y -6Y -5Y -3Y -2R -1R`: 64,6% chuỗi IE, 1,4% chuỗi N |
 | Đối chứng N | 0 itemset từ 2 item trở lên ở mọi minsup đã chạy, cả hai mã hóa |
-| Ngoại lệ GT | 8/767 donor không có GT; 4 trong số đó là GC (`+1G +2C`): HUMAPRTA, HUMFVII, HUMKER18, HUMTHB (`non_canonical.csv`) |
+| Ngoại lệ GT | 8/767 donor không có GT tại +1,+2: 1 chuỗi toàn N quanh ranh giới (HUMALPI1-DONOR-42, không xác định được base) và 7 ngoại lệ thật, trong đó 4 là GC (`+1G +2C`): HUMAPRTA, HUMFVII, HUMKER18, HUMTHB (`non_canonical.csv`) |
 
 Ý nghĩa khi đọc: mẫu chuẩn kiểu `MAG|GTRAGT` là hình mẫu lý tưởng, còn vị trí cắt nối thật chỉ khớp
 từng phần. Eclat cho biết những tổ hợp nào của mẫu chuẩn thực sự hay đi cùng nhau và với tần suất bao
@@ -239,8 +253,11 @@ nhiêu, điều mà một chuỗi đồng thuận không cho biết. Điều nà
 
 - Đồng xuất hiện không chứng minh cơ chế: dữ liệu không cho biết vì sao các vị trí phụ thuộc nhau.
 - Dữ liệu chỉ gồm linh trưởng, lấy từ GenBank 64.1 (`splice.names` dòng 7: "all examples taken from
-  Genbank 64.1"; bộ dữ liệu được tặng năm 1991), chỉ cửa sổ 60 nucleotide: không thấy được điểm nhánh
-  (branch point) nằm xa hơn, không đại diện cho genome hiện nay.
+  Genbank 64.1"; dòng 14 ghi "Date received: 1/1/92", trang UCI ghi tặng ngày 31/12/1991), chỉ một cửa sổ
+  60 nucleotide: không đại diện cho genome hiện nay.
+- Không tìm thấy mẫu nào có thể gán cho điểm nhánh (branch point) của intron. Cách mã hóa theo vị trí cố
+  định chỉ bắt được tín hiệu nằm ở vị trí cố định so với ranh giới; dữ liệu này không cho biết điểm nhánh
+  nằm ở đâu, nên không kết luận gì về nó.
 - Confidence và lift theo tỉ lệ lớp của bộ dữ liệu, không theo genome thật (mục 10).
 - 2 trong 4 chuỗi IE không có AG lại có AG ngay sau ranh giới (`HUMAK1-ACCEPTOR-3918`,
   `HUMAK1-ACCEPTOR-10488`; cột `ag_at_+1` trong `non_canonical.csv`); có thể ranh giới bị ghi lệch, nhưng
