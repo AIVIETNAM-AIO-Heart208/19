@@ -155,6 +155,10 @@ end
     d = pair_dependence(2, 6, 5, 10)
     @test d.lift ≈ 10 * 2 / (6 * 5)
     @test d.chi2 ≈ 10 * (2 * 1 - 4 * 3)^2 / (6 * 4 * 5 * 5)
+    # Kỳ vọng các ô khi độc lập: 6·5/10 = 3, 6·5/10 = 3, 4·5/10 = 2, 4·5/10 = 2.
+    @test d.min_expected ≈ 2.0
+    # Gần như mọi chuỗi có cả a lẫn b: ô "không a, không b" kỳ vọng rất nhỏ, χ² không dùng được.
+    @test pair_dependence(671, 677, 671, 679).min_expected < 5
     @test pair_dependence(3, 6, 5, 10).lift ≈ 1.0                    # độc lập đúng kỳ vọng
     @test pair_dependence(3, 6, 5, 10).chi2 ≈ 0.0
     @test isnan(pair_dependence(5, 10, 5, 10).chi2)                  # a có ở mọi chuỗi: χ² không xác định

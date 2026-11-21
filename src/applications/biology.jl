@@ -284,12 +284,13 @@ function class_contrast(sup_mined::Int, counts::Dict{String,Int}, sizes::Dict{St
 end
 
 """
-    pair_dependence(sup_ab, sup_a, sup_b, n) -> (lift, chi2)
+    pair_dependence(sup_ab, sup_a, sup_b, n) -> (lift, chi2, min_expected)
 
 Hai vị trí a, b trong n chuỗi. `lift = n·sup_ab / (sup_a·sup_b)`: bằng 1 khi hai vị trí độc lập
 (giả định của ma trận trọng số theo vị trí), > 1 khi hay đi cùng nhau, < 1 khi né nhau.
-`chi2` là thống kê χ² của bảng 2×2 (1 bậc tự do; > 10,83 ứng với p < 0,001 khi chỉ kiểm một
-cặp, kiểm nhiều cặp thì phải hiệu chỉnh). NaN khi một vị trí có mặt ở mọi chuỗi hoặc không chuỗi nào.
+`chi2` là thống kê χ² của bảng 2×2 (1 bậc tự do; > 15,14 ứng với p < 10⁻⁴ khi kiểm một cặp,
+kiểm nhiều cặp thì phải hiệu chỉnh). NaN khi một vị trí có mặt ở mọi chuỗi hoặc không chuỗi nào.
+`min_expected` là số đếm kỳ vọng nhỏ nhất của bốn ô khi độc lập; dưới 5 thì xấp xỉ χ² không tin được.
 """
 function pair_dependence(sup_ab::Int, sup_a::Int, sup_b::Int, n::Int)
     (0 <= sup_ab <= min(sup_a, sup_b) && max(sup_a, sup_b) <= n && sup_a + sup_b - sup_ab <= n) ||
@@ -301,24 +302,27 @@ function pair_dependence(sup_ab::Int, sup_a::Int, sup_b::Int, n::Int)
     denom = Float64(sup_a) * (n - sup_a) * sup_b * (n - sup_b)
     chi2 = denom == 0 ? NaN : n * (Float64(a) * d - Float64(b) * c)^2 / denom
     lift = sup_a * sup_b == 0 ? NaN : n * sup_ab / (Float64(sup_a) * sup_b)
-    return (lift=lift, chi2=chi2)
+    min_expected = min(sup_a, n - sup_a) * Float64(min(sup_b, n - sup_b)) / n
+    return (lift=lift, chi2=chi2, min_expected=min_expected)
 end
 
 """
     pair_table(itemsets, n) -> Vector{NamedTuple}
 
 Với mỗi 2-itemset phổ biến {a, b} trong kết quả của một lớp có n chuỗi: support của cặp và của
-từng item (có sẵn trong kết quả nhờ tính đóng xuống), kèm lift và χ².
+từng item (có sẵn trong kết quả nhờ tính đóng xuống), kèm lift, χ² và số đếm kỳ vọng nhỏ nhất.
 """
 function pair_table(itemsets::Vector{Pair{Vector{Int},Int}}, n::Int)
     single = Dict{Int,Int}(only(X) => s for (X, s) in itemsets if length(X) == 1)
-    rows = NamedTuple{(:a, :b, :sup_ab, :sup_a, :sup_b, :lift, :chi2),Tuple{Int,Int,Int,Int,Int,Float64,Float64}}[]
+    rows = NamedTuple{(:a, :b, :sup_ab, :sup_a, :sup_b, :lift, :chi2, :min_expected),
+                      Tuple{Int,Int,Int,Int,Int,Float64,Float64,Float64}}[]
     for (X, s) in itemsets
         length(X) == 2 || continue
         a, b = minmax(X[1], X[2])
         (haskey(single, a) && haskey(single, b)) || throw(ArgumentError("thiếu support của item đơn trong cặp $X"))
         d = pair_dependence(s, single[a], single[b], n)
-        push!(rows, (a=a, b=b, sup_ab=s, sup_a=single[a], sup_b=single[b], lift=d.lift, chi2=d.chi2))
+        push!(rows, (a=a, b=b, sup_ab=s, sup_a=single[a], sup_b=single[b], lift=d.lift, chi2=d.chi2,
+                     min_expected=d.min_expected))
     end
     return rows
 end
