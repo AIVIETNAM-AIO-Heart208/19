@@ -32,7 +32,7 @@ window = 60
     "splice.theory" = "9d090c73b9279e5e88531a03f45e04bacc508bffe0c2defebe5225f9f61f12c5"
 
 [environment]
-commit = "9333f2222bf7a74ff65040a1875058cfa31b0abc"
+commit = "2020c737428d88378642e9f4e2847d09cb47d28e"
 dirty = false
 julia = "1.11.9"
 
