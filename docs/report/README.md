@@ -13,7 +13,7 @@ Báo cáo cần XeTeX để hiển thị tiếng Việt với font TeX Gyre Term
 tectonic -X compile docs/report/Report.tex --outdir docs
 ```
 
-Lệnh ghi `docs/Report.pdf`. Lần chạy đầu Tectonic tải các gói LaTeX cần dùng nên mất vài phút. Có thể biên dịch bằng XeLaTeX của TeX Live, MiKTeX hoặc Overleaf (chọn trình biên dịch XeLaTeX) với cùng các file nguồn.
+Lệnh ghi `docs/Report.pdf`. Lần chạy đầu Tectonic tải các gói LaTeX cần dùng nên mất vài phút. Có thể biên dịch bằng XeLaTeX của TeX Live hoặc MiKTeX với cùng các file nguồn. Hình được lấy thẳng từ `results/figures/` qua đường dẫn tương đối, nên nếu dùng Overleaf thì phải tải lên cả cây thư mục repository (chọn trình biên dịch XeLaTeX), không chỉ thư mục `docs/report/`.
 
 ## Chương 1. Cài đặt Eclat
 

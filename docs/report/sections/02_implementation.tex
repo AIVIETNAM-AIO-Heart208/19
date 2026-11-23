@@ -32,8 +32,9 @@ dùng tính chất này để tỉa nhánh.
 Dữ liệu ngang có kiểu \texttt{Vector\{Vector\{Int\}\}}, mỗi giao dịch là các item nguyên không âm tăng
 nghiêm ngặt. Bản cơ bản (\texttt{src/algorithm/baseline.jl}) chuyển dữ liệu sang ánh xạ từ item tới
 \texttt{Vector\{Int\}} chứa các TID tăng dần, loại item đơn không đủ support, sắp các item còn lại tăng dần
-rồi duyệt sâu theo tiền tố (Thuật toán~\ref{alg:dfs}). Một lớp với tiền tố $P$ lưu các phần mở rộng $x$ cùng
-$T(P \cup \{x\})$.
+rồi duyệt sâu theo tiền tố (Thuật toán~\ref{alg:dfs}). Một lớp với tiền tố $P$ là danh sách $E$ các cặp
+$(x, T_x)$, trong đó $x$ là item mở rộng và $T_x = T(P \cup \{x\})$; $C$ là lớp con được dựng cho tiền tố
+$P \cup \{x\}$. Lời gọi đầu tiên có $P = \emptyset$ và $E$ gồm các item đơn phổ biến đã sắp.
 
 \begin{algorithm}[t]
 \caption{Mở rộng lớp tiền tố}
