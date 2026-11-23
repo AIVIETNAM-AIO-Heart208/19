@@ -112,11 +112,11 @@
 ### Người B — Ứng dụng 2 và báo cáo tổng
 
 **Goal 11. Ứng dụng 2 (25%) — ưu tiên dữ liệu sinh học**
-- [ ] Chọn một trong hai hướng của đề: **genome/protein** hoặc **visual patterns trên ảnh**.
-- [ ] Chọn dataset phù hợp; viết code **chuyển dữ liệu thành transaction trong notebook**.
-- [ ] Dùng **Eclat của nhóm** khai thác frequent itemset trên dữ liệu đã chuyển.
-- [ ] **Nếu sinh học:** giải thích ý nghĩa sinh học của các pattern; tránh diễn giải vượt quá khả năng dữ liệu.
-- [ ] **Nếu hình ảnh:** dùng biểu diễn như bag of visual words (descriptors → codebook k-means → transaction) và phân tích ý nghĩa các mẫu trực quan.
+- [x] Chọn hướng **genome**: [UCI Splice-junction Gene Sequences](https://doi.org/10.24432/C5M888), mỗi đoạn DNA là một giao dịch, item là cặp (vị trí, nucleotide).
+- [x] Chuyển dữ liệu thành transaction trong [notebook](../notebooks/demo.ipynb) (phần Ứng dụng 2).
+- [x] Khai phá từng lớp bằng Eclat của nhóm.
+- [x] Giải thích ý nghĩa sinh học của các pattern và những điều dữ liệu không cho phép kết luận ([ghi chú thiết kế](splice_notes.md)).
+- Không áp dụng hướng hình ảnh vì nhóm đã chọn dữ liệu sinh học.
 - [ ] Viết nội dung báo cáo về Ứng dụng 2, kèm dữ liệu, kết quả và nhận xét.
 
 **Goal 12. Hoàn thiện báo cáo và kiểm tra nộp bài**
