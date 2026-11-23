@@ -2,7 +2,13 @@ name = "EclatMining"
 uuid = "8f5337d3-61fc-4bb0-a289-ce81aa1eccfa"
 version = "0.1.0"
 
+[deps]
+XLSX = "fdbf4ff8-1666-58a4-91e7-1b58723a45e0"
+ZipFile = "a5390f91-8eb1-5f08-bee0-b1d1ffed6cea"
+
 [compat]
+XLSX = "0.10.4"
+ZipFile = "0.10.1"
 julia = "1.9"
 
 [extras]
@@ -12,4 +18,3 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
 test = ["Random", "TOML", "Test"]
-

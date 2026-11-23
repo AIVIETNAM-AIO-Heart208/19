@@ -14,7 +14,7 @@ Julia >= 1.9. Tại thư mục gốc, khởi tạo môi trường bằng:
 julia --project=. -e 'using Pkg; Pkg.instantiate()'
 ```
 
-Julia sẽ sinh Manifest.toml khi thiết lập môi trường; commit file này để cố định dependencies.
+Với Julia 1.11.4, lệnh trên cài các phiên bản gói ghi trong `Manifest-v1.11.toml`. Ứng dụng [phân tích giỏ hàng](docs/report/market_basket.md) dùng XLSX.jl để đọc trực tiếp dữ liệu UCI Online Retail.
 
 ## Cấu trúc
 

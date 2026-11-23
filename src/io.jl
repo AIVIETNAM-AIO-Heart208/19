@@ -156,6 +156,21 @@ read_spmf_output(path::AbstractString)::Dict{Vector{Int},Int} = open(read_itemse
 # minsup
 # ---------------------------------------------------------------------------
 
+function parse_decimal_ratio(s::AbstractString, name::AbstractString)::Rational{Int}
+    str = String(strip(s))
+    m = match(r"^(\d*)(?:\.(\d*))?(%?)$", str)
+    m === nothing && throw(ArgumentError("$name không hợp lệ: \"$s\" (ví dụ đúng: 0.4 hoặc 40%)"))
+    int_part = something(m.captures[1], "")
+    frac_part = something(m.captures[2], "")
+    ndigits = length(int_part) + length(frac_part)
+    ndigits == 0 && throw(ArgumentError("$name không hợp lệ: \"$s\""))
+    ndigits > 15 && throw(ArgumentError("$name quá nhiều chữ số: \"$s\""))
+    num = parse(Int, string(int_part, frac_part))   # "0.4" -> 04 = 4
+    den = 10^length(frac_part)                      #          10^1
+    m.captures[3] == "%" && (den *= 100)
+    return num // den
+end
+
 """
     parse_minsup(s) -> Rational{Int}
 
@@ -164,19 +179,15 @@ Chuỗi thập phân được đổi thẳng thành tử/mẫu, KHÔNG đi qua F
 (với Float64 thì 0.07*100 = 7.000000000000001 và ceil sẽ ra 8). Báo lỗi nếu minsup ≤ 0 hoặc > 1.
 """
 function parse_minsup(s::AbstractString)::Rational{Int}
-    str = String(strip(s))
-    m = match(r"^(\d*)(?:\.(\d*))?(%?)$", str)
-    m === nothing && throw(ArgumentError("minsup không hợp lệ: \"$s\" (ví dụ đúng: 0.4 hoặc 40%)"))
-    int_part = something(m.captures[1], "")
-    frac_part = something(m.captures[2], "")
-    ndigits = length(int_part) + length(frac_part)
-    ndigits == 0 && throw(ArgumentError("minsup không hợp lệ: \"$s\""))
-    ndigits > 15 && throw(ArgumentError("minsup quá nhiều chữ số: \"$s\""))
-    num = parse(Int, string(int_part, frac_part))   # "0.4" -> 04 = 4
-    den = 10^length(frac_part)                      #          10^1
-    m.captures[3] == "%" && (den *= 100)
-    r = num // den
+    r = parse_decimal_ratio(s, "minsup")
     (0 < r <= 1) || throw(ArgumentError("minsup phải thuộc (0, 1] hay (0%, 100%], nhận được \"$s\""))
+    return r
+end
+
+"""Đọc minconf dưới dạng tỉ lệ hoặc phần trăm, trả về số hữu tỉ thuộc [0, 1]."""
+function parse_minconf(s::AbstractString)::Rational{Int}
+    r = parse_decimal_ratio(s, "minconf")
+    0 <= r <= 1 || throw(ArgumentError("minconf phải thuộc [0, 1], nhận được \"$s\""))
     return r
 end
 
