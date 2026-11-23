@@ -134,6 +134,18 @@ using Test
 using Random
 using EclatMining
 
+module SpliceRunner
+include(joinpath(@__DIR__, "..", "scripts", "splice_patterns.jl"))
+end
+
+@testset "Splice: thư mục ghi kết quả của script" begin
+    @test SpliceRunner.output_dir(String[]) == SpliceRunner.OUT_DIR
+    @test SpliceRunner.output_dir(["--output-dir", "splice_out"]) == abspath("splice_out")
+    for bad in (["--output-dir"], ["--output-dir", ""], ["splice_out"], ["--output-dir", "a", "b"], ["--out", "a"])
+        @test_throws ErrorException SpliceRunner.output_dir(bad)
+    end
+end
+
 # Nhãn item -> id, viết test cho dễ đọc.
 ids(enc, labels...) = [item_id(enc, l) for l in labels]
 
