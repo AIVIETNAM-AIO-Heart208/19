@@ -28,5 +28,4 @@ const TOY_40 = Dict{Vector{Int},Int}(
     include("test_size_benchmarks.jl")
     include("test_memory_real.jl")
     include("test_applications.jl")
-    # Kiểm thử ứng dụng chưa triển khai; bổ sung test_applications.jl khi có test thực tế.
 end

@@ -18,3 +18,7 @@ Correctness trên 5 CSDL benchmark so với SPMF: [correctness_benchmarks.md](co
 Bộ nhớ baseline và bitset trên dữ liệu thật: [memory_benchmarks.md](memory_benchmarks.md).
 
 Điểm mạnh/yếu so với SPMF, hai hướng tối ưu và kết luận Chương 2: [chapter2_evaluation.md](chapter2_evaluation.md).
+
+## Chương 3. Ứng dụng thực tế
+
+[Phân tích giỏ hàng trên UCI Online Retail](market_basket.md).
