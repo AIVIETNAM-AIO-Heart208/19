@@ -161,7 +161,7 @@ ghi); hai phép đo chạy trên hai máy khác nhau nên đây chỉ là ước
 
 Điểm chậm nhất là Retail 0,1\%: Julia 10,634 giây, SPMF 1,435 giây (khoảng 7,41 lần), dù chỉ có 7.589
 itemset. Ở mức này Retail có 2.117 item đơn phổ biến, nên ngay ở gốc vòng lặp duyệt sâu thử
-$2117 \times 2116 / 2 = 2.239.786$ phép giao. Mỗi phép giao là AND trên mask dài đủ $N = 88.162$ bit (1.378 từ
+$2.117 \times 2.116 / 2 = 2.239.786$ phép giao. Mỗi phép giao là AND trên mask dài đủ $N = 88.162$ bit (1.378 từ
 máy) và cấp một mask mới, dù support trung bình của các item này chỉ 0,36\% (khoảng 313 giao dịch). Có
 $7.589 - 2.117 = 5.472$ itemset từ hai item trở lên, nên ít nhất 99,7\% số phép giao ở gốc cho kết quả bị loại
 nhưng vẫn tốn công. Từ 0,25\% xuống 0,1\%, số item đơn phổ biến tăng từ 712 lên 2.117 và số phép giao ở gốc tăng
@@ -171,10 +171,10 @@ khối lượng công việc. Các số phép giao suy ra từ cấu trúc vòng
 \subsection{Bộ nhớ của bản cơ bản và bản bitset}
 \label{sec:eval-mem}
 
-Đề yêu cầu đo RAM đỉnh tại minsup trung bình, so bản cơ bản với bản tối ưu. Mỗi bộ đo ở mức thứ tư trong dải
+Đề yêu cầu đo RAM đỉnh tại minsup trung bình, so bản cơ bản với bản tối ưu (bản bitset). Mỗi bộ đo ở mức thứ tư trong dải
 bảy mức; Retail đo thêm mức thấp nhất 0,1\% để thấy trường hợp bitset bất lợi. Mỗi phép đo là một tiến trình
 Julia mới chạy một bản một lần; tiến trình biên dịch hàm trên một CSDL 3 giao dịch, đọc dữ liệu, gọi
-\texttt{GC.gc()} rồi ghi RSS (resident set size, bộ nhớ thường trú) trước khai thác và RAM đỉnh (\texttt{Sys.maxrss()}) sau khai thác. Mỗi cấu hình đo
+\texttt{GC.gc()} rồi ghi RSS trước khai thác và RAM đỉnh (\texttt{Sys.maxrss()}) sau khai thác. Mỗi cấu hình đo
 3 lần, đổi thứ tự hai bản, lấy trung vị; cả 36/36 phép đo thành công. Phép đo này chạy trên máy khác (AMD Ryzen 7
 5800H, Julia 1.11.9). Ba đại lượng được báo cáo, từ rộng đến hẹp: RAM đỉnh của cả tiến trình; delta RSS (đỉnh
 trừ RSS trước khai thác, chỉ ghi khi khai thác đẩy đỉnh lên cao hơn đỉnh đã có lúc khởi động); và kích thước
@@ -379,7 +379,7 @@ Cả hai hướng dưới đây là đề xuất, nhóm chưa cài đặt và ch
 
 \textbf{Hướng 1: chọn TID-list hay bitset theo support của từng nút.} Khi tạo một nút (item đơn ở gốc hoặc kết
 quả một phép giao), lưu mask nếu support $s \ge N/64$ và lưu TID-list đã sắp nếu $s < N/64$, theo
-(\ref{eq:breakeven}); dùng số nguyên 32 bit cho TID (mọi benchmark có $N < 2^{31}$) thì ngưỡng chuyển thành
+(\ref{eq:breakeven}); dùng số nguyên 32 bit cho TID (mọi bộ benchmark có $N < 2^{31}$) thì ngưỡng chuyển thành
 $N/32$. Cần ba kiểu giao: mask với mask (AND từng từ máy), danh sách với danh sách (trộn hai danh sách đã sắp như
 bản cơ bản), và danh sách với mask (kiểm bit của từng TID, chi phí $O(|\text{danh sách}|)$). Support của kết quả
 không vượt support của đầu vào nên một nhánh chỉ chuyển từ mask sang danh sách, không cần chuyển ngược. Với hai

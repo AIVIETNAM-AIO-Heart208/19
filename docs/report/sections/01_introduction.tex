@@ -11,9 +11,37 @@ nén dữ liệu vào cây và không sinh ứng viên; Eclat~\cite{zaki2000scal
 Đồ án cài đặt lại Eclat từ bài báo gốc bằng Julia~\cite{bezanson2017julia}, không dùng thư viện FIM có sẵn,
 và đối chiếu kết quả với SPMF phiên bản 2.65~\cite{spmfsite}. Báo cáo gồm ba phần, ứng với ba chương của đề:
 Mục~\ref{sec:impl} trình bày thuật toán, hai biểu diễn dữ liệu dọc, phần nhập xuất và kiểm thử;
-Mục~\ref{sec:eval} đánh giá thời gian, bộ nhớ và khả năng mở rộng trên năm bộ dữ liệu chuẩn của
+Mục~\ref{sec:eval} đánh giá thời gian, bộ nhớ và khả năng mở rộng trên năm bộ dữ liệu benchmark của
 FIMI~\cite{goethals2003fimi} và đề xuất hướng tối ưu; Mục~\ref{sec:apps} trình bày hai ứng dụng trên dữ liệu
 thực. Mục~\ref{sec:conclusion} kết luận.
 
-Thuật ngữ tiếng Anh được giữ nguyên ở lần đầu kèm giải thích, sau đó dùng thống nhất: itemset (tập mục),
-support (số giao dịch chứa itemset), minsup (ngưỡng support tối thiểu), TID-list và bitset.
+Thuật ngữ tiếng Anh được giữ nguyên, giải thích ở Bảng~\ref{tab:terms} và dùng thống nhất trong toàn bài. Số
+viết theo kiểu Việt Nam: dấu chấm ngăn hàng nghìn, dấu phẩy thập phân (12.000; 0,5\%); MB là $10^6$ byte, MiB
+là $2^{20}$ byte.
+
+\begin{table}[t]
+\caption{Thuật ngữ dùng trong báo cáo}
+\label{tab:terms}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}p{0.30\linewidth}p{0.66\linewidth}@{}}
+\toprule
+Thuật ngữ & Nghĩa trong báo cáo \\
+\midrule
+item, itemset & phần tử; tập phần tử (tập mục) \\
+giao dịch, TID & một dòng của CSDL; chỉ số của giao dịch \\
+support & số giao dịch chứa itemset (support tuyệt đối) \\
+minsup & ngưỡng support tối thiểu, viết theo \% số giao dịch \\
+itemset phổ biến & itemset có support $\ge$ minsup; tên bài toán theo đề là khai thác tập phổ biến \\
+TID-list & danh sách tăng dần các TID chứa một itemset \\
+bitset, mask & biểu diễn dọc bằng bit; mask là vector $N$ bit của một itemset \\
+bản cơ bản, bản bitset & hai cài đặt của nhóm, dùng TID-list và bitset; bản bitset là bản tối ưu \\
+benchmark & bộ dữ liệu dùng chung để so sánh các chương trình \\
+dày, thưa & mật độ (số item trung bình mỗi giao dịch chia số item phân biệt) cao hoặc thấp \\
+thời gian toàn trình & tính từ lúc khởi động tới khi ghi xong kết quả \\
+RAM đỉnh (peak RSS) & bộ nhớ thường trú lớn nhất của tiến trình \\
+confidence, lift, minconf & độ tin cậy, độ nâng của luật kết hợp; ngưỡng confidence (Mục~\ref{sec:app-basket}) \\
+\bottomrule
+\end{tabular}
+\end{table}
