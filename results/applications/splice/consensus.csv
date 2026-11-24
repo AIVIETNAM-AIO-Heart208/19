@@ -1,0 +1,13 @@
+name,pattern,start,class,matches,transactions,fraction
+donor_full,MAGGTRAGT,-3,EI,27,679,0.0398
+donor_full,MAGGTRAGT,-3,IE,0,672,0.0
+donor_full,MAGGTRAGT,-3,N,0,1653,0.0
+donor_gt,GT,1,EI,671,679,0.9882
+donor_gt,GT,1,IE,100,672,0.1488
+donor_gt,GT,1,N,98,1653,0.0593
+acceptor_core,YAGG,-3,EI,168,679,0.2474
+acceptor_core,YAGG,-3,IE,316,672,0.4702
+acceptor_core,YAGG,-3,N,20,1653,0.0121
+acceptor_ag,AG,-2,EI,338,679,0.4978
+acceptor_ag,AG,-2,IE,668,672,0.994
+acceptor_ag,AG,-2,N,126,1653,0.0762

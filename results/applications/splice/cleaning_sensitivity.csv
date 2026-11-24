@@ -1,0 +1,7 @@
+encoding,class,minsup,itemsets_cleaned,itemsets_raw,common,jaccard
+nucleotide,EI,30%,286,280,273,0.9317
+nucleotide,IE,30%,304,331,302,0.9069
+nucleotide,N,30%,0,0,0,1.0
+purine_pyrimidine,EI,60%,103,103,103,1.0
+purine_pyrimidine,IE,60%,785,844,769,0.8942
+purine_pyrimidine,N,60%,0,0,0,1.0
