@@ -360,8 +360,9 @@ bị loại cũng đáng kể. Khi tăng $L$, tổng item, mật độ và khả
 \label{sec:eval-compare}
 
 \textbf{Điểm mạnh.} (1) Kết quả đúng hoàn toàn: 35/35 cấu hình benchmark và 27 trường hợp nhỏ khớp SPMF từng
-itemset và support. (2) Khi có ít item phổ biến với support rất cao, bản bitset nhanh hơn SPMF: Chess từ 70\%
-xuống 60\% và toàn bộ Accidents, vì giao bitset không phụ thuộc support. (3) Tối ưu có đo lường: bitset nhanh
+itemset và support. (2) Ở các cấu hình có ít item phổ biến với support rất cao và khối lượng việc đủ lớn để bù chi phí
+gần như cố định khoảng 1,4 giây của Julia (Chess từ 70\% xuống 60\% và toàn bộ Accidents; ở cả mười cấu hình này
+SPMF mất từ 1,83 giây trở lên), bản bitset nhanh hơn SPMF, vì giao bitset không phụ thuộc support. (3) Tối ưu có đo lường: bitset nhanh
 hơn bản cơ bản ở cả sáu cấu hình đo trên dữ liệu thật và giảm RAM đỉnh ở Accidents 80\% từ 665,6 xuống 433,4 MB.
 
 \textbf{Điểm yếu.} (1) Chi phí gần như cố định khoảng 1,4 giây mỗi lần chạy (khởi động, JIT, đọc ghi; chưa đo

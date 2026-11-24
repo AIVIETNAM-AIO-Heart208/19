@@ -15,7 +15,7 @@ cấu hình đo trên dữ liệu thật, từ 1,25 lần (Retail 0,1\%) đến 
 (\ref{eq:breakeven}), bitset gọn hơn TID-list khi support tương đối của item trên khoảng 1,56\% (theo công thức): nó giảm RAM đỉnh
 ở Accidents 80\% từ 665,6 xuống 433,4 MB nhưng tốn bộ nhớ hơn ở Retail 0,1\% (386,3 so với 314,3 MB). So với SPMF
 theo thời gian toàn trình, bản bitset nhanh hơn ở 10/35 cấu hình, là các cấu hình có ít item phổ biến với support rất
-cao (Chess từ 70\% xuống 60\%, toàn bộ Accidents). SPMF nhanh hơn ở 25/35 cấu hình còn lại: các tác vụ nhỏ, nơi Julia mất gần
+cao và đủ nặng để bù chi phí cố định của Julia (Chess từ 70\% xuống 60\%, toàn bộ Accidents). SPMF nhanh hơn ở 25/35 cấu hình còn lại: các tác vụ nhỏ, nơi Julia mất gần
 cố định khoảng 1,4 giây mỗi lần chạy, và hai bộ thưa, chênh nhiều nhất 7,41 lần ở Retail 0,1\%. Trong dải đã đo,
 thời gian trên Accidents tăng gần tuyến tính theo số giao dịch, còn trên dữ liệu tổng hợp, tăng độ dài giao dịch
 $L$ từ 8 lên 24 (kéo theo mật độ và đồng xuất hiện tăng) đi cùng thời gian tăng khoảng 25,7 lần, với bước nhảy
