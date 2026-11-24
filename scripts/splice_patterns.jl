@@ -1,10 +1,11 @@
 # Ứng dụng sinh học: khai thác motif quanh vị trí cắt nối (splice junction) bằng Eclat của nhóm.
 #
-# Chạy từ repo root:  julia --project scripts/splice_patterns.jl
+# Chạy từ repo root:  julia --project scripts/splice_patterns.jl [--output-dir <thư mục>]
 # - Tải splice.data cùng hai file mô tả splice.names, splice.theory từ UCI vào data/raw/ nếu chưa có,
 #   kiểm SHA-256 (sai thì dừng, không ghi đè file cũ).
 # - Làm sạch, mã hóa theo hai cách, khai thác từng lớp, ghi bảng CSV và run_info.toml vào
-#   results/applications/splice/.
+#   results/applications/splice/, hoặc vào thư mục truyền qua --output-dir (notebook dùng thư mục tạm
+#   để chạy lại mà không ghi đè kết quả đã commit).
 # Không có bước ngẫu nhiên: chạy lại trên cùng commit cho ra đúng các file như cũ.
 
 using EclatMining, Downloads, SHA, TOML
@@ -186,8 +187,16 @@ function duplicate_groups(raw::Vector{SpliceRecord})::Tuple{Int,Int}
     return length(dups), count(g -> length(unique(locus.(g))) > 1, dups)
 end
 
-function main()
-    isempty(ARGS) || error("script không nhận tham số; chạy: julia --project scripts/splice_patterns.jl")
+"Thư mục ghi kết quả: mặc định `OUT_DIR`, hoặc thư mục sau `--output-dir`."
+function output_dir(args::Vector{String})::String
+    isempty(args) && return OUT_DIR
+    (length(args) == 2 && args[1] == "--output-dir" && !isempty(args[2])) ||
+        error("tham số không hợp lệ; chạy: julia --project scripts/splice_patterns.jl [--output-dir <thư mục>]")
+    return abspath(args[2])
+end
+
+function main(args::Vector{String})
+    out = output_dir(args)
     path = ensure_data()
     # Code hoặc dữ liệu đã commit có bị sửa không; bỏ qua chính thư mục kết quả mà script sẽ ghi đè.
     dirty = !isempty(read(`git -C $ROOT status --porcelain -- . ":(exclude)results/applications/splice"`, String))
@@ -227,26 +236,26 @@ function main()
         push!(consensus, [cs.name, cs.pattern, fmt(cs.start), cls, fmt(m), fmt(length(recs)), fmt(m / length(recs))])
     end
 
-    mkpath(OUT_DIR)
-    write_csv(joinpath(OUT_DIR, "itemset_counts.csv"),
+    mkpath(out)
+    write_csv(joinpath(out, "itemset_counts.csv"),
               ["encoding", "class", "minsup", "minsup_abs", "transactions", "itemsets", "itemsets_2plus", "maximal", "max_length"],
               counts_rows)
-    write_csv(joinpath(OUT_DIR, "patterns.csv"),
+    write_csv(joinpath(out, "patterns.csv"),
               ["encoding", "class", "minsup", "length", "itemset", "motif", "support", "freq", "freq_ei", "freq_ie",
                "freq_n", "growth_vs_n", "confidence", "lift", "maximal"],
               patterns)
-    write_csv(joinpath(OUT_DIR, "pair_dependence.csv"),
+    write_csv(joinpath(out, "pair_dependence.csv"),
               ["encoding", "class", "minsup", "item_a", "item_b", "sup_ab", "sup_a", "sup_b", "transactions", "lift", "chi2",
                "min_expected"],
               pairs)
-    write_csv(joinpath(OUT_DIR, "pair_family.csv"),
+    write_csv(joinpath(out, "pair_family.csv"),
               ["encoding", "class", "minsup", "frequent_singles", "candidate_pairs", "tested_pairs"], family)
-    write_csv(joinpath(OUT_DIR, "consensus.csv"),
+    write_csv(joinpath(out, "consensus.csv"),
               ["name", "pattern", "start", "class", "matches", "transactions", "fraction"], consensus)
-    write_csv(joinpath(OUT_DIR, "cleaning_sensitivity.csv"),
+    write_csv(joinpath(out, "cleaning_sensitivity.csv"),
               ["encoding", "class", "minsup", "itemsets_cleaned", "itemsets_raw", "common", "jaccard"], sensitivity)
-    write_csv(joinpath(OUT_DIR, "raw_checks.csv"), ["check", "class", "matches", "transactions"], raw_check_rows(raw))
-    write_csv(joinpath(OUT_DIR, "non_canonical.csv"), ["class", "name", "around_boundary", "gc_at_+1", "ag_at_+1"],
+    write_csv(joinpath(out, "raw_checks.csv"), ["check", "class", "matches", "transactions"], raw_check_rows(raw))
+    write_csv(joinpath(out, "non_canonical.csv"), ["class", "name", "around_boundary", "gc_at_+1", "ag_at_+1"],
               non_canonical_rows(raw))
 
     raw_sizes = class_counts(raw)
@@ -270,10 +279,10 @@ function main()
             "commit" => strip(read(`git -C $ROOT rev-parse HEAD`, String)),
             "dirty" => dirty),
     )
-    open(joinpath(OUT_DIR, "run_info.toml"), "w") do io
+    open(joinpath(out, "run_info.toml"), "w") do io
         TOML.print(io, info; sorted=true)
     end
-    println("Đã ghi kết quả vào $OUT_DIR")
+    println("Đã ghi kết quả vào $out")
 end
 
-main()
+abspath(PROGRAM_FILE) == (@__FILE__) && main(ARGS)

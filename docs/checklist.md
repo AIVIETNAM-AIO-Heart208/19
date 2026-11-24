@@ -103,20 +103,21 @@
 - [x] Viết [báo cáo ứng dụng 1](report/market_basket.md) kèm dữ liệu, bảng và nhận xét.
 
 **Goal 10. Demo Colab, README và tích hợp repository**
-- [ ] Tạo/tích hợp notebook demo trên **Google Colab**: chạy Eclat và tái tạo kết quả **cả hai ứng dụng**.
-- [ ] Viết README: thành viên, hướng dẫn cài đặt/chạy, ví dụ, link Colab, link dataset, lệnh kiểm thử.
-- [ ] Đảm bảo repo GitHub **public**, cấu trúc rõ ràng, giữ lịch sử commit minh bạch.
-- [ ] Nếu dữ liệu lớn, host trên **Hugging Face hoặc Kaggle** và gắn link công khai trong README.
-- [ ] Gắn output của **lần chạy test cuối** vào README; kiểm tra notebook chạy sạch.
+- [x] Tạo/tích hợp notebook demo trên **Google Colab**: chạy Eclat và tái tạo kết quả **cả hai ứng dụng**.
+- [x] Viết README: thành viên, hướng dẫn cài đặt/chạy, ví dụ, link Colab, link dataset, lệnh kiểm thử.
+- [x] Đảm bảo repo GitHub **public**, cấu trúc rõ ràng, giữ lịch sử commit minh bạch.
+- [x] Gắn link công khai cho đủ năm bộ benchmark trong README theo phương án nhóm đã chốt.
+  Chess, Mushroom và Accidents có bản Kaggle khớp SHA-256. Retail và T10I4D100K dùng nguồn FIMI gốc. [Nguồn benchmark](../data/README.md#nguồn-và-điều-kiện-sử-dụng) · [Yêu cầu lưu trữ trong đề](itemset.md#tổ-chức-đồ-án-và-nộp-bài)
+- [x] Gắn output của **lần chạy test cuối** vào README; kiểm tra notebook chạy sạch.
 
 ### Người B — Ứng dụng 2 và báo cáo tổng
 
 **Goal 11. Ứng dụng 2 (25%) — ưu tiên dữ liệu sinh học**
-- [ ] Chọn một trong hai hướng của đề: **genome/protein** hoặc **visual patterns trên ảnh**.
-- [ ] Chọn dataset phù hợp; viết code **chuyển dữ liệu thành transaction trong notebook**.
-- [ ] Dùng **Eclat của nhóm** khai thác frequent itemset trên dữ liệu đã chuyển.
-- [ ] **Nếu sinh học:** giải thích ý nghĩa sinh học của các pattern; tránh diễn giải vượt quá khả năng dữ liệu.
-- [ ] **Nếu hình ảnh:** dùng biểu diễn như bag of visual words (descriptors → codebook k-means → transaction) và phân tích ý nghĩa các mẫu trực quan.
+- [x] Chọn hướng **genome**: [UCI Splice-junction Gene Sequences](https://doi.org/10.24432/C5M888), mỗi đoạn DNA là một giao dịch, item là cặp (vị trí, nucleotide).
+- [x] Chuyển dữ liệu thành transaction trong [notebook](../notebooks/demo.ipynb) (phần Ứng dụng 2).
+- [x] Khai phá từng lớp bằng Eclat của nhóm.
+- [x] Giải thích ý nghĩa sinh học của các pattern và những điều dữ liệu không cho phép kết luận ([ghi chú thiết kế](splice_notes.md)).
+- Không áp dụng hướng hình ảnh vì nhóm đã chọn dữ liệu sinh học.
 - [ ] Viết nội dung báo cáo về Ứng dụng 2, kèm dữ liệu, kết quả và nhận xét.
 
 **Goal 12. Hoàn thiện báo cáo và kiểm tra nộp bài**
