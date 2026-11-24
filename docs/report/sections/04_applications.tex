@@ -10,7 +10,7 @@
 
 \textbf{Bài toán và dữ liệu.} Ứng dụng tìm các sản phẩm thường được mua cùng nhau để đề xuất cách trưng bày và
 bán theo bộ. Dữ liệu UCI Online Retail~\cite{chen2015onlineretail} ghi 541.909 dòng hàng của một nhà bán lẻ trực
-tuyến tại Anh từ tháng 12/2010 đến tháng 12/2011; workbook gốc được đối chiếu SHA-256 trước khi đọc. Mỗi hóa đơn
+tuyến tại Anh từ tháng 12/2010 đến tháng 12/2011; workbook (tệp Excel) gốc được đối chiếu SHA-256 trước khi đọc. Mỗi hóa đơn
 (\texttt{InvoiceNo}) là một giỏ, tức một giao dịch; mỗi mã hàng (\texttt{StockCode}) được tính một lần trong giỏ, kể
 cả khi khách mua nhiều đơn vị hoặc cùng mã xuất hiện trên nhiều dòng. Các hóa đơn có cùng tập mặt hàng vẫn là các
 giao dịch riêng. Mã hàng được ánh xạ sang ID nguyên theo thứ tự từ điển.
@@ -42,7 +42,7 @@ Bỏ mã phí, điều chỉnh, giỏ rỗng & 527.794 & 19.775 & 3.914 \\
 \textbf{Khai thác và sinh luật.} Bản bitset của nhóm khai thác trên toàn bộ 19.775 giỏ. Minsup 1\% tương ứng
 ngưỡng 198 giỏ theo (\ref{eq:threshold}) và cho 2.007 itemset phổ biến. Với mỗi itemset có ít nhất hai item,
 chương trình xét mọi cách tách thành hai vế $X \to Y$ (luật kết hợp~\cite{agrawal1993mining}) và giữ 956 luật có
-confidence đạt minconf 50\%. Gọi $N$ là số giỏ và $n(S)$ là số giỏ chứa toàn bộ tập $S$:
+confidence đạt minconf (ngưỡng confidence tối thiểu) 50\%. Gọi $N$ là số giỏ và $n(S)$ là số giỏ chứa toàn bộ tập $S$:
 \begin{equation}
 \begin{aligned}
 \mathrm{supp}(X \to Y) &= \frac{n(X \cup Y)}{N},\\
@@ -58,8 +58,8 @@ chính xác, chỉ làm tròn khi hiển thị, và chương trình đếm lại
 trực tiếp các giỏ.
 
 \begin{table}[t]
-\caption{Mười luật có lift cao nhất (minsup 1\%, minconf 50\%). T: HERB MARKER THYME (22916), R: ROSEMARY (22917),
-P: PARSLEY (22918), B: BASIL (22920); $n$: số giỏ chứa cả hai vế}
+\caption{Mười luật có lift cao nhất (minsup 1\%, minconf 50\%). T, R, P, B: HERB MARKER THYME, ROSEMARY,
+PARSLEY, BASIL (mã hàng 22916, 22917, 22918, 22920); $n$: số giỏ chứa cả hai vế}
 \label{tab:retail-rules}
 \centering
 \footnotesize
@@ -88,12 +88,12 @@ xạ hương (thyme): confidence 94,42\%, trong khi tần suất nền của th�
 78,78. Tương tự, trong 210 giỏ có thẻ cỏ xạ hương và húng quế (basil), 200 giỏ có thẻ hương thảo (confidence
 95,24\%, tần suất nền 1,21\%, tức 240/19.775). Cặp cỏ xạ hương → hương thảo xuất hiện trong 221 giỏ, nhiều hơn hai
 bộ ba trên (confidence 93,25\%, tức 221/237; lift 76,83), nên là ứng viên cho một gói hai sản phẩm. Các luật
-ngược chiều của cùng một cặp vế có chung lift nhưng có thể khác confidence (hạng 1 và 2). Cửa hàng có thể dùng vài
+ngược chiều của cùng một cặp vế có chung lift nhưng có thể khác confidence (hạng 1 và 2). Nhóm có thể dùng vài
 bộ sản phẩm phân biệt này để thử trưng bày liền kề hoặc gợi ý bán kèm.
 
 \textbf{Giới hạn.} Dữ liệu mô tả hành vi trong các hóa đơn đã quan sát. Muốn đo tác động lên tỷ lệ mua, cần kiểm
-tra trên giao dịch mới hoặc làm thử nghiệm có nhóm so sánh. Phân tích chạy lại được bằng ô Ứng dụng 1 trong notebook demo
-hoặc lệnh \texttt{julia --project=. scripts/run\_market\_basket.jl <tệp kết quả> 1\% 50\%}, lệnh này tự tải workbook
+tra trên giao dịch mới hoặc làm thử nghiệm có nhóm so sánh. Phân tích chạy lại được bằng phần ``Phân tích giỏ hàng bằng
+Eclat'' của notebook demo hoặc lệnh \texttt{julia --project=. scripts/run\_market\_basket.jl <tệp kết quả> 1\% 50\%}, lệnh này tự tải workbook
 từ UCI nếu chưa có.
 
 \subsection{Mẫu DNA quanh vị trí cắt nối gen}
