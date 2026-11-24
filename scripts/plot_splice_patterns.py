@@ -4,6 +4,7 @@ Không khai thác lại: chỉ đọc results/applications/splice/ (phải là m
 và ghi results/figures/splice/. Chạy từ repo root:  python scripts/plot_splice_patterns.py
 """
 import csv
+from collections import Counter
 import hashlib
 import json
 import platform
@@ -62,6 +63,24 @@ def percent(text):
 
 def plot_counts(info, rows):
     """Số itemset có ít nhất 2 item theo minsup giảm dần, mỗi lớp một đường."""
+    expected = {
+        (encoding, cls, percent(level))
+        for encoding, _ in ENCODINGS
+        for cls in CLASSES
+        for level in info["mining"][encoding]["minsup_grid"]
+    }
+    actual = Counter((r["encoding"], r["class"], percent(r["minsup"])) for r in rows)
+    problems = []
+    for keys, message in (
+        (expected - actual.keys(), "thiếu"),
+        ({key for key, count in actual.items() if count > 1}, "trùng"),
+        (actual.keys() - expected, "ngoài cấu hình"),
+    ):
+        problems.extend(f"{message} {encoding}/{cls}/minsup={level:g}%"
+                        for encoding, cls, level in sorted(keys))
+    if problems:
+        raise SystemExit("itemset_counts.csv: " + ", ".join(problems))
+
     fig, axes = plt.subplots(1, 2, figsize=(7.0, 2.8), sharey=True, constrained_layout=True)
     for axis, (encoding, title) in zip(axes, ENCODINGS):
         main = percent(info["mining"][encoding]["minsup_main"])
@@ -71,8 +90,6 @@ def plot_counts(info, rows):
         for cls in CLASSES:
             points = sorted(((percent(r["minsup"]), int(r["itemsets_2plus"]))
                              for r in rows if r["encoding"] == encoding and r["class"] == cls), reverse=True)
-            if not points:
-                raise SystemExit(f"thiếu dòng {encoding}/{cls} trong itemset_counts.csv")
             xs, ys = zip(*points)
             axis.plot(xs, ys, color=COLORS[cls], marker=MARKERS[cls], markersize=5, linewidth=1.6,
                       label=NAMES[cls])

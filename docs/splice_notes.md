@@ -48,7 +48,8 @@ tên chứa `DONOR`, cả 768 mẫu IE có tên chứa `ACCEPTOR` (`raw_checks.c
 
 **Chọn:** mỗi chuỗi là một giao dịch; item là cặp (vị trí, base), ví dụ `+1G` là "G ngay sau ranh giới".
 Vị trí đánh số -30..-1, +1..+30, không có 0, theo đúng quy ước của `splice.theory`. Có 240 item; mỗi
-giao dịch có đúng 60 item (trừ chỗ có ký tự mơ hồ, xem mục 8).
+chuỗi đầu vào dài 60 nucleotide. Với mã hóa A/C/G/T, mỗi giao dịch có tối đa 60 item
+vì vị trí có ký tự mơ hồ được bỏ qua (xem mục 8).
 
 **Phương án khác:** (a) tập k-mer không gắn vị trí (chuỗi có chứa "GT" ở đâu đó không); (b) gộp nhãn
 lớp vào làm một item rồi khai thác một lần (xem mục 4).
@@ -60,7 +61,7 @@ nghĩa: trên dữ liệu gốc, 1541/1655 chuỗi N (93%) có "GT" ở đâu đ
 
 **Vì sao hợp với Eclat:** TID-set của item (p, b) là tập chuỗi có base b tại vị trí p. Giao các TID-set
 cho ra tập chuỗi khớp mọi vị trí của mẫu, nên một itemset phổ biến chính là một motif có khoảng trống
-(các vị trí không cần liền nhau). Dữ liệu dày, mỗi giao dịch dài cố định 60, giống Chess: đây là loại dữ
+(các vị trí không cần liền nhau). Giao dịch có gần 60 item nên dữ liệu dày, giống Chess. Đây là loại dữ
 liệu mà bản bitset của nhóm chạy tốt nhất (Chương 2).
 
 ## 3. Thêm mã hóa purin/pyrimidin (R/Y)
