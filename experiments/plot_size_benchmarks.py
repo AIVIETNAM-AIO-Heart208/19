@@ -11,8 +11,16 @@ import tomllib
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib.ticker import FuncFormatter
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def vi_number(value, _position=None):
+    """Số theo kiểu báo cáo: dấu chấm ngăn hàng nghìn, dấu phẩy thập phân."""
+    if float(value).is_integer():
+        return f"{int(value):,}".replace(",", ".")
+    return f"{value:.6g}".replace(".", ",")
 
 
 def digest(path):
@@ -83,13 +91,15 @@ def plot(directory):
             y = [float(r["median_seconds"]) for r in rows]
             errors = [[float(r["median_seconds"])-float(r["q1_seconds"]) for r in rows],
                       [float(r["q3_seconds"])-float(r["median_seconds"]) for r in rows]]
-            axis.errorbar(x,y,yerr=errors,marker="o",capsize=3,label="Eclat của nhóm, bitset (trung vị, Q1–Q3)")
-            axis.set_ylabel("Thời gian gọi hàm khai thác, sau khởi động JIT (giây)")
+            axis.errorbar(x,y,yerr=errors,marker="o",capsize=3,label="Bản bitset (trung vị, Q1–Q3)")
+            axis.set_ylabel("Thời gian gọi hàm khai thác, sau một lượt làm nóng (giây)")
         else:
             axis.plot(x,[int(r["itemsets"]) for r in rows],marker="o",label="Khớp hoàn toàn với SPMF")
             axis.set_ylabel("Số itemset phổ biến")
         axis.set_xlabel("Số giao dịch" if scalability else "Độ dài giao dịch trung bình (item)")
         axis.set_xticks(x)
+        axis.xaxis.set_major_formatter(FuncFormatter(vi_number))
+        axis.yaxis.set_major_formatter(FuncFormatter(vi_number))
         axis.set_title(plot_title(metadata))
         axis.grid(alpha=.25); axis.legend(fontsize=8)
         for extension in ("png","svg","pdf"):

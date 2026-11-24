@@ -46,5 +46,13 @@ class FigureIntegrityTests(unittest.TestCase):
                 figures.read_run(path)
 
 
+class AxisNumberTests(unittest.TestCase):
+    def test_vietnamese_number_format(self):
+        self.assertEqual(figures.vi_number(254944.0), "254.944")
+        self.assertEqual(figures.vi_number(0.75), "0,75")
+        self.assertEqual(figures.vi_number(60), "60")
+        self.assertEqual(figures.vi_number(0.1 + 0.2), "0,3")
+
+
 if __name__ == "__main__":
     unittest.main()

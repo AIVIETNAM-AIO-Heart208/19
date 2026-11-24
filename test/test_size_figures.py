@@ -95,5 +95,11 @@ class SizeFigureTests(unittest.TestCase):
                 figures.read_run(path)
 
 
+class AxisNumberTests(unittest.TestCase):
+    def test_vietnamese_number_format(self):
+        self.assertEqual(figures.vi_number(340183.0), "340.183")
+        self.assertEqual(figures.vi_number(0.55), "0,55")
+
+
 if __name__ == "__main__":
     unittest.main()
