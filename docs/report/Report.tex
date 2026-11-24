@@ -1,0 +1,59 @@
+% Báo cáo đồ án Eclat (CSC14004), mẫu IEEE conference, tiếng Việt.
+% Biên dịch từ thư mục gốc repository (cần XeTeX; Tectonic đã thử với bản 0.17.0):
+%   tectonic -X compile docs/report/Report.tex --outdir docs
+% Kết quả: docs/Report.pdf. Đề yêu cầu 10–15 trang, không kể tài liệu tham khảo và phụ lục.
+\documentclass[conference]{IEEEtran}
+
+% Font Times có đủ dấu tiếng Việt (TeX Gyre Termes) và tiếng Việt cho caption, ngắt từ.
+\usepackage{fontspec}
+\setmainfont{texgyretermes}[Extension=.otf, UprightFont=*-regular, BoldFont=*-bold,
+  ItalicFont=*-italic, BoldItalicFont=*-bolditalic]
+\usepackage{polyglossia}
+\setmainlanguage{vietnamese}
+
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{url}
+\usepackage{cite}
+
+% Hình lấy thẳng từ kết quả đã commit; đường dẫn tính từ thư mục chứa file này.
+\graphicspath{{../../results/figures/}}
+
+% Tên khối thuật toán và các từ khóa giả mã bằng tiếng Việt.
+\floatname{algorithm}{Thuật toán}
+\algrenewcommand\algorithmicfor{\textbf{với mỗi}}
+\algrenewcommand\algorithmicdo{\textbf{thực hiện}}
+\algrenewcommand\algorithmicif{\textbf{nếu}}
+\algrenewcommand\algorithmicthen{\textbf{thì}}
+\algrenewcommand\algorithmicend{\textbf{kết thúc}}
+\algrenewcommand\algorithmicprocedure{\textbf{thủ tục}}
+
+\begin{document}
+
+\title{Khai thác tập phổ biến bằng Eclat: cài đặt bằng Julia, đánh giá thực nghiệm và hai ứng dụng}
+
+% [CẦN ĐIỀN] Họ tên và MSSV của hai thành viên; nhóm chưa cung cấp nên để trống, không tự điền.
+\author{\IEEEauthorblockN{[Họ tên thành viên 1] -- [MSSV]}
+\IEEEauthorblockA{Khoa Công nghệ Thông tin\\
+Trường Đại học Khoa học Tự nhiên, ĐHQG-HCM}
+\and
+\IEEEauthorblockN{[Họ tên thành viên 2] -- [MSSV]}
+\IEEEauthorblockA{Khoa Công nghệ Thông tin\\
+Trường Đại học Khoa học Tự nhiên, ĐHQG-HCM}}
+
+\maketitle
+
+\input{sections/00_abstract}
+\input{sections/01_introduction}
+\input{sections/02_implementation}
+\input{sections/03_evaluation}
+\input{sections/04_applications}
+\input{sections/05_conclusion}
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}

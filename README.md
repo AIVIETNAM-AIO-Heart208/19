@@ -1,10 +1,28 @@
 # Eclat Mining
 
-Đồ án Khai thác tập phổ biến — cài đặt Eclat từ bài báo gốc, đối chiếu SPMF, đánh giá hiệu năng và thực hiện hai ứng dụng.
+Đồ án Khai thác tập phổ biến triển khai Eclat bằng Julia, đối chiếu kết quả với SPMF và đánh giá hiệu năng trên dữ liệu tổng hợp và dữ liệu thực.
+
+## Thông tin nhóm
+
+**Mã nhóm**: 14
+
+| Họ tên | MSSV |
+|---|---|
+| Nguyễn Văn Minh | 24127205 |
+| Lưu Minh Quân | 24127223 |
+
+## Demo trên Google Colab
+
+[Mở demo trên Google Colab](https://colab.research.google.com/github/AIVIETNAM-AIO-Heart208/eclat-mining/blob/main/notebooks/demo.ipynb)
+
+Kết nối runtime và chọn **Runtime → Run all**. Notebook khởi tạo môi trường Julia, chuẩn bị năm bộ dữ liệu benchmark trong `data/processed/` rồi chạy lần lượt hai ứng dụng bằng Eclat của nhóm.
+
+- **Phân tích giỏ hàng** hiển thị 10 luật có lift cao nhất tại minsup 1% và minconf 50%. Có thể đối chiếu với [bảng kết quả tham chiếu](results/metrics/online_retail_rules.md). [Nguồn UCI Online Retail](https://archive.ics.uci.edu/dataset/352/online+retail) · [Báo cáo ứng dụng](docs/report/market_basket.md)
+- **Phân tích mẫu DNA quanh vị trí cắt nối gen** tự kiểm tra cả 8 bảng CSV với bản đã lưu, xác nhận SHA-256 của dữ liệu dùng để vẽ hai biểu đồ và hiển thị hai hình đã lưu. [Nguồn UCI Splice-junction](https://doi.org/10.24432/C5M888) · [Phân tích kết quả](docs/splice_notes.md)
 
 ## Trạng thái
 
-Đã có baseline TID-list và optimized BitVector; `eclat` mặc định gọi bitset. Cả hai khớp 27/27 case SPMF. Kiểm thử Julia 1.11.4: 3873 pass, 0 fail/error, 1 skip do quyền tạo symlink Windows. Đã có số liệu tối ưu trên dữ liệu tổng hợp và benchmark runtime trên cả 5 CSDL thật: 7 mức minsup mỗi bộ, 350 mẫu chính thức, 35/35 cấu hình khớp itemset/support với SPMF. Xem [kết quả và phân tích](docs/report/runtime_benchmarks.md).
+Hàm `eclat` mặc định gọi bản bitset dùng `BitVector`. Cả baseline TID-list và bitset đều khớp với SPMF trong 27 ca kiểm thử nhỏ. Trên năm bộ dữ liệu benchmark, bản bitset khớp với SPMF về itemset và support ở cả 35 cấu hình. Phép đo runtime thu 350 mẫu trên 7 mức minsup mỗi bộ. [Kết quả và phân tích](docs/report/runtime_benchmarks.md)
 
 ## Môi trường
 
@@ -14,7 +32,7 @@ Julia >= 1.9. Tại thư mục gốc, khởi tạo môi trường bằng:
 julia --project=. -e 'using Pkg; Pkg.instantiate()'
 ```
 
-Julia sẽ sinh Manifest.toml khi thiết lập môi trường; commit file này để cố định dependencies.
+Với Julia 1.11.4, lệnh trên cài các phiên bản gói ghi trong `Manifest-v1.11.toml`. Ứng dụng [phân tích giỏ hàng](docs/report/market_basket.md) dùng XLSX.jl để đọc trực tiếp dữ liệu UCI Online Retail.
 
 ## Cấu trúc
 
@@ -23,15 +41,11 @@ Julia sẽ sinh Manifest.toml khi thiết lập môi trường; commit file này
 - test/: kiểm thử và kết quả SPMF tham chiếu.
 - experiments/: cấu hình và chương trình thực nghiệm.
 - data/: thông tin nguồn và dữ liệu cục bộ.
-- notebooks/demo.ipynb: khung demo Colab.
+- notebooks/demo.ipynb: demo Colab cho cả hai ứng dụng.
 - results/: số liệu và biểu đồ đã chọn cho báo cáo.
 - docs/: đề bài, checklist, ghi chú và nguồn báo cáo.
 
 ## Cách chạy CLI
-
-```bash
-julia --project scripts/run_eclat.jl --input <file> --output <file> --minsup <0.4 | 40%>
-```
 
 - `--input`: file giao dịch định dạng SPMF (mỗi dòng một giao dịch, item nguyên cách nhau dấu cách; bỏ dòng trống và dòng bắt đầu `@`, `#`, `%`; dòng chỉ có khoảng trắng là một giao dịch rỗng).
 - `--output`: mỗi dòng `i1 i2 ... #SUP: n` (support tuyệt đối).
@@ -45,32 +59,44 @@ julia --project experiments/spmf/compare.jl out.txt test/fixtures/spmf_expected/
 ```
 
 Lệnh thứ hai so khớp dạng tập `{(itemset, support)}` và thoát với mã 0 khi khớp 100%.
-CLI chạy bitset thật; baseline vẫn gọi riêng được. API và phân tích: [ghi chú thuật toán](docs/algorithm_notes.md).
+CLI dùng bản bitset. Có thể gọi `eclat_baseline` từ Julia để chạy bản TID-list. [Giao diện và thuật toán](docs/algorithm_notes.md)
 Dữ liệu benchmark thật cần đi qua `EclatMining.clean_spmf(in, out)` trước khi đưa cho SPMF và cho CLI.
 
 ## Chạy test
 
 ```bash
-julia --project test/runtests.jl
+julia --project=. test/runtests.jl
 ```
 
-`test/runtests.jl` chạy `test_io.jl` (parser, writer, minsup, `clean_spmf`) và `test_correctness.jl` (toy 15 itemset, edge case, khớp output thật của SPMF trên `test/fixtures/`). Đề ghi thư mục `tests/`, repo dùng `test/` cho khớp lệnh chạy trong đề.
+`test/runtests.jl` kiểm tra I/O và CLI, đối chiếu hai bản Eclat với SPMF, kiểm tra quy trình benchmark và kiểm thử hai ứng dụng.
 
-Kết quả kiểm tra hai implementation ngày 17/11/2026 (Windows, Julia 1.11.4):
+Để kiểm tra các script vẽ biểu đồ, chạy trong môi trường Python của dự án.
+
+```bash
+python -m pip install -r experiments/requirements-figures.txt
+python -m unittest discover -s test -p "test_*figures.py"
+```
+
+Kết quả ngày 24/11/2026 trên Windows với Julia 1.11.4 và Python 3.11.9.
 
 ```text
-Khớp SPMF: 27/27 case, 7 CSDL, tổng 552 itemset tham chiếu (mỗi bản)
-Test Summary: | Pass  Broken  Total
-EclatMining   | 3873       1   3874
+Test Summary: | Pass  Broken  Total     Time
+EclatMining   | 4069       1   4070  1m36.3s
 ```
 
-Một Broken là @test_skip do Windows thiếu quyền tạo symlink. Không skip bitset/baseline. CLI toy @40% khớp 100%; module không có cảnh báo ghi đè hoặc method ambiguity.
+Mục `Broken` là ca kiểm thử CLI được bỏ qua bằng `@test_skip` khi Windows không cho tạo symlink.
+
+```text
+Ran 20 tests in 1.241s
+
+OK
+```
 
 ## So sánh hiệu năng
 
 Scalability và ảnh hưởng độ dài giao dịch: [hướng dẫn](experiments/SIZE_EXPERIMENTS.md).
 
-Benchmark trên năm bộ dữ liệu thật: xem [hướng dẫn runtime](experiments/BENCHMARKS.md).
+Benchmark trên năm bộ dữ liệu giao dịch chuẩn, trong đó T10I4D100K là bộ tổng hợp. [Hướng dẫn đo runtime](experiments/BENCHMARKS.md)
 Luồng này dùng `experiments/run_benchmarks.jl`, độc lập với phép đo tối ưu bên dưới.
 
 ```powershell
@@ -79,9 +105,9 @@ julia --startup-file=no --threads=1 --project=. experiments/run_memory.jl
 julia --startup-file=no --threads=1 --project=. experiments/summarize_optimization.jl
 ```
 
-Cấu hình: `experiments/configs/optimization.toml`; dữ liệu tổng hợp seed 42. Số liệu ở `results/metrics/optimization_*.csv`, môi trường trong `optimization_runtime_environment.toml và optimization_memory_environment.toml`. Chạy lại sẽ ghi đè các kết quả này. Runtime median/IQR sau warm-up (7 lần), peak RAM median của 3 tiến trình mới mỗi case/miner; allocated bytes và peak RAM được ghi riêng. Bảng và phân tích: [algorithm_notes.md](docs/algorithm_notes.md#kết-quả-đo-thực-tế).
+Cấu hình đo dùng dữ liệu tổng hợp với seed 42. Các file `results/metrics/optimization_*.csv` ghi số liệu và hai file `optimization_*_environment.toml` trong cùng thư mục ghi môi trường đo. Chạy lại sẽ ghi đè các kết quả này. Runtime được tóm tắt bằng median và IQR của 7 lần đo sau warm-up. Peak RAM là median của 3 tiến trình mới cho mỗi cấu hình và thuật toán. [Cấu hình](experiments/configs/optimization.toml) · [Bảng số liệu và phân tích](docs/algorithm_notes.md#kết-quả-đo-thực-tế)
 
-Dense: bitset nhanh hơn 31.4–31.6x và cấp phát ít hơn. Sparse: 1.7–2.6x nhanh hơn nhưng cấp phát và peak RAM cao hơn. Đây chưa phải kết quả benchmark thật Chương 2.
+Trên dữ liệu tổng hợp dày, bitset chạy nhanh hơn baseline 31,4–31,6 lần và cấp phát ít bộ nhớ hơn. Trên dữ liệu tổng hợp thưa, bitset chạy nhanh hơn 1,7–2,6 lần nhưng cấp phát nhiều bộ nhớ hơn. Peak RAM của bitset cao hơn ở một trong hai cấu hình thưa.
 
 ## Chạy SPMF tham chiếu
 
@@ -97,25 +123,23 @@ Chi tiết (phiên bản, checksum, hành vi SPMF với input bẩn) ở `experi
 
 Đề gợi ý `tests/`, `src/utils.jl`, `src/structures.jl`, `data/toy/`; repo theo khung của nhóm: `test/` (fixtures nhỏ ở `test/fixtures/transactions/` thay cho `data/toy/`, output SPMF ở `test/fixtures/spmf_expected/`), I/O và so khớp kết quả ở `src/io.jl`, CLI ở `scripts/run_eclat.jl`, script đối chiếu SPMF ở `experiments/spmf/`.
 
-## Thông tin cần bổ sung
+## Báo cáo
 
-- Thành viên và mã nhóm.
-- Bài báo gốc Eclat và ít nhất ba tài liệu liên quan.
-- Link Colab công khai, nguồn dữ liệu và checksum.
-- Lệnh kiểm thử: julia --project test/runtests.jl (cả baseline và bitset thật).
-
-## Hướng ứng dụng dự kiến
-
-Market Basket Analysis và dữ liệu sinh học; nhóm có thể đổi sang hướng khác được đề cho phép.
-
-
-## Nội dung Chương 1
-
-Bản viết chung: [docs/report/chapter1.md](docs/report/chapter1.md). Phần cài đặt có baseline, bitset, I/O/CLI, kiểm thử và đo tối ưu. `clean_spmf` và CLI dùng chung kiểm tra file nguồn/đích, bao gồm alias hoa/thường và hard link. Báo cáo IEEE tổng hợp sẽ ghép nội dung này cùng Chương 2–3.
+Phần cài đặt trình bày hai phiên bản Eclat, CLI và kiểm thử. Báo cáo IEEE tổng hợp phần cài đặt, thực nghiệm và hai ứng dụng. [Chương cài đặt](docs/report/chapter1.md) · [Nguồn báo cáo và hướng dẫn biên dịch](docs/report/README.md)
 
 ## Chuẩn bị benchmark
 
-Đã chuẩn bị Chess, Mushroom, Retail, Accidents và T10I4D100K từ FIMI.
-Tải lại/kiểm tra/chuẩn hóa: `julia --project=. scripts/prepare_benchmarks.jl`.
-Dùng file data/processed/*.txt cho mọi miner; raw và processed được giữ ngoài Git.
-Nguồn, checksum và thống kê: [data/README.md](data/README.md), [data/datasets.toml](data/datasets.toml).
+Từ thư mục gốc, chạy lệnh sau để tải, kiểm tra SHA-256 và chuẩn hóa Chess, Mushroom, Retail, Accidents và T10I4D100K.
+
+```bash
+julia --project=. scripts/prepare_benchmarks.jl
+```
+
+Dùng các file `data/processed/*.txt` làm đầu vào chung cho baseline, bitset và SPMF. [Nguồn FIMI](https://fimi.uantwerpen.be/data/) · [Hướng dẫn và bản lưu Kaggle đã xác minh](data/README.md#nguồn-và-điều-kiện-sử-dụng) · [Manifest và SHA-256](data/datasets.toml)
+
+| Bộ dữ liệu | Liên kết tải |
+|---|---|
+| Chess và Accidents | [Kaggle, bản 1](https://www.kaggle.com/datasets/mominazahidd/accidents-dat) |
+| Mushroom | [Kaggle, bản 1](https://www.kaggle.com/datasets/subhamila/mushroom) |
+| Retail | [FIMI, retail.dat](https://fimi.uantwerpen.be/data/retail.dat) |
+| T10I4D100K | [FIMI, T10I4D100K.dat](https://fimi.uantwerpen.be/data/T10I4D100K.dat) |

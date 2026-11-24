@@ -1,0 +1,7 @@
+encoding,class,minsup,frequent_singles,candidate_pairs,tested_pairs
+nucleotide,EI,30%,44,858,23
+nucleotide,IE,30%,58,1522,21
+nucleotide,N,30%,0,0,0
+purine_pyrimidine,EI,60%,9,18,8
+purine_pyrimidine,IE,60%,25,244,81
+purine_pyrimidine,N,60%,0,0,0

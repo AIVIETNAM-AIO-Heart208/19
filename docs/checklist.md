@@ -86,7 +86,7 @@
 - [x] Đủ biểu đồ runtime–minsup, số itemset–minsup, peak RAM và scalability.
 - [x] Có thực nghiệm độ dài giao dịch nếu phù hợp.
 - [x] Chương 2 có phân tích số liệu và ít nhất 2 đề xuất tối ưu.
-- [ ] **Cả hai người đã chốt dataset và thử chuyển đổi dữ liệu cho ứng dụng mình phụ trách ở tuần 3.**
+- [x] **Cả hai người đã chốt dataset và thử chuyển đổi dữ liệu cho ứng dụng mình phụ trách ở tuần 3.**
 
 ---
 
@@ -95,28 +95,29 @@
 ### Người A — Ứng dụng 1 và demo
 
 **Goal 9. Ứng dụng 1 (25%) — ưu tiên Market Basket Analysis**
-- [ ] Chọn một trong hai hướng của đề: **Market Basket Analysis** hoặc **Event Log**.
-- [ ] Chọn dataset thực; viết code **chuyển dữ liệu gốc thành transaction trong notebook**.
-- [ ] Dùng **Eclat của nhóm** chạy mining, không dùng thư viện FIM làm thay.
-- [ ] **Nếu Market Basket:** sinh association rules theo minsup/minconf; trình bày **top-10 luật theo lift** và giải thích ý nghĩa kinh doanh.
-- [ ] **Nếu Event Log:** phân tích tổ hợp sự kiện thường xuyên và khả năng phát hiện lỗi/bất thường.
-- [ ] Viết nội dung báo cáo về Ứng dụng 1, kèm dữ liệu, biểu đồ/bảng và nhận xét.
+- [x] Chọn **Market Basket Analysis** với [UCI Online Retail](https://archive.ics.uci.edu/dataset/352/online%2Bretail). Mỗi hóa đơn (`InvoiceNo`) là một giỏ; mỗi mã hàng (`StockCode`) xuất hiện tối đa một lần trong giỏ.
+- [x] Chuyển dữ liệu gốc thành transaction trong [notebook](../notebooks/demo.ipynb).
+- [x] Khai phá toàn bộ giỏ hợp lệ bằng Eclat của nhóm.
+- [x] Sinh luật theo minsup và minconf, trình bày [top-10 theo lift](../results/metrics/online_retail_rules.md) và giải thích ý nghĩa kinh doanh.
+- Không áp dụng hướng Event Log vì nhóm đã chọn Market Basket Analysis.
+- [x] Viết [báo cáo ứng dụng 1](report/market_basket.md) kèm dữ liệu, bảng và nhận xét.
 
 **Goal 10. Demo Colab, README và tích hợp repository**
-- [ ] Tạo/tích hợp notebook demo trên **Google Colab**: chạy Eclat và tái tạo kết quả **cả hai ứng dụng**.
-- [ ] Viết README: thành viên, hướng dẫn cài đặt/chạy, ví dụ, link Colab, link dataset, lệnh kiểm thử.
-- [ ] Đảm bảo repo GitHub **public**, cấu trúc rõ ràng, giữ lịch sử commit minh bạch.
-- [ ] Nếu dữ liệu lớn, host trên **Hugging Face hoặc Kaggle** và gắn link công khai trong README.
-- [ ] Gắn output của **lần chạy test cuối** vào README; kiểm tra notebook chạy sạch.
+- [x] Tạo/tích hợp notebook demo trên **Google Colab**: chạy Eclat và tái tạo kết quả **cả hai ứng dụng**.
+- [x] Viết README: thành viên, hướng dẫn cài đặt/chạy, ví dụ, link Colab, link dataset, lệnh kiểm thử.
+- [x] Đảm bảo repo GitHub **public**, cấu trúc rõ ràng, giữ lịch sử commit minh bạch.
+- [x] Gắn link công khai cho đủ năm bộ benchmark trong README theo phương án nhóm đã chốt.
+  Chess, Mushroom và Accidents có bản Kaggle khớp SHA-256. Retail và T10I4D100K dùng nguồn FIMI gốc. [Nguồn benchmark](../data/README.md#nguồn-và-điều-kiện-sử-dụng) · [Yêu cầu lưu trữ trong đề](itemset.md#tổ-chức-đồ-án-và-nộp-bài)
+- [x] Gắn output của **lần chạy test cuối** vào README; kiểm tra notebook chạy sạch.
 
 ### Người B — Ứng dụng 2 và báo cáo tổng
 
 **Goal 11. Ứng dụng 2 (25%) — ưu tiên dữ liệu sinh học**
-- [ ] Chọn một trong hai hướng của đề: **genome/protein** hoặc **visual patterns trên ảnh**.
-- [ ] Chọn dataset phù hợp; viết code **chuyển dữ liệu thành transaction trong notebook**.
-- [ ] Dùng **Eclat của nhóm** khai thác frequent itemset trên dữ liệu đã chuyển.
-- [ ] **Nếu sinh học:** giải thích ý nghĩa sinh học của các pattern; tránh diễn giải vượt quá khả năng dữ liệu.
-- [ ] **Nếu hình ảnh:** dùng biểu diễn như bag of visual words (descriptors → codebook k-means → transaction) và phân tích ý nghĩa các mẫu trực quan.
+- [x] Chọn hướng **genome**: [UCI Splice-junction Gene Sequences](https://doi.org/10.24432/C5M888), mỗi đoạn DNA là một giao dịch, item là cặp (vị trí, nucleotide).
+- [x] Chuyển dữ liệu thành transaction trong [notebook](../notebooks/demo.ipynb) (phần Ứng dụng 2).
+- [x] Khai phá từng lớp bằng Eclat của nhóm.
+- [x] Giải thích ý nghĩa sinh học của các pattern và những điều dữ liệu không cho phép kết luận ([ghi chú thiết kế](splice_notes.md)).
+- Không áp dụng hướng hình ảnh vì nhóm đã chọn dữ liệu sinh học.
 - [ ] Viết nội dung báo cáo về Ứng dụng 2, kèm dữ liệu, kết quả và nhận xét.
 
 **Goal 12. Hoàn thiện báo cáo và kiểm tra nộp bài**
