@@ -103,11 +103,12 @@
 - [x] Viết [báo cáo ứng dụng 1](report/market_basket.md) kèm dữ liệu, bảng và nhận xét.
 
 **Goal 10. Demo Colab, README và tích hợp repository**
-- [ ] Tạo/tích hợp notebook demo trên **Google Colab**: chạy Eclat và tái tạo kết quả **cả hai ứng dụng**.
-- [ ] Viết README: thành viên, hướng dẫn cài đặt/chạy, ví dụ, link Colab, link dataset, lệnh kiểm thử.
-- [ ] Đảm bảo repo GitHub **public**, cấu trúc rõ ràng, giữ lịch sử commit minh bạch.
-- [ ] Nếu dữ liệu lớn, host trên **Hugging Face hoặc Kaggle** và gắn link công khai trong README.
-- [ ] Gắn output của **lần chạy test cuối** vào README; kiểm tra notebook chạy sạch.
+- [x] Tạo/tích hợp notebook demo trên **Google Colab**: chạy Eclat và tái tạo kết quả **cả hai ứng dụng**.
+- [x] Viết README: thành viên, hướng dẫn cài đặt/chạy, ví dụ, link Colab, link dataset, lệnh kiểm thử.
+- [x] Đảm bảo repo GitHub **public**, cấu trúc rõ ràng, giữ lịch sử commit minh bạch.
+- [x] Gắn link công khai cho đủ năm bộ benchmark trong README theo phương án nhóm đã chốt.
+  Chess, Mushroom và Accidents có bản Kaggle khớp SHA-256. Retail và T10I4D100K dùng nguồn FIMI gốc. [Nguồn benchmark](../data/README.md#nguồn-và-điều-kiện-sử-dụng) · [Yêu cầu lưu trữ trong đề](itemset.md#tổ-chức-đồ-án-và-nộp-bài)
+- [x] Gắn output của **lần chạy test cuối** vào README; kiểm tra notebook chạy sạch.
 
 ### Người B — Ứng dụng 2 và báo cáo tổng
 
