@@ -91,7 +91,7 @@ không ghi đè dữ liệu gốc.
 Mỗi bản được đối chiếu từng itemset và support với kết quả tham chiếu do SPMF sinh ra và với một chương trình
 vét cạn độc lập trên dữ liệu nhỏ. Bảng~\ref{tab:fixtures} liệt kê các CSDL kiểm thử: 27 trường hợp minsup trên
 7 tệp (6 CSDL khác nhau, vì hai tệp là hai bản làm sạch của cùng một dữ liệu), tổng 552 itemset tham chiếu
-qua các ngưỡng; cả hai bản khớp 100\%. Ngoài ra, bộ test đối chiếu vét cạn mọi CSDL 3 giao dịch trên 3 item ở
+qua các ngưỡng; cả hai bản khớp 100\%. Ngoài ra, bộ kiểm thử đối chiếu vét cạn mọi CSDL 3 giao dịch trên 3 item ở
 $\theta = 1, 2, 3$ (1.536 phép so sánh), 40 CSDL ngẫu nhiên có seed cố định, các độ dài 63/64/65 và 127/128/129
 giao dịch để kiểm biên từ máy của bitset, cùng các trường hợp CSDL rỗng, ngưỡng lớn hơn $N$, item 0 và ID lớn.
 
@@ -118,7 +118,7 @@ Tệp CSDL & minsup & Itemset & Khớp \\
 \end{table}
 
 % [CẦN CẬP NHẬT] Số test lấy từ lần chạy cuối cùng trước khi nộp (README cũng ghi số này).
-Bộ test chạy bằng \texttt{julia --project test/runtests.jl}; một test về symlink được đánh dấu bỏ qua trên
+Bộ kiểm thử chạy bằng \texttt{julia --project test/runtests.jl}; một ca kiểm thử về symlink được đánh dấu bỏ qua trên
 Windows vì hệ điều hành không cho tạo symlink khi thiếu quyền.
 
 \subsection{Độ phức tạp}
@@ -126,15 +126,15 @@ Windows vì hệ điều hành không cho tạo symlink khi thiếu quyền.
 Gọi $M$ là tổng số lần xuất hiện item, $U$ số item phân biệt, $F$ số item đơn phổ biến và $w = 64$ số bit của
 một từ máy. Dựng TID-list tốn $O(N + M)$ kỳ vọng; giao hai danh sách $a$, $b$ tốn $O(|a| + |b|)$. Dựng bitset
 cần $O(F \lceil N/w \rceil)$ từ máy, và mỗi phép giao hoặc đếm tốn $O(\lceil N/w \rceil)$, không phụ thuộc
-support. Tổng thời gian còn phụ thuộc số ứng viên được thử và độ dài kết quả; có thể có tới $2^F - 1$ tập phổ
-biến nên không thể khẳng định thuật toán tuyến tính theo $N$. Về bộ nhớ, TID-list dọc dùng $O(M + U)$, còn
+support. Tổng thời gian còn phụ thuộc số ứng viên được thử và độ dài kết quả; có thể có tới $2^F - 1$ itemset
+phổ biến nên không thể khẳng định thuật toán tuyến tính theo $N$. Về bộ nhớ, TID-list dọc dùng $O(M + U)$, còn
 bitset dọc dùng $O(F \lceil N/w \rceil)$ từ máy.
 
 \subsection{Đo tác động của tối ưu}
 \label{sec:impl-opt}
 
 Hai CSDL tổng hợp Bernoulli với seed 42 kiểm soát mật độ: dày ($N = 12.000$, 24 item, xác suất 0,6) và thưa
-($N = 20.000$, 500 item, xác suất 0,01). Thời gian gồm kiểm tra input, dựng dữ liệu dọc, duyệt sâu và tạo kết
+($N = 20.000$, 500 item, xác suất 0,01). Thời gian gồm kiểm tra đầu vào, dựng dữ liệu dọc, duyệt sâu và tạo kết
 quả, không gồm sinh dữ liệu và đọc ghi tệp; mỗi cấu hình làm nóng trước, đo 7 lần, đổi lượt chạy giữa hai bản
 và báo trung vị. Bộ nhớ cấp phát là tổng cấp phát của lời gọi, khác với RAM đỉnh (peak RSS; RSS
 là resident set size, bộ nhớ thường trú) của tiến trình.

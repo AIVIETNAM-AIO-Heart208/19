@@ -25,22 +25,22 @@ là $2^{20}$ byte.
 \centering
 \footnotesize
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}p{0.30\linewidth}p{0.66\linewidth}@{}}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.30\linewidth}p{0.66\linewidth}@{}}
 \toprule
 Thuật ngữ & Nghĩa trong báo cáo \\
 \midrule
 item, itemset & phần tử; tập phần tử (tập mục) \\
-giao dịch, TID & một dòng của CSDL; chỉ số của giao dịch \\
-support & số giao dịch chứa itemset (support tuyệt đối) \\
+giao dịch, TID & một dòng của cơ sở dữ liệu (CSDL); chỉ số của giao dịch \\
+support & số giao dịch chứa itemset (support tuyệt đối); chia cho số giao dịch thì là support tương đối, viết theo \% \\
 minsup & ngưỡng support tối thiểu, viết theo \% số giao dịch \\
-itemset phổ biến & itemset có support $\ge$ minsup; tên bài toán theo đề là khai thác tập phổ biến \\
+itemset phổ biến & itemset có support tương đối $\ge$ minsup; tên bài toán theo đề là khai thác tập phổ biến \\
 TID-list & danh sách tăng dần các TID chứa một itemset \\
 bitset, mask & biểu diễn dọc bằng bit; mask là vector $N$ bit của một itemset \\
 bản cơ bản, bản bitset & hai cài đặt của nhóm, dùng TID-list và bitset; bản bitset là bản tối ưu \\
 benchmark & bộ dữ liệu dùng chung để so sánh các chương trình \\
 dày, thưa & mật độ (số item trung bình mỗi giao dịch chia số item phân biệt) cao hoặc thấp \\
 thời gian toàn trình & tính từ lúc khởi động tới khi ghi xong kết quả \\
-RAM đỉnh (peak RSS) & bộ nhớ thường trú lớn nhất của tiến trình \\
+RAM đỉnh (peak RSS) & bộ nhớ thường trú (resident set size) lớn nhất của tiến trình \\
 confidence, lift, minconf & độ tin cậy, độ nâng của luật kết hợp; ngưỡng confidence (Mục~\ref{sec:app-basket}) \\
 \bottomrule
 \end{tabular}

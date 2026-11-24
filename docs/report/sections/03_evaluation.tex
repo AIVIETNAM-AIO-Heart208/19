@@ -57,7 +57,7 @@ nóng. Ngưỡng tuyệt đối tính theo (\ref{eq:threshold}) bằng số hữ
 tập cặp (itemset, support); thứ tự dòng trong tệp không ảnh hưởng. Cả 35/35 cấu hình (5 bộ × 7 minsup) khớp
 hoàn toàn: cùng số itemset và cùng support ở từng itemset, tức tỉ lệ khớp 100\% ở mọi dòng
 (Bảng~\ref{tab:correct}; bảng đủ 35 dòng ở \texttt{docs/report/correctness\_benchmarks.md}). Vì không có sai lệch
-nên không có nguyên nhân sai lệch cần phân tích. Bản cơ bản TID-list được đối chiếu SPMF trên 27 trường hợp
+nên không có nguyên nhân sai lệch cần phân tích. Bản cơ bản (TID-list) được đối chiếu SPMF trên 27 trường hợp
 nhỏ ở Mục~\ref{sec:impl}; ở sáu cấu hình đo bộ nhớ (Mục~\ref{sec:eval-mem}), số itemset của hai bản bằng nhau
 và bằng số đã khớp SPMF.
 
@@ -87,7 +87,7 @@ Tổng & & & 35/35 \\
 \label{sec:eval-runtime}
 
 Hình~\ref{fig:runtime} vẽ thời gian toàn trình của hai chương trình trên cùng hệ trục cho từng bộ, Hình~\ref{fig:itemsets}
-vẽ số itemset; Bảng~\ref{tab:runtime} ghi trung vị ở hai đầu dải. Run đo gồm 350 mẫu chính thức
+vẽ số itemset; Bảng~\ref{tab:runtime} ghi trung vị ở hai đầu dải. Đợt đo gồm 350 mẫu chính thức
 (35 cấu hình × 2 chương trình × 5 lần), mọi tiến trình đều thành công.
 
 \begin{figure*}[t]
@@ -254,10 +254,10 @@ của tiến trình: 236--260 MB trước khai thác ở bốn bộ nhỏ và v�
 đỉnh hai bản chênh nhau không quá 12 MB. Chênh lệch rõ chỉ ở hai cấu hình. Trên Accidents 80\%, bản cơ bản đạt
 665,6 MB so với 433,4 MB của bitset: mỗi TID-list dài khoảng 300 nghìn phần tử (2,4 MB) và mỗi phép giao tạo
 thêm một danh sách gần dài như vậy. Trên Retail 0,1\%, bitset đạt 386,3 MB so với 314,3 MB, delta 129,2 so với
-56,0 MB: ngoài 23,5 MB mask ở gốc, mỗi phép giao cấp một mask mới dài đủ 88.162 bit (khoảng 11 KB) kể cả khi
+56,0 MB: ngoài 23,5 MB mask ở gốc, mỗi phép giao cấp một mask mới dài đủ 88.162 bit (khoảng 11.000 byte) kể cả khi
 kết quả bị loại, còn TID-list con thì ngắn theo support. Về thời gian riêng lời gọi khai thác, bitset nhanh hơn
 bản cơ bản ở cả sáu cấu hình, từ khoảng 146 lần ở Chess đến chỉ 1,25 lần ở Retail 0,1\%, nhưng không tối ưu
-bộ nhớ cho mọi input: nó giảm RAM đỉnh rõ ở Accidents và tốn bộ nhớ hơn ở Retail 0,1\%.
+bộ nhớ cho mọi đầu vào: nó giảm RAM đỉnh rõ ở Accidents và tốn bộ nhớ hơn ở Retail 0,1\%.
 
 \subsection{Khả năng mở rộng theo số giao dịch}
 \label{sec:eval-scale}
@@ -267,7 +267,7 @@ dịch bằng MersenneTwister seed 42, lấy $\lfloor pN/100 \rfloor$ chỉ số
 tập con) rồi trả về thứ tự gốc, nên các tập
 con lồng nhau. Minsup tương đối giữ cố định (Retail 0,1\%, Accidents 75\%; Accidents dùng ngưỡng cao hơn để
 không gian tìm kiếm khả thi) và ngưỡng tuyệt đối tính lại theo (\ref{eq:threshold}) cho từng tập con. Mỗi cấu
-hình làm nóng một lần trên chính tập đó, đo 5 lần lời gọi hàm (gồm kiểm tra input, dựng mask, duyệt sâu và tạo
+hình làm nóng một lần trên chính tập đó, đo 5 lần lời gọi hàm (gồm kiểm tra đầu vào, dựng mask, duyệt sâu và tạo
 kết quả; không gồm đọc ghi), và kết quả được đối chiếu với SPMF từng itemset và support. Cả 15 cấu hình của
 Mục~\ref{sec:eval-scale} và~\ref{sec:eval-length} đều khớp.
 
@@ -352,7 +352,7 @@ Tăng $L$ từ 8 lên 24 chỉ nhân ba tổng số item đầu vào nhưng th�
 phổ biến; ở $L = 16$ và 20 có thêm đủ 2.016 cặp item, tổng 2.080 itemset, nên duyệt sâu phải đi xuống và thử
 giao ở mức tiếp theo dù không itemset ba item nào đủ ngưỡng; $L = 24$ bắt đầu có itemset ba item. Vì $N$ cố
 định, chênh lệch không đến từ mask dài thêm mà từ không gian tìm kiếm mở rộng. Từ $L = 16$ lên 20, số itemset
-giữ nguyên 2.080 nhưng thời gian vẫn tăng từ 55,583 lên 60,749 ms, cho thấy chi phí xử lý input và các ứng viên
+giữ nguyên 2.080 nhưng thời gian vẫn tăng từ 55,583 lên 60,749 ms, cho thấy chi phí xử lý đầu vào và các ứng viên
 bị loại cũng đáng kể. Khi tăng $L$, tổng item, mật độ và khả năng đồng xuất hiện tăng cùng lúc, nên đây là tổng
 ảnh hưởng trong mô hình sinh đã chọn, chưa cô lập được riêng độ dài.
 
@@ -416,6 +416,6 @@ Julia 1.11.9), nên các so sánh chéo chỉ để ước lượng độ lớn.
 và công thức kích thước, chưa có profile từng pha. So sánh với SPMF là thời gian toàn trình trên một máy, trung
 vị 5 lần, không kiểm định thống kê. Bộ nhớ đo 3 lần ở một mức minsup cho mỗi bộ (Retail hai mức); RAM đỉnh là
 của cả tiến trình và delta RSS có thể gồm rác chưa được thu gom. Thí nghiệm mở rộng dùng một seed cho mỗi họ tập
-con, nên năm lần đo lặp lại trên cùng input chứ không phải năm lần lấy mẫu độc lập. Năm điểm kích thước cũng
+con, nên năm lần đo lặp lại trên cùng đầu vào chứ không phải năm lần lấy mẫu độc lập. Năm điểm kích thước cũng
 không đủ để suy ra độ phức tạp tiệm cận. Toàn bộ số liệu thô, cấu hình, mã băm và lệnh tái lập nằm
 trong \texttt{results/metrics/} và \texttt{experiments/BENCHMARKS.md}.
