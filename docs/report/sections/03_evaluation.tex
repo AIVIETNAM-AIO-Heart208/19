@@ -1,0 +1,17 @@
+% Chương 2 của đề (thực nghiệm và đánh giá). Ngân sách: khoảng 4 trang.
+% Nguồn: docs/report/runtime_benchmarks.md, correctness_benchmarks.md, scalability.md,
+% memory_benchmarks.md, chapter2_evaluation.md; hình ở results/figures/.
+\section{Thực nghiệm và đánh giá}
+\label{sec:eval}
+
+\textbf{[Chưa viết.]} Dàn ý dự kiến:
+\begin{enumerate}
+\item Năm bộ dữ liệu FIMI (Chess, Mushroom, Accidents~\cite{geurts2003profiling},
+  Retail~\cite{brijs1999using}, T10I4D100K), bảng thống kê và dải minsup; làm sạch và kiểm SHA-256.
+\item Tính đúng: 35/35 cấu hình khớp SPMF từng itemset và support.
+\item Thời gian và số itemset theo minsup: hình runtime và số itemset cho từng bộ, so với SPMF (toàn trình).
+\item Bộ nhớ: RAM đỉnh và kích thước cấu trúc dọc của TID-list và bitset trên dữ liệu thật; ngưỡng hòa vốn $N/64$.
+\item Khả năng mở rộng theo số giao dịch (Retail, Accidents) và theo độ dài giao dịch.
+\item Điểm mạnh, điểm yếu so với SPMF và hai hướng tối ưu: chọn TID-list hay bitset theo support từng nút;
+  diffset~\cite{zaki2003fast}.
+\end{enumerate}
