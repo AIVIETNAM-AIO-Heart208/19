@@ -5,10 +5,96 @@
 \subsection{Phân tích giỏ hàng trên UCI Online Retail}
 \label{sec:app-basket}
 
-% Nguồn: docs/report/market_basket.md, results/metrics/online_retail_rules.md (phần của trưởng nhóm).
-\textbf{[Chưa viết.]} Dàn ý dự kiến: dữ liệu~\cite{chen2015onlineretail} và cách chuyển hóa đơn thành giao dịch;
-các bước làm sạch; khai thác ở minsup 1\%; sinh luật theo minconf 50\% với support, confidence và lift; bảng 10
-luật có lift cao nhất; ý nghĩa kinh doanh và giới hạn.
+% Nguồn: docs/report/market_basket.md và results/metrics/online_retail_rules.md (nội dung của trưởng nhóm,
+% chuyển sang LaTeX, giữ nguyên số liệu và nhận xét; số lẻ làm tròn 2 chữ số khi hiển thị).
+
+\textbf{Bài toán và dữ liệu.} Ứng dụng tìm các sản phẩm thường được mua cùng nhau để đề xuất cách trưng bày và
+bán theo bộ. Dữ liệu UCI Online Retail~\cite{chen2015onlineretail} ghi 541.909 dòng hàng của một nhà bán lẻ trực
+tuyến tại Anh từ tháng 12/2010 đến tháng 12/2011; workbook gốc được đối chiếu SHA-256 trước khi đọc. Mỗi hóa đơn
+(\texttt{InvoiceNo}) là một giỏ, tức một giao dịch; mỗi mã hàng (\texttt{StockCode}) được tính một lần trong giỏ, kể
+cả khi khách mua nhiều đơn vị hoặc cùng mã xuất hiện trên nhiều dòng. Các hóa đơn có cùng tập mặt hàng vẫn là các
+giao dịch riêng. Mã hàng được ánh xạ sang ID nguyên theo thứ tự từ điển.
+
+\textbf{Làm sạch.} Chương trình loại hóa đơn hủy (tiền tố \texttt{C} hoặc \texttt{c}), dòng thiếu mã hóa đơn hoặc
+mã hàng, và dòng có số lượng hoặc đơn giá thiếu, không hợp lệ hay không dương. Sau đó loại các mã không phải hàng
+hóa, xác định từ mô tả trong workbook: cước giao hàng (\texttt{POST}, \texttt{DOT}, \texttt{C2}), phí
+(\texttt{BANK CHARGES}, \texttt{AMAZONFEE}), điều chỉnh thủ công (\texttt{M}, \texttt{m}) và điều chỉnh nợ xấu
+(\texttt{B}). Bước này loại 2.310 dòng và làm 185 hóa đơn không còn mặt hàng nên bị bỏ (Bảng~\ref{tab:retail-clean}).
+Ví dụ, hóa đơn \texttt{536365} trở thành một giao dịch 7 mã hàng phân biệt.
+
+\begin{table}[t]
+\caption{Số dòng hàng, hóa đơn và mã hàng sau từng bước làm sạch UCI Online Retail}
+\label{tab:retail-clean}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Bước & Dòng hàng & Hóa đơn & Mã hàng \\
+\midrule
+Dữ liệu nguồn & 541.909 & 25.900 & 4.070 \\
+Lọc hủy, thiếu mã, số lượng, giá & 530.104 & 19.960 & 3.922 \\
+Bỏ mã phí, điều chỉnh, giỏ rỗng & 527.794 & 19.775 & 3.914 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Khai thác và sinh luật.} Bản bitset của nhóm khai thác trên toàn bộ 19.775 giỏ. Minsup 1\% tương ứng
+ngưỡng 198 giỏ theo (\ref{eq:threshold}) và cho 2.007 itemset phổ biến. Với mỗi itemset có ít nhất hai item,
+chương trình xét mọi cách tách thành hai vế $X \to Y$ (luật kết hợp~\cite{agrawal1993mining}) và giữ 956 luật có
+confidence đạt minconf 50\%. Gọi $N$ là số giỏ và $n(S)$ là số giỏ chứa toàn bộ tập $S$:
+\begin{equation}
+\begin{aligned}
+\mathrm{supp}(X \to Y) &= \frac{n(X \cup Y)}{N},\\
+\mathrm{conf}(X \to Y) &= \frac{n(X \cup Y)}{n(X)},\\
+\mathrm{lift}(X \to Y) &= \frac{\mathrm{conf}(X \to Y)}{n(Y)/N}.
+\end{aligned}
+\label{eq:rules}
+\end{equation}
+Confidence là tỉ lệ giỏ có $Y$ trong số giỏ có $X$; lift so confidence với tần suất nền của $Y$, lớn hơn 1 khi
+$X$ và $Y$ đi cùng nhau nhiều hơn mức kỳ vọng nếu độc lập. Luật được xếp giảm dần theo lift, rồi confidence, rồi
+số giỏ chứa đồng thời; các luật còn hòa xếp theo thứ tự từ điển của ID hai vế. Phép lọc và sắp xếp dùng giá trị
+chính xác, chỉ làm tròn khi hiển thị, và chương trình đếm lại ba số đếm của từng luật trong bảng bằng cách duyệt
+trực tiếp các giỏ.
+
+\begin{table}[t]
+\caption{Mười luật có lift cao nhất (minsup 1\%, minconf 50\%). T: HERB MARKER THYME (22916), R: ROSEMARY (22917),
+P: PARSLEY (22918), B: BASIL (22920); $n$: số giỏ chứa cả hai vế}
+\label{tab:retail-rules}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}rlrrrr@{}}
+\toprule
+Hạng & Luật & $n$ & Support & Confidence & Lift \\
+\midrule
+1 & \{R, P\} → T & 203 & 1,03\% & 94,42\% & 78,78 \\
+2 & T → \{R, P\} & 203 & 1,03\% & 85,65\% & 78,78 \\
+3 & \{T, P\} → R & 203 & 1,03\% & 95,31\% & 78,53 \\
+4 & R → \{T, P\} & 203 & 1,03\% & 84,58\% & 78,53 \\
+5 & \{T, B\} → R & 200 & 1,01\% & 95,24\% & 78,47 \\
+6 & R → \{T, B\} & 200 & 1,01\% & 83,33\% & 78,47 \\
+7 & \{R, B\} → T & 200 & 1,01\% & 93,46\% & 77,98 \\
+8 & T → \{R, B\} & 200 & 1,01\% & 84,39\% & 77,98 \\
+9 & T → R & 221 & 1,12\% & 93,25\% & 76,83 \\
+10 & R → T & 221 & 1,12\% & 92,08\% & 76,83 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Ý nghĩa kinh doanh.} Cả mười luật ở Bảng~\ref{tab:retail-rules} thuộc cùng một dòng sản phẩm: thẻ đánh dấu
+cây gia vị (herb marker). Trong 215 giỏ có thẻ hương thảo (rosemary) và mùi tây (parsley), 203 giỏ cũng có thẻ cỏ
+xạ hương (thyme): confidence 94,42\%, trong khi tần suất nền của thẻ cỏ xạ hương chỉ 1,20\% (237/19.775), nên lift
+78,78. Tương tự, trong 210 giỏ có thẻ cỏ xạ hương và húng quế (basil), 200 giỏ có thẻ hương thảo (confidence
+95,24\%, tần suất nền 1,21\%, tức 240/19.775). Cặp cỏ xạ hương → hương thảo xuất hiện trong 221 giỏ, nhiều hơn hai
+bộ ba trên (confidence 93,25\%, tức 221/237; lift 76,83), nên là ứng viên cho một gói hai sản phẩm. Các luật
+ngược chiều của cùng một cặp vế có chung lift nhưng có thể khác confidence (hạng 1 và 2). Cửa hàng có thể dùng vài
+bộ sản phẩm phân biệt này để thử trưng bày liền kề hoặc gợi ý bán kèm.
+
+\textbf{Giới hạn.} Dữ liệu mô tả hành vi trong các hóa đơn đã quan sát. Muốn đo tác động lên tỷ lệ mua, cần kiểm
+tra trên giao dịch mới hoặc làm thử nghiệm có nhóm so sánh. Phân tích chạy lại được bằng ô Ứng dụng 1 trong notebook demo
+hoặc lệnh \texttt{julia --project=. scripts/run\_market\_basket.jl <tệp kết quả> 1\% 50\%}, lệnh này tự tải workbook
+từ UCI nếu chưa có.
 
 \subsection{Mẫu DNA quanh vị trí cắt nối gen}
 \label{sec:app-splice}
