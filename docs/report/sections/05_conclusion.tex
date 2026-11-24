@@ -9,16 +9,17 @@ bản khớp SPMF từng itemset và support trên 27 trường hợp kiểm th�
 của năm bộ dữ liệu benchmark (Mục~\ref{sec:impl} và~\ref{sec:eval-correct}). Như vậy kết quả của cài đặt khớp
 hoàn toàn với SPMF trên mọi trường hợp đã thử.
 
-Thực nghiệm cho thấy lợi thế của bitset phụ thuộc vào support của các item còn lại sau khi lọc theo minsup, không
-phụ thuộc vào nhãn dày hay thưa của cả CSDL. Khi chỉ đo lời gọi khai thác, bitset nhanh hơn bản cơ bản ở cả sáu
+Thực nghiệm cho thấy bitset gọn hay tốn bộ nhớ hơn TID-list là do support của các item còn lại sau khi lọc theo
+minsup; nhãn dày hay thưa của cả CSDL không đủ để dự đoán điều này. Khi chỉ đo lời gọi khai thác, bitset nhanh hơn bản cơ bản ở cả sáu
 cấu hình đo trên dữ liệu thật, từ 1,25 lần (Retail 0,1\%) đến khoảng 146 lần (Chess 75\%). Theo
-(\ref{eq:breakeven}), bitset gọn hơn TID-list khi support tương đối của item trên khoảng 1,56\%: nó giảm RAM đỉnh
+(\ref{eq:breakeven}), bitset gọn hơn TID-list khi support tương đối của item trên khoảng 1,56\% (theo công thức): nó giảm RAM đỉnh
 ở Accidents 80\% từ 665,6 xuống 433,4 MB nhưng tốn bộ nhớ hơn ở Retail 0,1\% (386,3 so với 314,3 MB). So với SPMF
-theo thời gian toàn trình, bản bitset nhanh hơn ở 10/35 cấu hình, là các cấu hình dày có nhiều itemset (Chess từ
-70\% xuống 60\%, toàn bộ Accidents). SPMF nhanh hơn ở 25/35 cấu hình còn lại: các tác vụ nhỏ, nơi Julia mất gần
+theo thời gian toàn trình, bản bitset nhanh hơn ở 10/35 cấu hình, là các cấu hình có ít item phổ biến với support rất
+cao (Chess từ 70\% xuống 60\%, toàn bộ Accidents). SPMF nhanh hơn ở 25/35 cấu hình còn lại: các tác vụ nhỏ, nơi Julia mất gần
 cố định khoảng 1,4 giây mỗi lần chạy, và hai bộ thưa, chênh nhiều nhất 7,41 lần ở Retail 0,1\%. Trong dải đã đo,
-thời gian trên Accidents tăng gần tuyến tính theo số giao dịch, còn tăng độ dài giao dịch làm thời gian tăng
-khoảng 25,7 lần với bước nhảy khi xuất hiện các cặp item phổ biến.
+thời gian trên Accidents tăng gần tuyến tính theo số giao dịch, còn trên dữ liệu tổng hợp, tăng độ dài giao dịch
+$L$ từ 8 lên 24 (kéo theo mật độ và đồng xuất hiện tăng) đi cùng thời gian tăng khoảng 25,7 lần, với bước nhảy
+khi xuất hiện các cặp item phổ biến.
 
 Hai ứng dụng đều chạy bằng chính cài đặt của nhóm trên dữ liệu thực. Trên 19.775 hóa đơn của UCI Online
 Retail~\cite{chen2015onlineretail}, minsup 1\% cho 2.007 itemset phổ biến và 956 luật đạt minconf 50\%; mười luật có
@@ -27,13 +28,14 @@ bày liền kề hoặc bán kèm. Trên bộ UCI Splice-junction~\cite{uci1991s
 không được cho trước: motif donor \texttt{-1G +1G +2T +4A +5G} có ở 46,8\% chuỗi donor và không có ở chuỗi nào của
 lớp đối chứng, và lớp đối chứng không có itemset nào từ hai item trở lên ở mọi minsup đã chạy. Itemset còn cho
 biết điều mà một chuỗi mẫu chuẩn không cho: chỉ GT thì luật ``→ donor'' có confidence 0,77, cả cụm năm vị trí thì
-0,98; và các vị trí hai phía ranh giới có xu hướng cùng khớp ít hơn mức kỳ vọng nếu độc lập.
+0,98; và ở lớp donor, các vị trí hai phía ranh giới có xu hướng cùng khớp ít hơn mức kỳ vọng nếu độc lập.
 
 \textbf{Giới hạn.} Thời gian so với SPMF và bộ nhớ được đo trên hai máy khác nhau, nên so sánh chéo chỉ để ước
 lượng độ lớn. Thời gian so với SPMF là thời gian toàn trình, gồm khởi động, JIT và đọc ghi; các nhận định về
 nguyên nhân dựa trên cấu trúc mã và công thức kích thước, chưa có profile từng pha. Trong hai ứng dụng, đồng xuất
-hiện không chứng minh quan hệ nhân quả: luật giỏ hàng mô tả các hóa đơn đã quan sát, chưa đo tác động lên doanh
-số; mẫu DNA không cho biết cơ chế sinh học và chỉ đại diện cho một bộ dữ liệu linh trưởng nhỏ, cũ.
+hiện không chứng minh quan hệ nhân quả: luật giỏ hàng mô tả các hóa đơn đã quan sát, chưa đo tác động lên tỷ
+lệ mua; mẫu DNA không cho biết cơ chế sinh học và chỉ đại diện cho một bộ dữ liệu linh trưởng nhỏ, cũ, còn
+confidence của luật ``mẫu → lớp'' phụ thuộc tỉ lệ lớp do người dựng bộ dữ liệu chọn.
 
 \textbf{Hướng phát triển.} Theo Mục~\ref{sec:eval-future}, bước tiếp theo là chọn TID-list hay bitset theo support
 của từng nút, nhắm vào điểm yếu đo được ở Retail 0,1\% (chậm hơn SPMF và tốn bộ nhớ hơn bản cơ bản), và dùng
