@@ -38,9 +38,10 @@ T10I4D100K & 100.000 & 870 & 10,10 & 1,161 & 2 → 0,1 \\
 \end{table}
 
 Có hai kiểu đo thời gian. Khi so với SPMF (Mục~\ref{sec:eval-correct} và~\ref{sec:eval-runtime}), mỗi lần đo
-là một tiến trình mới và thời gian là \emph{toàn trình}: khởi động, biên dịch JIT của Julia, đọc dữ liệu, khai
-thác và ghi đầy đủ kết quả. Mỗi cấu hình chạy một lượt sơ bộ (không tính) và năm lần chính thức cho mỗi
-chương trình, đổi lượt Julia/SPMF giữa các lần; báo cáo trung vị và khoảng Q1--Q3, không loại mẫu nào. Phía
+là một tiến trình mới và thời gian là \emph{toàn trình}: khởi động, biên dịch JIT (just-in-time, biên dịch lúc
+chạy) của Julia, đọc dữ liệu, khai thác và ghi đầy đủ kết quả. Mỗi cấu hình chạy một lượt sơ bộ (không tính) và năm lần chính thức cho mỗi
+chương trình, đổi lượt Julia/SPMF giữa các lần; báo cáo trung vị và khoảng Q1--Q3 (tứ phân vị thứ nhất và thứ ba),
+không loại mẫu nào. Phía
 Julia là bản bitset, chạy một luồng (Julia 1.11.4); phía tham chiếu là Eclat của SPMF
 2.65~\cite{fournierviger2014spmf} trên Java Temurin 25.0.5+8 với \texttt{-Xmx2g} và một nhân. Máy đo dùng
 AMD Ryzen 7 7735HS, Windows. Vì thời gian gồm cả khởi động và nhập xuất, phép so này trả lời ``chương trình nào
@@ -173,7 +174,7 @@ khối lượng công việc. Các số phép giao suy ra từ cấu trúc vòng
 Đề yêu cầu đo RAM đỉnh tại minsup trung bình, so bản cơ bản với bản tối ưu. Mỗi bộ đo ở mức thứ tư trong dải
 bảy mức; Retail đo thêm mức thấp nhất 0,1\% để thấy trường hợp bitset bất lợi. Mỗi phép đo là một tiến trình
 Julia mới chạy một bản một lần; tiến trình biên dịch hàm trên một CSDL 3 giao dịch, đọc dữ liệu, gọi
-\texttt{GC.gc()} rồi ghi RSS trước khai thác và RAM đỉnh (\texttt{Sys.maxrss()}) sau khai thác. Mỗi cấu hình đo
+\texttt{GC.gc()} rồi ghi RSS (resident set size, bộ nhớ thường trú) trước khai thác và RAM đỉnh (\texttt{Sys.maxrss()}) sau khai thác. Mỗi cấu hình đo
 3 lần, đổi thứ tự hai bản, lấy trung vị; cả 36/36 phép đo thành công. Phép đo này chạy trên máy khác (AMD Ryzen 7
 5800H, Julia 1.11.9). Ba đại lượng được báo cáo, từ rộng đến hẹp: RAM đỉnh của cả tiến trình; delta RSS (đỉnh
 trừ RSS trước khai thác, chỉ ghi khi khai thác đẩy đỉnh lên cao hơn đỉnh đã có lúc khởi động); và kích thước
@@ -247,22 +248,23 @@ lần, nên ngưỡng hòa vốn thực tế của cách dựng hiện tại kho
 item còn lại sau khi lọc theo minsup, không phải nhãn dày/thưa của cả CSDL: cùng là Retail, tỉ lệ đi từ 2,67 ở
 0,75\% xuống 0,42 ở 0,1\%.
 
-\textbf{RAM đỉnh.} Phần lớn RAM đỉnh là nền của tiến trình: 236--260 MB trước khai thác ở bốn bộ nhỏ và vừa,
+\textbf{RAM đỉnh.} Bảng~\ref{tab:memory} và Hình~\ref{fig:memory} (trái) cho thấy phần lớn RAM đỉnh là nền
+của tiến trình: 236--260 MB trước khai thác ở bốn bộ nhỏ và vừa,
 360--380 MB ở Accidents do đọc 340.183 giao dịch. Vì vậy ở Chess, Mushroom, Retail 0,75\% và T10I4D100K, RAM
 đỉnh hai bản chênh nhau không quá 12 MB. Chênh lệch rõ chỉ ở hai cấu hình. Trên Accidents 80\%, bản cơ bản đạt
 665,6 MB so với 433,4 MB của bitset: mỗi TID-list dài khoảng 300 nghìn phần tử (2,4 MB) và mỗi phép giao tạo
 thêm một danh sách gần dài như vậy. Trên Retail 0,1\%, bitset đạt 386,3 MB so với 314,3 MB, delta 129,2 so với
 56,0 MB: ngoài 23,5 MB mask ở gốc, mỗi phép giao cấp một mask mới dài đủ 88.162 bit (khoảng 11 KB) kể cả khi
 kết quả bị loại, còn TID-list con thì ngắn theo support. Về thời gian riêng lời gọi khai thác, bitset nhanh hơn
-bản cơ bản ở cả sáu cấu hình, từ khoảng 146 lần ở Chess đến chỉ 1,25 lần ở Retail 0,1\%. Như vậy bitset nhanh
-hơn bản cơ bản trên cả sáu cấu hình đo bộ nhớ, nhưng không tối ưu bộ nhớ cho mọi input: nó giảm RAM đỉnh rõ ở Accidents
-và tốn bộ nhớ hơn ở Retail 0,1\%.
+bản cơ bản ở cả sáu cấu hình, từ khoảng 146 lần ở Chess đến chỉ 1,25 lần ở Retail 0,1\%, nhưng không tối ưu
+bộ nhớ cho mọi input: nó giảm RAM đỉnh rõ ở Accidents và tốn bộ nhớ hơn ở Retail 0,1\%.
 
 \subsection{Khả năng mở rộng theo số giao dịch}
 \label{sec:eval-scale}
 
 Từ Retail và Accidents, nhóm tạo các tập con 10\%, 25\%, 50\%, 75\% và 100\% số giao dịch: hoán vị chỉ số giao
-dịch bằng MersenneTwister seed 42, lấy $\lfloor pN/100 \rfloor$ chỉ số đầu rồi trả về thứ tự gốc, nên các tập
+dịch bằng MersenneTwister seed 42, lấy $\lfloor pN/100 \rfloor$ chỉ số đầu (với $p$ là tỉ lệ phần trăm của
+tập con) rồi trả về thứ tự gốc, nên các tập
 con lồng nhau. Minsup tương đối giữ cố định (Retail 0,1\%, Accidents 75\%; Accidents dùng ngưỡng cao hơn để
 không gian tìm kiếm khả thi) và ngưỡng tuyệt đối tính lại theo (\ref{eq:threshold}) cho từng tập con. Mỗi cấu
 hình làm nóng một lần trên chính tập đó, đo 5 lần lời gọi hàm (gồm kiểm tra input, dựng mask, duyệt sâu và tạo
@@ -304,8 +306,10 @@ $L$ (Mục~\ref{sec:eval-length})}
 
 Bảng~\ref{tab:scale} và Hình~\ref{fig:scale} cho thấy Accidents tăng gần tuyến tính: số giao dịch tăng khoảng 10
 lần thì trung vị tăng 10,36 lần, và $T/N$ chỉ đổi trong khoảng 0,550--0,569 $\mu$s/giao dịch (chênh khoảng
-3,6\%). Ở đây số item đơn phổ biến luôn là 14 và số itemset gần như không đổi (319 → 313), nên chủ yếu chiều dài
-mask $\lceil N/64 \rceil$ tăng theo $N$, khớp chi phí mỗi phép giao ở Mục~\ref{sec:impl}. Retail cũng tăng ở cả
+3,6\%). Ở đây số item đơn phổ biến luôn là 14 và số itemset gần như không đổi (319 → 313), nên các đại lượng tăng
+theo $N$ là chiều dài mask $\lceil N/64 \rceil$ (khớp chi phí mỗi phép giao ở Mục~\ref{sec:impl}) và tổng số
+item đầu vào cần kiểm tra và dựng mask (1.150.276 → 11.500.870); chưa đo tách nên không khẳng định phần nào
+quyết định. Retail cũng tăng ở cả
 năm điểm (thời gian tăng khoảng 7,97 lần khi $N$ tăng 10 lần) nhưng $T/N$ dao động từ 98,12 đến 177,45, nên dữ
 liệu không cho thấy tỉ lệ thuận $T = cN$; năm điểm cũng chưa đủ để kết luận tuyến tính hay phi tuyến. Ngoài
 $N$, số item xuất hiện cũng tăng từ 10.103 lên 16.470 và số item đơn phổ biến dao động quanh 2.100--2.200, nên
@@ -360,9 +364,10 @@ itemset và support. (2) Trên dữ liệu dày có kết quả lớn, thời gi
 xuống 60\% và toàn bộ Accidents, vì giao bitset không phụ thuộc support. (3) Tối ưu có đo lường: bitset nhanh
 hơn bản cơ bản ở cả sáu cấu hình đo trên dữ liệu thật và giảm RAM đỉnh ở Accidents 80\% từ 665,6 xuống 433,4 MB.
 
-\textbf{Điểm yếu.} (1) Chi phí cố định khoảng 1,4 giây cho mỗi lần chạy (khởi động và JIT của Julia) làm SPMF
-nhanh hơn ở mọi tác vụ nhỏ. (2) Trên dữ liệu thưa ở minsup thấp, bản bitset chậm hơn SPMF ở cả bảy mức của Retail
-và T10I4D100K, chậm nhất 7,41 lần ở Retail 0,1\%, vì mọi nút dùng mask dài $N$ bit dù support rất thấp. (3) Cũng
+\textbf{Điểm yếu.} (1) Chi phí gần như cố định khoảng 1,4 giây mỗi lần chạy (khởi động, JIT, đọc ghi; chưa đo
+tách từng pha) làm SPMF nhanh hơn ở các tác vụ nhỏ trên Chess và Mushroom. (2) Trên hai bộ thưa Retail và
+T10I4D100K, SPMF nhanh hơn ở cả bảy mức; chênh lệch lớn nhất là 7,41 lần ở Retail 0,1\%, nơi mọi nút dùng mask
+dài $N$ bit dù support rất thấp. (3) Cũng
 ở cấu hình đó, bitset tốn bộ nhớ hơn bản cơ bản (cấu trúc gốc 23,5 so với 9,9 MB; RAM đỉnh 386,3 so với 314,3
 MB). (4) Nhãn dày/thưa của cả CSDL không đủ để dự đoán: điều quyết định là minsup và support của các item còn lại.
 
@@ -410,5 +415,6 @@ Julia 1.11.9), nên các so sánh chéo chỉ để ước lượng độ lớn.
 và công thức kích thước, chưa có profile từng pha. So sánh với SPMF là thời gian toàn trình trên một máy, trung
 vị 5 lần, không kiểm định thống kê. Bộ nhớ đo 3 lần ở một mức minsup cho mỗi bộ (Retail hai mức); RAM đỉnh là
 của cả tiến trình và delta RSS có thể gồm rác chưa được thu gom. Thí nghiệm mở rộng dùng một seed cho mỗi họ tập
-con, nên không suy ra độ phức tạp tiệm cận từ năm điểm. Toàn bộ số liệu thô, cấu hình, mã băm và lệnh tái lập nằm
+con, nên năm lần đo lặp lại trên cùng input chứ không phải năm lần lấy mẫu độc lập. Năm điểm kích thước cũng
+không đủ để suy ra độ phức tạp tiệm cận. Toàn bộ số liệu thô, cấu hình, mã băm và lệnh tái lập nằm
 trong \texttt{results/metrics/} và \texttt{experiments/BENCHMARKS.md}.
