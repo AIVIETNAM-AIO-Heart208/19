@@ -13,9 +13,156 @@ luật có lift cao nhất; ý nghĩa kinh doanh và giới hạn.
 \subsection{Mẫu DNA quanh vị trí cắt nối gen}
 \label{sec:app-splice}
 
-% Nguồn: docs/splice_notes.md, results/applications/splice/, results/figures/splice/.
-\textbf{[Chưa viết.]} Dàn ý dự kiến: dữ liệu~\cite{uci1991splice,noordewier1990training} và kiến thức sinh học
-tối thiểu (exon, intron, donor, acceptor, quy tắc GT-AG); mã hóa (vị trí, nucleotide) và R/Y; làm sạch; chọn
-minsup 30\% và 60\% theo mức nền và lớp đối chứng; bảng itemset tối đại và mẫu chuẩn; hình số itemset và hình
-tỉ lệ theo vị trí; kiểm $\chi^2$ có hiệu chỉnh Bonferroni~\cite{burge1997prediction}; diễn giải~\cite{roca2013pick}
-và giới hạn.
+% Nguồn: docs/splice_notes.md (lý do từng lựa chọn), results/applications/splice/*.csv, results/figures/splice/.
+% Quy ước số: dấu chấm ngăn hàng nghìn, dấu phẩy thập phân.
+
+\textbf{Bài toán.} Gen của sinh vật bậc cao gồm các đoạn exon (được giữ lại để tạo protein) xen với intron (bị
+cắt bỏ). Vị trí cắt nối (splice site) là ranh giới giữa hai loại đoạn này: ranh giới exon → intron gọi là
+donor, ranh giới intron → exon gọi là acceptor. Sinh học đã biết intron gần như luôn bắt đầu bằng GT và kết
+thúc bằng AG (quy tắc GT-AG), quanh đó có một vùng mẫu chuẩn (consensus) dài hơn. Ứng dụng này hỏi: chỉ từ dữ
+liệu, Eclat có tìm lại được quy tắc đó không, và cho biết thêm gì so với một chuỗi mẫu chuẩn?
+
+\textbf{Dữ liệu.} Bộ UCI Splice-junction~\cite{uci1991splice,noordewier1990training} gồm 3.190 đoạn DNA linh
+trưởng, mỗi đoạn 60 nucleotide (A, C, G, T) quanh một vị trí, nhãn EI (donor), IE (acceptor) hoặc N (không
+phải vị trí cắt nối). Script tải dữ liệu từ UCI và dừng nếu mã SHA-256 khác bản đã ghim. Làm sạch: bỏ 184 bản
+trùng (cùng chuỗi, cùng lớp; phần lớn là cùng một gen ở nhiều loài linh trưởng nên sẽ bị đếm nhiều lần) và bỏ
+cả hai bản của chuỗi duy nhất mang hai nhãn IE và N. Không chọn nhãn theo quy tắc AG vì sẽ thành lập luận vòng
+tròn. Còn 3.004 chuỗi: 679 EI, 672 IE, 1.653 N. Vị trí có ký tự mơ hồ (N, D, R, S; 15 chuỗi) không sinh item,
+vì đoán base sẽ tạo ra item không có thật. Khai thác lại trên dữ liệu chưa làm sạch cho tập itemset gần như
+trùng (chỉ số Jaccard 0,89--1,00), nên bước làm sạch không làm đổi kết luận.
+
+\textbf{Mã hóa thành giao dịch.} Mỗi chuỗi là một giao dịch, mỗi item là một cặp (vị trí, nucleotide). Ví dụ
+\texttt{+1G} là ``G ngay sau ranh giới''; vị trí đánh số $-30..-1$ và $+1..+30$, không có 0. Có 240 item và
+mỗi giao dịch có đúng 60 item, nên dữ liệu dày như Chess, loại dữ liệu bản bitset chạy tốt (Mục~\ref{sec:eval}).
+TID-list của \texttt{+1G} là tập chuỗi có G ở $+1$, và theo (\ref{eq:intersect}) phép giao cho tập chuỗi khớp
+mọi vị trí của mẫu; một itemset phổ biến vì thế là một motif có khoảng trống (các vị trí không cần liền nhau).
+Phải giữ vị trí trong item: trên dữ liệu gốc, 93\% chuỗi N có ``GT'' ở đâu đó trong chuỗi, nhưng ``GT tại $+1,+2$''
+có ở 98,8\% chuỗi EI và chỉ 5,9\% chuỗi N (dữ liệu đã làm sạch). Mã hóa thứ hai thay base bằng nhóm hóa học:
+R (purin, A hoặc G) và Y (pyrimidin, C hoặc T), 120 item. Trước acceptor có một vùng giàu pyrimidin nhưng từng
+vị trí có thể là C hoặc T, nên mỗi item C hoặc T đạt minsup ở $-15..-5$ chỉ có ở 33,8--46,1\% chuỗi IE; gộp
+thành Y thì tín hiệu lộ ra. Hai mã hóa chạy riêng, vì gộp chung thì ``C tại $p$'' luôn kéo theo ``Y tại $p$'' và
+sinh ra các tổ hợp hiển nhiên.
+
+\textbf{Khai thác riêng từng lớp, N là đối chứng.} Ba lớp có kích thước khác nhau (EI 22,6\%, IE 22,4\%, N
+55,0\%), nên một ngưỡng chung trên toàn dữ liệu sẽ cho ngưỡng thực tế khác nhau ở mỗi lớp. Nhóm chạy Eclat
+riêng trên ba CSDL EI, IE, N với cùng minsup tương đối; lớp N được xử lý y hệt nên là nhóm đối chứng. Mọi
+itemset đều do hàm \texttt{eclat} của nhóm sinh ra. Để biết một mẫu của lớp EI có tỉ lệ bao nhiêu trong lớp N,
+nhóm đếm lại số chuỗi chứa mẫu ở cả ba lớp; ở chính lớp đã khai thác, số đếm lại phải bằng support của Eclat,
+nếu khác thì chương trình báo lỗi.
+
+\textbf{Chọn minsup theo mức nền.} Ở một vị trí bất kỳ, mỗi base chiếm khoảng 1/4 số chuỗi (R hoặc Y khoảng
+1/2), nên minsup phải cao hơn mức nền này thì item phổ biến mới có ý nghĩa. Bảng~\ref{tab:splice-counts} và
+Hình~\ref{fig:splice-counts} cho thấy lớp N có đủ 240 item đơn ở 20\%, 115 ở 25\% và 0 ở 30\%; với R/Y, có 59 ở
+50\% và 0 ở 60\%. Nhóm chọn 30\% (nucleotide) và 60\% (R/Y), mức đầu tiên của dải mà lớp đối chứng hoàn toàn
+trống. Không chọn 40\% vì mất hẳn vị trí $-3$ của mẫu chuẩn donor (\texttt{-3C} có ở 39,0\%, \texttt{-3A} ở
+31,7\% chuỗi EI); không chọn 20--25\% vì ngưỡng đã chạm mức nền và số itemset của EI tăng lên 866 rồi 2.324
+mà phần tăng thêm không phân biệt được với nhiễu. Ở mọi minsup đã chạy, lớp N không có itemset nào từ hai item
+trở lên, ở cả hai mã hóa.
+
+\begin{table}[t]
+\caption{Số itemset phổ biến theo lớp và minsup (mã hóa nucleotide; hàng cuối: R/Y). ``Tối đại'': itemset không
+nằm trong itemset phổ biến nào lớn hơn; ``Dài nhất'': số item của itemset dài nhất}
+\label{tab:splice-counts}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+minsup & EI & IE & N & Tối đại EI / IE & Dài nhất EI / IE \\
+\midrule
+50\% & 31 & 7 & 0 & 4 / 1 & 4 / 3 \\
+40\% & 63 & 59 & 0 & 6 / 14 & 5 / 3 \\
+\textbf{30\%} & \textbf{286} & \textbf{304} & \textbf{0} & 49 / 56 & 5 / 4 \\
+25\% & 866 & 640 & 115 & 141 / 117 & 6 / 4 \\
+20\% & 2.324 & 1.303 & 240 & 334 / 218 & 6 / 4 \\
+\midrule
+R/Y \textbf{60\%} & \textbf{103} & \textbf{785} & \textbf{0} & 6 / 89 & 6 / 6 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{splice/itemset_counts.pdf}
+\caption{Số itemset phổ biến của từng lớp theo minsup, hai mã hóa. Lớp đối chứng N chỉ có item đơn, và chỉ ở
+minsup chạm mức nền ngẫu nhiên}
+\label{fig:splice-counts}
+\end{figure}
+
+\textbf{Kết quả: Eclat tìm lại quy tắc GT-AG.} Ở 30\%, EI có 286 itemset nhưng chỉ 49 itemset tối đại; mọi
+itemset khác là tập con của chúng nên báo cáo trình bày itemset tối đại (Bảng~\ref{tab:splice-patterns}). Lọc
+tối đại là bước hậu xử lý trên kết quả Eclat, không khai thác lại. Motif donor dài nhất có support cao nhất là
+\texttt{-1G +1G +2T +4A +5G}: có ở 318/679 chuỗi EI (46,8\%) và 0/1.653 chuỗi N. Mười item đơn của EI có tỉ lệ
+ít nhất 1,5 lần so với N đều nằm trong vùng $-3..+6$ (Hình~\ref{fig:splice-enrich}), khớp mẫu chuẩn donor
+\texttt{MAG|GTRAGT} (M là A hoặc C, R là A hoặc G, dấu | là ranh giới). Ở IE, lõi acceptor \texttt{-3C -2A -1G}
+có ở 78,0\% chuỗi IE và 2,2\% chuỗi N; ở mã hóa R/Y, \texttt{-7Y -6Y -5Y -3Y -2R -1R} có ở 64,6\% chuỗi IE và
+1,4\% chuỗi N, tức vùng giàu pyrimidin ngay trước AG.
+
+\begin{table}[t]
+\caption{Một số itemset tối đại có support cao nhất. Tỉ lệ: phần trăm chuỗi của lớp chứa mẫu; N: phần trăm chuỗi
+lớp N chứa mẫu (đếm lại); conf.: confidence của luật ``mẫu → lớp''}
+\label{tab:splice-patterns}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{@{}llrrr@{}}
+\toprule
+Lớp & Itemset & Tỉ lệ & N & conf. \\
+\midrule
+EI & \texttt{-1G +1G +2T +4A +5G} & 46,8\% & 0\% & 0,98 \\
+EI & \texttt{-2A -1G +1G +2T +5G} & 38,0\% & 0\% & 0,93 \\
+EI & \texttt{+1G +2T +3G +4A +5G} & 35,5\% & 0\% & 0,98 \\
+IE & \texttt{-6C -3C -2A -1G} & 38,5\% & 0,5\% & 0,79 \\
+IE & \texttt{-11T -3C -2A -1G} & 35,6\% & 0,6\% & 0,87 \\
+IE (R/Y) & \texttt{-7Y -6Y -5Y -3Y -2R -1R} & 64,6\% & 1,4\% & 0,89 \\
+EI (R/Y) & \texttt{-1R +1R +2Y +3R +4R +5R} & 66,3\% & 1,7\% & 0,85 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{splice/position_enrichment.pdf}
+\caption{Tỉ lệ của từng item đơn trong lớp EI hoặc IE chia cho tỉ lệ trong lớp N, theo vị trí. Các item tăng
+mạnh tập trung quanh ranh giới, đúng vùng mẫu chuẩn}
+\label{fig:splice-enrich}
+\end{figure}
+
+\textbf{Điều Eclat cho biết thêm so với mẫu chuẩn.} Thứ nhất, chỉ GT chưa đủ: luật \texttt{+1G +2T} → EI có
+confidence 0,77, còn \texttt{-1G +1G +2T +4A +5G} → EI có confidence 0,98. Vị trí cắt nối được nhận ra nhờ cả
+một cụm nucleotide, không chỉ hai base. Thứ hai, mẫu chuẩn đầy đủ \texttt{MAGGTRAGT} (từ $-3$) chỉ khớp 27/679
+chuỗi EI (4,0\%), gần với con số 4\% mà tài liệu đi kèm bộ dữ liệu ghi cho luật khớp chính xác. Vị trí cắt nối
+thật chỉ khớp từng phần của mẫu chuẩn, và Eclat cho biết những tổ hợp nào thực sự hay đi cùng nhau, với tần suất
+bao nhiêu; điều này hợp với nhận xét rằng vị trí donor rất đa dạng và phần lớn được nhận ra nhờ bắt cặp base với
+U1 snRNA~\cite{roca2013pick}. Thứ ba, có 8/767 donor gốc không có GT tại $+1,+2$: một chuỗi toàn ký tự mơ hồ quanh
+ranh giới và 7 ngoại lệ thật, trong đó 4 là GC (\texttt{+1G +2C}).
+
+\textbf{Phụ thuộc giữa hai vị trí.} Với mỗi itemset 2 item phổ biến, nhóm tính lift và kiểm $\chi^2$ trên bảng
+$2 \times 2$ (có/không có từng item), chỉ đọc các cặp có mọi ô kỳ vọng $\ge 5$. Lift chưa đủ vì không cho biết
+độ lệch có vượt dao động ngẫu nhiên không; ngược lại, cặp \texttt{+1G,+2T} có ở gần mọi chuỗi EI nên một ô kỳ
+vọng chưa tới 1 chuỗi và $\chi^2$ ra 168 dù lift chỉ 1,003, nên bị loại. Kiểm nhiều cặp cùng lúc phải hiệu chỉnh
+Bonferroni: cặp được kiểm đã bị chọn theo chính số lần hai vị trí cùng xuất hiện (đạt minsup), nên số phép kiểm
+$m$ phải là mọi cặp item đơn phổ biến ở hai vị trí khác nhau có đủ điều kiện kỳ vọng, đạt minsup hay không:
+$m = 2642$. Một cặp được coi là phụ thuộc khi
+\begin{equation}
+p < \frac{\alpha}{m} = \frac{0{,}05}{2642} \approx 1{,}89 \cdot 10^{-5}
+\iff \chi^2 > 18{,}29,
+\label{eq:bonferroni}
+\end{equation}
+với $\alpha = 0{,}05$ là mức ý nghĩa chung và $\chi^2$ có 1 bậc tự do. Nếu chỉ chia cho 133 cặp thật sự được kiểm
+thì ngưỡng quá dễ. Ở EI (nucleotide) có 105 cặp đạt minsup, 23 cặp đủ điều kiện kỳ vọng và 6 cặp qua ngưỡng;
+ba trong số đó nối một vị trí phía exon với một vị trí phía intron và có lift $< 1$ (\texttt{-1G,+6T} lift 0,87,
+$\chi^2 = 44{,}4$; \texttt{-1G,+4A} 0,95; \texttt{-2A,+5G} 0,94). Rộng hơn, trong 23 cặp đủ điều kiện có 8 cặp nối
+hai phía của ranh giới trong vùng $-3..+6$, và 7/8 cặp có lift $< 1$. Nghĩa là hai phía của mẫu chuẩn cùng khớp
+\emph{ít hơn} mức kỳ vọng nếu độc lập; một mô hình coi mỗi vị trí độc lập sẽ bỏ sót điều này. Quan sát này phù
+hợp với nhận xét rằng các vị trí của tín hiệu donor phụ thuộc nhau~\cite{burge1997prediction}, nhưng dữ liệu
+không cho biết cơ chế.
+
+\textbf{Giới hạn.} Đồng xuất hiện không chứng minh cơ chế. Dữ liệu chỉ gồm linh trưởng, lấy từ GenBank cũ (bộ
+dữ liệu tặng cuối năm 1991) và chỉ một cửa sổ 60 nucleotide, nên không đại diện cho genome hiện nay. Confidence
+và lift phụ thuộc tỉ lệ lớp do người dựng bộ dữ liệu chọn (N chiếm khoảng một nửa), không phải tỉ lệ trong
+genome thật; vì vậy nhóm xếp hạng theo tỉ lệ so với N. Mã hóa theo vị trí cố định chỉ bắt được tín hiệu ở vị trí
+cố định so với ranh giới, nên không tìm được điểm nhánh (branch point) của intron. Chỉ cặp đạt minsup mới được
+kiểm $\chi^2$, nên hai vị trí né nhau mạnh có thể không xuất hiện. Toàn bộ phân tích chạy lại được bằng
+\texttt{julia --project scripts/splice\_patterns.jl}; phần ``Ứng dụng 2'' của notebook demo chạy script này vào
+thư mục tạm và so mọi bảng vừa tạo với bản đã commit.
