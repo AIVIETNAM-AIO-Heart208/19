@@ -122,7 +122,8 @@ luận.
 
 \textbf{Mã hóa thành giao dịch.} Mỗi chuỗi là một giao dịch, mỗi item là một cặp (vị trí, nucleotide). Ví dụ
 \texttt{+1G} là ``G ngay sau ranh giới''; vị trí đánh số $-30..-1$ và $+1..+30$, không có 0. Có 240 item và
-mỗi giao dịch có đúng 60 item (trừ 15 chuỗi có ký tự mơ hồ), nên dữ liệu dày như Chess, loại dữ liệu bản bitset chạy tốt (Mục~\ref{sec:eval}).
+mỗi giao dịch chứa tối đa 60 item (đủ 60 trừ 15 chuỗi có ký tự mơ hồ), nên mật độ khoảng 25\%: dữ liệu dày,
+dù chưa bằng Chess (49,3\%, Mục~\ref{sec:eval}).
 TID-list của \texttt{+1G} là tập chuỗi có G ở $+1$, và theo (\ref{eq:intersect}) phép giao cho tập chuỗi khớp
 mọi vị trí của mẫu; một itemset phổ biến vì thế là một motif có khoảng trống (các vị trí không cần liền nhau).
 Phải giữ vị trí trong item: trên dữ liệu gốc, 93\% chuỗi N có ``GT'' ở đâu đó trong chuỗi, nhưng ``GT tại $+1,+2$''
