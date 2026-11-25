@@ -77,17 +77,17 @@ python -m pip install -r experiments/requirements-figures.txt
 python -m unittest discover -s test -p "test_*figures.py"
 ```
 
-Kết quả ngày 24/11/2026 trên Windows với Julia 1.11.4 và Python 3.11.9.
+Kết quả ngày 25/11/2026 trên Windows với Julia 1.11.4 và Python 3.11.9.
 
 ```text
 Test Summary: | Pass  Broken  Total     Time
-EclatMining   | 4069       1   4070  1m36.3s
+EclatMining   | 4069       1   4070  1m30.9s
 ```
 
 Mục `Broken` là ca kiểm thử CLI được bỏ qua bằng `@test_skip` khi Windows không cho tạo symlink.
 
 ```text
-Ran 20 tests in 1.241s
+Ran 23 tests in 1.130s
 
 OK
 ```
@@ -125,7 +125,7 @@ Chi tiết (phiên bản, checksum, hành vi SPMF với input bẩn) ở `experi
 
 ## Báo cáo
 
-Phần cài đặt trình bày hai phiên bản Eclat, CLI và kiểm thử. Báo cáo IEEE tổng hợp phần cài đặt, thực nghiệm và hai ứng dụng. [Chương cài đặt](docs/report/chapter1.md) · [Nguồn báo cáo và hướng dẫn biên dịch](docs/report/README.md)
+Báo cáo IEEE trình bày hai phiên bản Eclat, kết quả thực nghiệm và hai ứng dụng. [Đọc báo cáo PDF](docs/Report.pdf) · [Chương cài đặt](docs/report/chapter1.md) · [Nguồn báo cáo và hướng dẫn biên dịch](docs/report/README.md)
 
 ## Chuẩn bị benchmark
 

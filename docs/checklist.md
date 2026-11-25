@@ -118,19 +118,19 @@
 - [x] Khai phá từng lớp bằng Eclat của nhóm.
 - [x] Giải thích ý nghĩa sinh học của các pattern và những điều dữ liệu không cho phép kết luận ([ghi chú thiết kế](splice_notes.md)).
 - Không áp dụng hướng hình ảnh vì nhóm đã chọn dữ liệu sinh học.
-- [ ] Viết nội dung báo cáo về Ứng dụng 2, kèm dữ liệu, kết quả và nhận xét.
+- [x] Viết nội dung báo cáo về Ứng dụng 2, kèm dữ liệu, kết quả và nhận xét.
 
 **Goal 12. Hoàn thiện báo cáo và kiểm tra nộp bài**
-- [ ] Ghép nội dung Chương 1–3 từ hai thành viên vào báo cáo tiếng Việt **10–15 trang** theo **IEEE conference format** (không tính tài liệu tham khảo/phụ lục).
-- [ ] Bổ sung công thức với giải thích ký hiệu, caption và tham chiếu hình/bảng.
-- [ ] Trích dẫn **bài báo gốc Eclat và ít nhất 3 tài liệu liên quan khác**.
-- [ ] Xuất đúng file **`docs/Report.pdf`**.
-- [ ] Kiểm tra sự khớp nhau giữa báo cáo, code, kết quả đo và demo.
+- [x] Ghép nội dung Chương 1–3 từ hai thành viên vào báo cáo tiếng Việt **10–15 trang** theo **IEEE conference format** (không tính tài liệu tham khảo/phụ lục).
+- [x] Bổ sung công thức với giải thích ký hiệu, caption và tham chiếu hình/bảng.
+- [x] Trích dẫn **bài báo gốc Eclat và ít nhất 3 tài liệu liên quan khác**.
+- [x] Xuất đúng file **`docs/Report.pdf`**.
+- [x] Kiểm tra sự khớp nhau giữa báo cáo, code, kết quả đo và demo.
 
 **Nghiệm thu cuối tuần 3 / trước khi nộp**
-- [ ] Ứng dụng 1 **và** Ứng dụng 2 đều chạy bằng Eclat của nhóm, có diễn giải kết quả.
-- [ ] Notebook Colab public chạy lại được từ đầu; seed ngẫu nhiên được cố định khi có bước ngẫu nhiên.
-- [ ] README đầy đủ; toàn bộ unit tests pass; `docs/Report.pdf` đúng yêu cầu.
+- [x] Ứng dụng 1 **và** Ứng dụng 2 đều chạy bằng Eclat của nhóm, có diễn giải kết quả.
+- [x] Notebook Colab public chạy lại được từ đầu; seed ngẫu nhiên được cố định khi có bước ngẫu nhiên.
+- [x] README đầy đủ; toàn bộ unit tests pass; `docs/Report.pdf` đúng yêu cầu.
 - [ ] **Người A kiểm tra chéo Goal 11–12; Người B kiểm tra chéo Goal 9–10.**
 - [ ] Cả hai đều giải thích được thuật toán, phần tối ưu và ứng dụng để chuẩn bị vấn đáp.
 - [ ] **Nộp duy nhất link GitHub public lên Moodle.**
