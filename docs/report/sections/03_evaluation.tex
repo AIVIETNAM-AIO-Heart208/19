@@ -309,9 +309,10 @@ lần thì trung vị tăng 10,36 lần, và $T/N$ chỉ đổi trong khoảng 0
 3,6\%). Ở đây số item đơn phổ biến luôn là 14 và số itemset gần như không đổi (319 → 313), nên các đại lượng tăng
 theo $N$ là chiều dài mask $\lceil N/64 \rceil$ (khớp chi phí mỗi phép giao ở Mục~\ref{sec:impl}) và tổng số
 item đầu vào cần kiểm tra và dựng mask (1.150.276 → 11.500.870); chưa đo tách nên không khẳng định phần nào
-quyết định. Retail cũng tăng ở cả
-năm điểm (thời gian tăng khoảng 7,97 lần khi $N$ tăng 10 lần) nhưng $T/N$ dao động từ 98,12 đến 177,45, nên dữ
-liệu không cho thấy tỉ lệ thuận $T = cN$; năm điểm cũng chưa đủ để kết luận tuyến tính hay phi tuyến. Ngoài
+quyết định. Retail cũng tăng ở cả năm điểm và, xét cả dải, tăng chậm hơn tỉ lệ thuận một chút: $N$ tăng 10 lần
+thì thời gian tăng khoảng 7,97 lần, nên nhóm xếp Retail vào loại gần tuyến tính. Đường tăng không đều: $T/N$ dao
+động từ 98,12 đến 177,45, và từ 10\% lên 25\% thời gian tăng 3,60 lần trong khi $N$ chỉ tăng khoảng 2,5 lần; với
+năm điểm đo, kết luận này chỉ đúng trong dải 10--100\%. Ngoài
 $N$, số item xuất hiện cũng tăng từ 10.103 lên 16.470 và số item đơn phổ biến dao động quanh 2.100--2.200, nên
 không chỉ một đại lượng khối lượng công việc thay đổi. Số itemset của Retail giảm từ 8.908 (10\%) xuống 7.576
 (25\%) rồi dao động nhẹ; điều này hợp lệ vì ngưỡng tuyệt đối tăng theo $N$ (từ 9 lên 23) nên tập con lồng nhau
