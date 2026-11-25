@@ -368,7 +368,9 @@ hơn bản cơ bản ở cả sáu cấu hình đo trên dữ liệu thật và 
 \textbf{Điểm yếu.} (1) Chi phí gần như cố định khoảng 1,4 giây mỗi lần chạy (khởi động, JIT, đọc ghi; chưa đo
 tách từng pha) làm SPMF nhanh hơn ở các tác vụ nhỏ trên Chess và Mushroom. (2) Trên hai bộ thưa Retail và
 T10I4D100K, SPMF nhanh hơn ở cả bảy mức; chênh lệch lớn nhất là 7,41 lần ở Retail 0,1\%, nơi mọi nút dùng mask
-dài $N$ bit dù support rất thấp. (3) Cũng
+dài $N$ bit dù support rất thấp. Eclat gốc~\cite{zaki2000scalable} dùng TID-list, có độ dài bằng support nên
+theo (\ref{eq:intersect}) ngắn dần khi itemset dài thêm và phép giao rẻ dần; mask bitset giữ nguyên độ dài $N$ ở
+mọi nút nên mất lợi thế này khi support thấp. (3) Cũng
 ở cấu hình đó, bitset tốn bộ nhớ hơn bản cơ bản (cấu trúc gốc 23,5 so với 9,9 MB; RAM đỉnh 386,3 so với 314,3
 MB). (4) Nhãn dày/thưa của cả CSDL không đủ để dự đoán: điều quyết định là minsup và support của các item còn lại.
 
