@@ -5,17 +5,262 @@
 \subsection{Phân tích giỏ hàng trên UCI Online Retail}
 \label{sec:app-basket}
 
-% Nguồn: docs/report/market_basket.md, results/metrics/online_retail_rules.md (phần của trưởng nhóm).
-\textbf{[Chưa viết.]} Dàn ý dự kiến: dữ liệu~\cite{chen2015onlineretail} và cách chuyển hóa đơn thành giao dịch;
-các bước làm sạch; khai thác ở minsup 1\%; sinh luật theo minconf 50\% với support, confidence và lift; bảng 10
-luật có lift cao nhất; ý nghĩa kinh doanh và giới hạn.
+% Nguồn: docs/report/market_basket.md và results/metrics/online_retail_rules.md (nội dung của trưởng nhóm,
+% chuyển sang LaTeX, giữ nguyên số liệu và nhận xét; số lẻ làm tròn 2 chữ số khi hiển thị).
+
+\textbf{Bài toán và dữ liệu.} Ứng dụng tìm các sản phẩm thường được mua cùng nhau để đề xuất cách trưng bày và
+bán theo bộ. Dữ liệu UCI Online Retail~\cite{chen2015onlineretail} ghi 541.909 dòng hàng của một nhà bán lẻ trực
+tuyến tại Anh từ tháng 12/2010 đến tháng 12/2011; workbook (tệp Excel) gốc được đối chiếu SHA-256 trước khi đọc. Mỗi hóa đơn
+(\texttt{InvoiceNo}) là một giỏ, tức một giao dịch; mỗi mã hàng (\texttt{StockCode}) được tính một lần trong giỏ, kể
+cả khi khách mua nhiều đơn vị hoặc cùng mã xuất hiện trên nhiều dòng. Các hóa đơn có cùng tập mặt hàng vẫn là các
+giao dịch riêng. Mã hàng được ánh xạ sang ID nguyên theo thứ tự từ điển.
+
+\textbf{Làm sạch.} Chương trình loại hóa đơn hủy (tiền tố \texttt{C} hoặc \texttt{c}), dòng thiếu mã hóa đơn hoặc
+mã hàng, và dòng có số lượng hoặc đơn giá thiếu, không hợp lệ hay không dương. Sau đó loại các mã không phải hàng
+hóa, xác định từ mô tả trong workbook: cước giao hàng (\texttt{POST}, \texttt{DOT}, \texttt{C2}), phí
+(\texttt{BANK CHARGES}, \texttt{AMAZONFEE}), điều chỉnh thủ công (\texttt{M}, \texttt{m}) và điều chỉnh nợ xấu
+(\texttt{B}). Bước này loại 2.310 dòng và làm 185 hóa đơn không còn mặt hàng nên bị bỏ (Bảng~\ref{tab:retail-clean}).
+Ví dụ, hóa đơn \texttt{536365} trở thành một giao dịch 7 mã hàng phân biệt.
+
+\begin{table}[t]
+\caption{Số dòng hàng, hóa đơn và mã hàng sau từng bước làm sạch UCI Online Retail}
+\label{tab:retail-clean}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Bước & Dòng hàng & Hóa đơn & Mã hàng \\
+\midrule
+Dữ liệu nguồn & 541.909 & 25.900 & 4.070 \\
+Lọc hủy, thiếu mã, số lượng, giá & 530.104 & 19.960 & 3.922 \\
+Bỏ mã phí, điều chỉnh, giỏ rỗng & 527.794 & 19.775 & 3.914 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Khai thác và sinh luật.} Bản bitset của nhóm khai thác trên toàn bộ 19.775 giỏ. Minsup 1\% tương ứng
+ngưỡng 198 giỏ theo (\ref{eq:threshold}) và cho 2.007 itemset phổ biến. Với mỗi itemset có ít nhất hai item,
+chương trình xét mọi cách tách thành hai vế $X \to Y$ (luật kết hợp~\cite{agrawal1993mining}) và giữ 956 luật có
+confidence đạt minconf (ngưỡng confidence tối thiểu) 50\%. Gọi $N$ là số giỏ và $n(S)$ là số giỏ chứa toàn bộ tập $S$:
+\begin{equation}
+\begin{aligned}
+\mathrm{supp}(X \to Y) &= \frac{n(X \cup Y)}{N},\\
+\mathrm{conf}(X \to Y) &= \frac{n(X \cup Y)}{n(X)},\\
+\mathrm{lift}(X \to Y) &= \frac{\mathrm{conf}(X \to Y)}{n(Y)/N}.
+\end{aligned}
+\label{eq:rules}
+\end{equation}
+Confidence là tỉ lệ giỏ có $Y$ trong số giỏ có $X$; lift so confidence với tần suất nền của $Y$, lớn hơn 1 khi
+$X$ và $Y$ đi cùng nhau nhiều hơn mức kỳ vọng nếu độc lập. Luật được xếp giảm dần theo lift, rồi confidence, rồi
+số giỏ chứa đồng thời; các luật còn hòa xếp theo thứ tự từ điển của ID hai vế. Phép lọc và sắp xếp dùng giá trị
+chính xác, chỉ làm tròn khi hiển thị, và chương trình đếm lại ba số đếm của từng luật trong bảng bằng cách duyệt
+trực tiếp các giỏ.
+
+\begin{table}[t]
+\caption{Mười luật có lift cao nhất (minsup 1\%, minconf 50\%). T, R, P, B: HERB MARKER THYME, ROSEMARY,
+PARSLEY, BASIL (mã hàng 22916, 22917, 22918, 22920); $n$: số giỏ chứa cả hai vế}
+\label{tab:retail-rules}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}rlrrrr@{}}
+\toprule
+Hạng & Luật & $n$ & Support & Confidence & Lift \\
+\midrule
+1 & \{R, P\} → T & 203 & 1,03\% & 94,42\% & 78,78 \\
+2 & T → \{R, P\} & 203 & 1,03\% & 85,65\% & 78,78 \\
+3 & \{T, P\} → R & 203 & 1,03\% & 95,31\% & 78,53 \\
+4 & R → \{T, P\} & 203 & 1,03\% & 84,58\% & 78,53 \\
+5 & \{T, B\} → R & 200 & 1,01\% & 95,24\% & 78,47 \\
+6 & R → \{T, B\} & 200 & 1,01\% & 83,33\% & 78,47 \\
+7 & \{R, B\} → T & 200 & 1,01\% & 93,46\% & 77,98 \\
+8 & T → \{R, B\} & 200 & 1,01\% & 84,39\% & 77,98 \\
+9 & T → R & 221 & 1,12\% & 93,25\% & 76,83 \\
+10 & R → T & 221 & 1,12\% & 92,08\% & 76,83 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Ý nghĩa kinh doanh.} Cả mười luật ở Bảng~\ref{tab:retail-rules} thuộc cùng một dòng sản phẩm: thẻ đánh dấu
+cây gia vị (herb marker). Trong 215 giỏ có thẻ hương thảo (rosemary) và mùi tây (parsley), 203 giỏ cũng có thẻ cỏ
+xạ hương (thyme): confidence 94,42\%, trong khi tần suất nền của thẻ cỏ xạ hương chỉ 1,20\% (237/19.775), nên lift
+78,78. Tương tự, trong 210 giỏ có thẻ cỏ xạ hương và húng quế (basil), 200 giỏ có thẻ hương thảo (confidence
+95,24\%, tần suất nền 1,21\%, tức 240/19.775). Cặp cỏ xạ hương → hương thảo xuất hiện trong 221 giỏ, nhiều hơn hai
+bộ ba trên (confidence 93,25\%, tức 221/237; lift 76,83), nên là ứng viên cho một gói hai sản phẩm. Các luật
+ngược chiều của cùng một cặp vế có chung lift nhưng có thể khác confidence (hạng 1 và 2). Nhóm có thể dùng vài
+bộ sản phẩm phân biệt này để thử trưng bày liền kề hoặc gợi ý bán kèm.
+
+\textbf{Giới hạn.} Dữ liệu mô tả hành vi trong các hóa đơn đã quan sát. Muốn đo tác động lên tỉ lệ mua, cần kiểm
+tra trên giao dịch mới hoặc làm thử nghiệm có nhóm so sánh. Phân tích chạy lại được bằng phần ``Phân tích giỏ hàng bằng
+Eclat'' của notebook demo hoặc lệnh \texttt{julia --project=. scripts/run\_market\_basket.jl <tệp kết quả> 1\% 50\%}, lệnh này tự tải workbook
+từ UCI nếu chưa có.
 
 \subsection{Mẫu DNA quanh vị trí cắt nối gen}
 \label{sec:app-splice}
 
-% Nguồn: docs/splice_notes.md, results/applications/splice/, results/figures/splice/.
-\textbf{[Chưa viết.]} Dàn ý dự kiến: dữ liệu~\cite{uci1991splice,noordewier1990training} và kiến thức sinh học
-tối thiểu (exon, intron, donor, acceptor, quy tắc GT-AG); mã hóa (vị trí, nucleotide) và R/Y; làm sạch; chọn
-minsup 30\% và 60\% theo mức nền và lớp đối chứng; bảng itemset tối đại và mẫu chuẩn; hình số itemset và hình
-tỉ lệ theo vị trí; kiểm $\chi^2$ có hiệu chỉnh Bonferroni~\cite{burge1997prediction}; diễn giải~\cite{roca2013pick}
-và giới hạn.
+% Nguồn: docs/splice_notes.md (lý do từng lựa chọn), results/applications/splice/*.csv, results/figures/splice/.
+% Quy ước số: dấu chấm ngăn hàng nghìn, dấu phẩy thập phân.
+
+\textbf{Bài toán.} Gen của sinh vật bậc cao gồm các đoạn exon (được giữ lại để tạo protein) xen với intron (bị
+cắt bỏ). Vị trí cắt nối (splice site) là ranh giới giữa hai loại đoạn này: ranh giới exon → intron gọi là
+donor, ranh giới intron → exon gọi là acceptor. Sinh học đã biết intron gần như luôn bắt đầu bằng GT và kết
+thúc bằng AG (quy tắc GT-AG), quanh đó có một vùng mẫu chuẩn (consensus) dài hơn. Ứng dụng này hỏi: chỉ từ dữ
+liệu, Eclat có tìm lại được quy tắc đó không, và cho biết thêm gì so với một chuỗi mẫu chuẩn?
+
+\textbf{Dữ liệu.} Bộ UCI Splice-junction~\cite{uci1991splice,noordewier1990training} gồm 3.190 đoạn DNA linh
+trưởng, mỗi đoạn 60 nucleotide (A, C, G, T) quanh một vị trí, nhãn EI (donor), IE (acceptor) hoặc N (không
+phải vị trí cắt nối). Script tải dữ liệu từ UCI và dừng nếu mã SHA-256 khác bản đã ghim. Làm sạch: bỏ 184 bản
+trùng (cùng chuỗi, cùng lớp; 107/124 nhóm trùng gồm các locus GenBank khác nhau, theo tên locus thường là
+cùng một gen ở nhiều loài linh trưởng hoặc các bản sao gen, nên sẽ bị đếm nhiều lần) và bỏ
+cả hai bản của chuỗi duy nhất mang hai nhãn IE và N. Không chọn nhãn theo quy tắc AG vì sẽ thành lập luận vòng
+tròn. Còn 3.004 chuỗi: 679 EI, 672 IE, 1.653 N. Vị trí có ký tự mơ hồ (N, D, R, S; 15 chuỗi) không sinh item,
+vì đoán base sẽ tạo ra item không có thật; riêng ở mã hóa R/Y bên dưới, ký tự R có nghĩa xác định (A hoặc G)
+nên vẫn sinh item. Khai thác lại trên dữ liệu chưa làm sạch cho tập itemset gần như trùng (chỉ số Jaccard, tức
+số itemset chung chia cho số itemset của hợp hai tập, từ 0,89 đến 1,00), nên bước làm sạch không làm đổi kết
+luận.
+
+\textbf{Mã hóa thành giao dịch.} Mỗi chuỗi là một giao dịch, mỗi item là một cặp (vị trí, nucleotide). Ví dụ
+\texttt{+1G} là ``G ngay sau ranh giới''; vị trí đánh số $-30..-1$ và $+1..+30$, không có 0. Có 240 item và
+mỗi giao dịch chứa tối đa 60 item (đủ 60 trừ 15 chuỗi có ký tự mơ hồ), nên mật độ khoảng 25\%: dữ liệu dày,
+dù chưa bằng Chess (49,3\%, Mục~\ref{sec:eval}).
+TID-list của \texttt{+1G} là tập chuỗi có G ở $+1$, và theo (\ref{eq:intersect}) phép giao cho tập chuỗi khớp
+mọi vị trí của mẫu; một itemset phổ biến vì thế là một motif có khoảng trống (các vị trí không cần liền nhau).
+Phải giữ vị trí trong item: trên dữ liệu gốc, 93\% chuỗi N có ``GT'' ở đâu đó trong chuỗi, nhưng ``GT tại $+1,+2$''
+có ở 98,8\% chuỗi EI và chỉ 5,9\% chuỗi N (dữ liệu đã làm sạch). Mã hóa thứ hai thay base bằng nhóm hóa học:
+R (purin, A hoặc G) và Y (pyrimidin, C hoặc T), 120 item. Trước acceptor có một vùng giàu pyrimidin nhưng từng
+vị trí có thể là C hoặc T, nên mỗi item C hoặc T đạt minsup ở $-15..-5$ chỉ có ở 33,8--46,1\% chuỗi IE; gộp
+thành Y thì tín hiệu lộ ra. Hai mã hóa chạy riêng, vì gộp chung thì ``C tại $p$'' luôn kéo theo ``Y tại $p$'' và
+sinh ra các tổ hợp hiển nhiên.
+
+\textbf{Khai thác riêng từng lớp, N là đối chứng.} Ba lớp có kích thước khác nhau (EI 22,6\%, IE 22,4\%, N
+55,0\%), nên một ngưỡng chung trên toàn dữ liệu sẽ cho ngưỡng thực tế khác nhau ở mỗi lớp. Nhóm chạy Eclat
+riêng trên ba CSDL EI, IE, N với cùng minsup tương đối; lớp N được xử lý y hệt nên là nhóm đối chứng. Mọi
+itemset đều do hàm \texttt{eclat} của nhóm sinh ra. Để biết một mẫu của lớp EI có tỉ lệ bao nhiêu trong lớp N,
+nhóm đếm lại số chuỗi chứa mẫu ở cả ba lớp; ở chính lớp đã khai thác, số đếm lại phải bằng support của Eclat,
+nếu khác thì chương trình báo lỗi. Hai chỉ số dùng ở dưới: confidence của luật ``mẫu → lớp'' là
+$P(\text{lớp} \mid \text{mẫu})$, tức tỉ lệ chuỗi thuộc lớp trong số chuỗi chứa mẫu, tính trên cả 3.004 chuỗi;
+lift của một cặp item $a$, $b$ trong một lớp là $P(a,b)/(P(a)P(b))$, lớn hơn 1 khi hai item cùng xuất hiện
+nhiều hơn mức kỳ vọng nếu độc lập.
+
+\textbf{Chọn minsup theo mức nền.} Ở một vị trí bất kỳ, mỗi base chiếm khoảng 1/4 số chuỗi (R hoặc Y khoảng
+1/2), nên minsup phải cao hơn mức nền này thì item phổ biến mới có ý nghĩa. Bảng~\ref{tab:splice-counts} cho
+thấy lớp N có đủ 240 item đơn ở 20\%, 115 ở 25\% và 0 ở 30\%; với R/Y, có 59 ở 50\% và 0 ở 60\%. Nhóm chọn 30\% (nucleotide) và 60\% (R/Y), mức đầu tiên của dải mà lớp đối chứng hoàn toàn
+trống. Không chọn 40\% vì mất hẳn vị trí $-3$ của mẫu chuẩn donor (\texttt{-3C} có ở 39,0\%, \texttt{-3A} ở
+31,7\% chuỗi EI); không chọn 20--25\% vì ngưỡng đã chạm mức nền và số itemset của EI tăng lên 866 rồi 2.324
+mà phần tăng thêm không phân biệt được với nhiễu. Ở mọi minsup đã chạy, lớp N không có itemset nào từ hai item
+trở lên, ở cả hai mã hóa (Hình~\ref{fig:splice-counts}).
+
+\begin{table}[t]
+\caption{Số itemset phổ biến theo lớp và minsup (mã hóa nucleotide; hai hàng cuối: R/Y). ``Tối đại'': itemset không
+nằm trong itemset phổ biến nào lớn hơn; ``Dài nhất'': số item của itemset dài nhất}
+\label{tab:splice-counts}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+minsup & EI & IE & N & Tối đại EI / IE & Dài nhất EI / IE \\
+\midrule
+50\% & 31 & 7 & 0 & 4 / 1 & 4 / 3 \\
+40\% & 63 & 59 & 0 & 6 / 14 & 5 / 3 \\
+\textbf{30\%} & \textbf{286} & \textbf{304} & \textbf{0} & 49 / 56 & 5 / 4 \\
+25\% & 866 & 640 & 115 & 141 / 117 & 6 / 4 \\
+20\% & 2.324 & 1.303 & 240 & 334 / 218 & 6 / 4 \\
+\midrule
+R/Y 50\% & 460 & 3.632 & 59 & 69 / 383 & 6 / 7 \\
+R/Y \textbf{60\%} & \textbf{103} & \textbf{785} & \textbf{0} & 6 / 89 & 6 / 6 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{splice/itemset_counts.pdf}
+\caption{Số itemset phổ biến có ít nhất 2 item của từng lớp theo minsup, hai mã hóa. Đường của lớp đối chứng N
+bằng 0 ở mọi mức}
+\label{fig:splice-counts}
+\end{figure}
+
+\textbf{Kết quả: Eclat tìm lại quy tắc GT-AG.} Ở 30\%, EI có 286 itemset nhưng chỉ 49 itemset tối đại; mọi
+itemset khác là tập con của chúng nên báo cáo trình bày itemset tối đại (Bảng~\ref{tab:splice-patterns}). Lọc
+tối đại là bước hậu xử lý trên kết quả Eclat, không khai thác lại. Motif donor dài nhất có support cao nhất là
+\texttt{-1G +1G +2T +4A +5G}: có ở 318/679 chuỗi EI (46,8\%) và 0/1.653 chuỗi N. Trong các item đơn phổ biến của EI ở minsup
+30\%, mười item có tỉ lệ ít nhất 1,5 lần so với N, và cả mười đều nằm trong vùng $-3..+6$ (Hình~\ref{fig:splice-enrich}), khớp mẫu chuẩn donor
+\texttt{MAG|GTRAGT} (M là A hoặc C, R là A hoặc G, dấu | là ranh giới). Ở IE, lõi acceptor \texttt{-3C -2A -1G}
+có ở 78,0\% chuỗi IE và 2,2\% chuỗi N; ở mã hóa R/Y, \texttt{-7Y -6Y -5Y -3Y -2R -1R} có ở 64,6\% chuỗi IE và
+1,4\% chuỗi N, tức vùng giàu pyrimidin ngay trước AG.
+
+\begin{table}[t]
+\caption{Itemset tối đại dài nhất của mỗi lớp, chọn theo support cao nhất: ba mẫu cho EI và IE (nucleotide,
+minsup 30\%), một mẫu cho mỗi lớp ở R/Y (60\%); \texttt{-8C -3C -2A -1G} hòa 35,6\% với hàng IE thứ ba. Tỉ lệ: phần trăm chuỗi của lớp chứa mẫu; N: phần trăm chuỗi
+lớp N chứa mẫu (đếm lại); conf.: confidence của luật ``mẫu → lớp''}
+\label{tab:splice-patterns}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{@{}llrrr@{}}
+\toprule
+Lớp & Itemset & Tỉ lệ & N & conf. \\
+\midrule
+EI & \texttt{-1G +1G +2T +4A +5G} & 46,8\% & 0\% & 0,98 \\
+EI & \texttt{-2A -1G +1G +2T +5G} & 38,0\% & 0\% & 0,93 \\
+EI & \texttt{+1G +2T +3G +4A +5G} & 35,5\% & 0\% & 0,98 \\
+IE & \texttt{-6C -3C -2A -1G} & 38,5\% & 0,5\% & 0,79 \\
+IE & \texttt{-3C -2A -1G +1G} & 36,6\% & 0,8\% & 0,59 \\
+IE & \texttt{-11T -3C -2A -1G} & 35,6\% & 0,6\% & 0,87 \\
+IE (R/Y) & \texttt{-7Y -6Y -5Y -3Y -2R -1R} & 64,6\% & 1,4\% & 0,89 \\
+EI (R/Y) & \texttt{-1R +1R +2Y +3R +4R +5R} & 66,3\% & 1,7\% & 0,85 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{splice/position_enrichment.pdf}
+\caption{Tỉ lệ của từng item đơn phổ biến (minsup 30\%) trong lớp EI hoặc IE chia cho tỉ lệ trong lớp N, theo vị trí. Các item tăng
+mạnh tập trung quanh ranh giới, đúng vùng mẫu chuẩn}
+\label{fig:splice-enrich}
+\end{figure}
+
+\textbf{Điều Eclat cho biết thêm so với mẫu chuẩn.} Thứ nhất, chỉ GT chưa đủ: luật \texttt{+1G +2T} → EI có
+confidence 0,77, còn \texttt{-1G +1G +2T +4A +5G} → EI có confidence 0,98. Vị trí cắt nối được nhận ra nhờ cả
+một cụm nucleotide, không chỉ hai base. Thứ hai, mẫu chuẩn đầy đủ \texttt{MAGGTRAGT} (từ $-3$) chỉ khớp 27/679
+chuỗi EI (4,0\%), gần với con số 4\% mà tài liệu đi kèm bộ dữ liệu ghi cho luật khớp chính xác (luật đó còn
+thêm điều kiện không có codon dừng và tính trên dữ liệu chưa làm sạch). Vị trí cắt nối
+thật chỉ khớp từng phần của mẫu chuẩn, và Eclat cho biết những tổ hợp nào thực sự hay đi cùng nhau, với tần suất
+bao nhiêu; điều này hợp với nhận xét rằng vị trí donor rất đa dạng và phần lớn được nhận ra nhờ bắt cặp base với
+U1 snRNA (một phân tử RNA nhỏ trong bộ máy cắt nối)~\cite{roca2013pick}. Thứ ba, có 8/767 donor gốc không có GT tại $+1,+2$: một chuỗi toàn ký tự mơ hồ quanh
+ranh giới và 7 ngoại lệ thật, trong đó 4 là GC (\texttt{+1G +2C}).
+
+\textbf{Phụ thuộc giữa hai vị trí.} Với mỗi itemset 2 item phổ biến, nhóm tính lift và kiểm $\chi^2$ trên bảng
+$2 \times 2$ (có/không có từng item), chỉ đọc các cặp có mọi ô kỳ vọng $\ge 5$. Lift chưa đủ vì không cho biết
+độ lệch có vượt dao động ngẫu nhiên không; ngược lại, cặp \texttt{+1G,+2T} có ở gần mọi chuỗi EI nên một ô kỳ
+vọng chưa tới 1 chuỗi và $\chi^2$ ra 168 dù lift chỉ 1,003, nên bị loại. Kiểm nhiều cặp cùng lúc phải hiệu chỉnh
+Bonferroni: cặp được kiểm đã bị chọn theo chính số lần hai vị trí cùng xuất hiện (đạt minsup), nên số phép kiểm
+$m$ phải là mọi cặp item đơn phổ biến ở hai vị trí khác nhau có đủ điều kiện kỳ vọng, đạt minsup hay không,
+cộng qua bốn nhóm (EI, IE × hai mã hóa): $m = 858 + 1.522 + 18 + 244 = 2.642$. Một cặp được coi là phụ thuộc khi
+\begin{equation}
+p < \frac{\alpha}{m} = \frac{0{,}05}{2.642} \approx 1{,}89 \cdot 10^{-5}
+\iff \chi^2 > 18{,}29,
+\label{eq:bonferroni}
+\end{equation}
+với $p$ là giá trị p của phép kiểm $\chi^2$ (1 bậc tự do) và $\alpha = 0{,}05$ là mức ý nghĩa chung. Nếu chỉ chia
+cho 133 cặp thật sự được kiểm thì ngưỡng quá dễ. Ở EI (nucleotide) có 105 cặp đạt minsup, 23 cặp đủ điều kiện kỳ vọng và 6 cặp qua ngưỡng;
+ba trong số đó nối một vị trí phía exon với một vị trí phía intron và có lift $< 1$ (\texttt{-1G,+6T} lift 0,87,
+$\chi^2 = 44{,}4$; \texttt{-1G,+4A} 0,95; \texttt{-2A,+5G} 0,94). Rộng hơn, trong 23 cặp đủ điều kiện có 8 cặp nối
+hai phía của ranh giới trong vùng $-3..+6$, và 7/8 cặp có lift $< 1$ (chỉ 3 cặp trong đó qua ngưỡng hiệu chỉnh). Xu hướng chung là hai phía của mẫu chuẩn cùng khớp
+\emph{ít hơn} mức kỳ vọng nếu độc lập; một mô hình coi mỗi vị trí độc lập sẽ bỏ sót điều này. Quan sát này phù
+hợp với nhận xét rằng các vị trí của tín hiệu donor phụ thuộc nhau~\cite{burge1997prediction}, nhưng dữ liệu
+không cho biết cơ chế.
+
+\textbf{Giới hạn.} Đồng xuất hiện không chứng minh cơ chế. Dữ liệu chỉ gồm linh trưởng, lấy từ GenBank cũ (bộ
+dữ liệu tặng cuối năm 1991) và chỉ một cửa sổ 60 nucleotide, nên không đại diện cho genome hiện nay. Confidence
+của luật ``mẫu → lớp'' phụ thuộc tỉ lệ lớp do người dựng bộ dữ liệu chọn (N chiếm khoảng một nửa), không phải tỉ lệ trong
+genome thật; vì vậy khi so giữa các lớp, nhóm dùng tỉ lệ so với N (Hình~\ref{fig:splice-enrich}). Không tìm
+thấy mẫu nào có thể gán cho điểm nhánh (branch point, một vị trí bên trong intron tham gia phản ứng cắt nối);
+cách mã hóa theo vị trí cố định chỉ bắt được tín hiệu nằm ở vị trí cố định so với ranh giới, và dữ liệu không
+cho biết điểm nhánh nằm ở đâu, nên không kết luận gì về nó. Chỉ cặp đạt minsup mới được
+kiểm $\chi^2$, nên hai vị trí né nhau mạnh có thể không xuất hiện. Toàn bộ phân tích chạy lại được bằng
+\texttt{julia --project scripts/splice\_patterns.jl}; phần ``Ứng dụng 2'' của notebook demo chạy script này vào
+thư mục tạm và so mọi bảng vừa tạo với bản đã commit.

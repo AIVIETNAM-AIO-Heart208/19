@@ -1,10 +1,10 @@
 % Tóm tắt: viết lại khi các chương đã đủ; số liệu lấy từ docs/report/*.md và results/.
 \begin{abstract}
 Báo cáo trình bày việc cài đặt lại thuật toán Eclat của Zaki~\cite{zaki2000scalable} bằng Julia để khai thác
-tập phổ biến (frequent itemset), với hai biểu diễn dữ liệu dọc: danh sách giao dịch (TID-list) và vector bit
-(bitset). Cả hai bản cho kết quả trùng khớp hoàn toàn với SPMF~\cite{fournierviger2014spmf} trên 27 trường hợp
-kiểm thử nhỏ và 35 cấu hình trên năm bộ dữ liệu chuẩn. Trên dữ liệu tổng hợp dày, bản bitset nhanh hơn bản
-TID-list khoảng 31 lần; trên dữ liệu thưa, bản bitset tốn nhiều bộ nhớ hơn. Nhóm đề xuất (chưa cài đặt) chọn
+tập phổ biến (frequent itemset mining), với hai biểu diễn dữ liệu dọc: danh sách giao dịch (TID-list) và vector bit
+(bitset). Cả hai bản khớp với SPMF~\cite{fournierviger2014spmf} trên 27 trường hợp kiểm thử nhỏ; bản bitset
+còn khớp toàn bộ itemset và support ở 35 cấu hình trên năm bộ dữ liệu benchmark. Trên dữ liệu tổng hợp dày, bản bitset nhanh hơn bản
+cơ bản (TID-list) khoảng 31 lần; trên dữ liệu thưa, bản bitset tốn nhiều bộ nhớ hơn. Nhóm đề xuất (chưa cài đặt) chọn
 TID-list hay bitset theo support của từng nút cho điểm yếu này, và dùng diffset để thu gọn TID-list trên dữ
 liệu dày. Hai ứng dụng dùng chính cài đặt của nhóm: phân tích giỏ hàng trên UCI Online Retail và khai thác mẫu DNA
 quanh vị trí cắt nối gen trên bộ UCI Splice-junction, trong đó Eclat tìm lại được quy tắc GT-AG đã biết và cho

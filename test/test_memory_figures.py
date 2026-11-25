@@ -88,6 +88,11 @@ class MemoryFigureTests(unittest.TestCase):
                 self.assertTrue(all(height > 0 for height in heights))
             figures.plt.close("all")
 
+    def test_labels_follow_the_report_glossary(self):
+        self.assertEqual(figures.MINER_LABELS, {"baseline": "Bản cơ bản (TID-list)", "bitset": "Bản bitset"})
+        self.assertEqual(figures.vi_number(1264032.0), "1.264.032")
+        self.assertEqual(figures.vi_number(254.6), "254,6")
+
 
 if __name__ == "__main__":
     unittest.main()

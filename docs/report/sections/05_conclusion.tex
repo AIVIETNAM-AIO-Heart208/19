@@ -1,5 +1,43 @@
+% Kết luận. Số liệu lấy lại từ các mục trước (nguồn: docs/report/*.md, docs/splice_notes.md, results/);
+% phần Ứng dụng 1 lấy từ docs/report/market_basket.md và results/metrics/online_retail_rules.md.
 \section{Kết luận}
 \label{sec:conclusion}
 
-\textbf{[Chưa viết.]} Dàn ý dự kiến: tóm tắt kết quả ba phần (khớp SPMF, đánh đổi giữa TID-list và bitset, hai
-ứng dụng), các giới hạn chính và hướng phát triển.
+Nhóm đã cài đặt lại Eclat~\cite{zaki2000scalable} bằng Julia với hai biểu diễn dữ liệu dọc. Bản cơ bản dùng
+TID-list và giao hai danh sách đã sắp; bản tối ưu dùng bitset và thay phép giao bằng phép AND từng từ máy. Cả hai
+bản khớp SPMF từng itemset và support trên 27 trường hợp kiểm thử nhỏ, và bản bitset khớp trên cả 35/35 cấu hình
+của năm bộ dữ liệu benchmark (Mục~\ref{sec:impl} và~\ref{sec:eval-correct}).
+
+Bitset gọn hay tốn bộ nhớ hơn TID-list tùy vào support của các item còn lại sau khi lọc theo minsup, và nhãn dày
+hay thưa của cả CSDL không đủ để dự đoán điều này. Theo (\ref{eq:breakeven}), bitset gọn hơn khi support tương đối
+của item trên khoảng 1,56\%: nó giảm RAM đỉnh ở Accidents 80\% từ 665,6 xuống 433,4 MB nhưng tốn bộ nhớ hơn ở
+Retail 0,1\% (386,3 so với 314,3 MB). Khi chỉ đo lời gọi khai thác, bitset nhanh hơn bản cơ bản ở cả sáu cấu hình
+đo trên dữ liệu thật, từ 1,25 lần (Retail 0,1\%) đến khoảng 146 lần (Chess 75\%). So với SPMF
+theo thời gian toàn trình, bản bitset nhanh hơn ở 10/35 cấu hình, là các cấu hình có ít item phổ biến với support rất
+cao và có khối lượng tính toán đủ lớn để bù chi phí cố định của Julia (Chess từ 70\% xuống 60\%, toàn bộ Accidents). SPMF nhanh hơn ở 25/35 cấu hình còn lại: các tác vụ nhỏ, nơi Julia mất gần
+cố định khoảng 1,4 giây mỗi lần chạy, và hai bộ thưa, chênh nhiều nhất 7,41 lần ở Retail 0,1\%. Trong dải đã đo,
+thời gian trên Accidents tăng gần tuyến tính theo số giao dịch, còn trên dữ liệu tổng hợp, tăng độ dài giao dịch
+$L$ từ 8 lên 24 (kéo theo mật độ và đồng xuất hiện tăng) đi cùng thời gian tăng khoảng 25,7 lần, với bước nhảy
+khi xuất hiện các cặp item phổ biến.
+
+Hai ứng dụng đều chạy bằng chính cài đặt của nhóm trên dữ liệu thực. Trên 19.775 hóa đơn của UCI Online
+Retail~\cite{chen2015onlineretail}, minsup 1\% cho 2.007 itemset phổ biến và 956 luật đạt minconf 50\%; mười luật có
+lift cao nhất (76,83--78,78) đều thuộc cùng một dòng thẻ đánh dấu cây gia vị, gợi ý các bộ sản phẩm để thử trưng
+bày liền kề hoặc bán kèm. Trên bộ UCI Splice-junction~\cite{uci1991splice}, Eclat tìm lại quy tắc GT-AG mà
+không được cho trước: motif donor \texttt{-1G +1G +2T +4A +5G} có ở 46,8\% chuỗi donor và không có ở chuỗi nào của
+lớp đối chứng, và lớp đối chứng không có itemset nào từ hai item trở lên ở mọi minsup đã chạy. Khác với một chuỗi
+mẫu chuẩn, itemset cho biết từng phần của mẫu đáng tin đến đâu: luật ``→ donor'' có confidence 0,77 khi chỉ dựa vào GT và 0,98 khi dùng cả cụm năm
+vị trí. Ở lớp donor, các vị trí hai phía ranh giới có xu hướng cùng khớp ít hơn mức kỳ vọng nếu độc lập.
+
+\textbf{Giới hạn.} Thời gian so với SPMF và bộ nhớ được đo trên hai máy khác nhau, nên so sánh chéo chỉ để ước
+lượng độ lớn. Thời gian so với SPMF là thời gian toàn trình, gồm khởi động, JIT và đọc ghi; các nhận định về
+nguyên nhân dựa trên cấu trúc mã và công thức kích thước, chưa có profile từng pha. Trong hai ứng dụng, đồng xuất
+hiện không chứng minh quan hệ nhân quả: luật giỏ hàng mô tả các hóa đơn đã quan sát, chưa đo tác động lên tỉ
+lệ mua; mẫu DNA không cho biết cơ chế sinh học và chỉ đại diện cho một bộ dữ liệu linh trưởng nhỏ, cũ, còn
+confidence của luật ``mẫu → lớp'' phụ thuộc tỉ lệ lớp do người dựng bộ dữ liệu chọn.
+
+\textbf{Hướng phát triển.} Theo Mục~\ref{sec:eval-future}, bước tiếp theo là chọn TID-list hay bitset theo support
+của từng nút, nhắm vào điểm yếu đo được ở Retail 0,1\% (chậm hơn SPMF và tốn bộ nhớ hơn bản cơ bản), và dùng
+diffset~\cite{zaki2003fast} để thu gọn TID-list trên dữ liệu dày. Cả hai hướng cần được cài đặt và đo lại, cùng với
+phép đo tách riêng các pha (khởi động, đọc dữ liệu, khai thác, ghi kết quả) trên cùng một máy để định lượng phần
+chi phí cố định của Julia.
