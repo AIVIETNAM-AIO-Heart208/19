@@ -104,8 +104,9 @@ số chuỗi (R hoặc Y chiếm khoảng 1/2). Một item chỉ phổ biến �
   còn 0. Vậy 30% và 60% là mức đầu tiên của dải mà lớp đối chứng hoàn toàn trống.
 - Không chọn 40%: mất hẳn vị trí -3 của mẫu chuẩn donor (`-3C` có ở 39,0% chuỗi EI, `-3A` 31,7%), và EI
   chỉ còn 63 itemset.
-- Không chọn 20–25%: số itemset của EI tăng lên 866 (25%) và 2324 (20%), trong khi ngưỡng đã chạm mức
-  nền nên phần tăng thêm không còn phân biệt được với nhiễu.
+- Không chọn 20–25%: ngưỡng đã chạm mức nền, lớp N có 115 (25%) rồi đủ 240 (20%) item đơn đạt ngưỡng.
+  Số itemset của EI tăng lên 866 (25%) và 2324 (20%); riêng support trong lớp EI chưa đủ để kết luận phần
+  tăng thêm đặc trưng cho EI (chưa so từng mẫu tăng thêm với lớp N).
 - Không chọn 50% cho R/Y: IE có 3632 itemset, quá nhiều để đọc; 70% thì mẫu dài nhất của IE chỉ còn 5 item.
 
 ## 6. Bỏ chuỗi trùng trong cùng lớp
