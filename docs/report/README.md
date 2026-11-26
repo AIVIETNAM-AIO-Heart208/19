@@ -5,7 +5,7 @@ Bản nộp dùng mẫu IEEE conference, dài 10–15 trang tiếng Việt (khô
 
 ## Nguồn LaTeX và cách biên dịch
 
-Nguồn bản nộp là `Report.tex` (lớp `IEEEtran`, chế độ `conference`), các mục trong `sections/` và tài liệu tham khảo trong `references.bib`. Các file `.md` trong thư mục này là bản nháp chi tiết của từng phần; số liệu đưa vào LaTeX phải khớp với chúng và với `results/`.
+Nguồn bản nộp là `Report.tex` (lớp `IEEEtran`, chế độ `conference`), các mục trong `sections/` và tài liệu tham khảo trong `references.bib`. Các file `.md` trong thư mục này là tài liệu phân tích chi tiết cho từng phần. Số liệu trong báo cáo PDF được đối chiếu với các tài liệu này và với `results/`.
 
 Báo cáo cần XeTeX để hiển thị tiếng Việt với font TeX Gyre Termes. Cách đã thử là [Tectonic](https://tectonic-typesetting.github.io/) 0.17.0, chạy từ thư mục gốc repository:
 

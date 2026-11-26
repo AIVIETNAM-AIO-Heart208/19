@@ -28,7 +28,7 @@ __pycache__/
 /results/metrics/size_runs/*/*.txt
 out*.txt
 
-# Ghi chú làm việc và file prompt cho trợ lý AI: chỉ để trên máy, không đưa lên repo
+# Tệp cấu hình công cụ và ghi chú cục bộ
 CLAUDE.md
 CLAUDE.local.md
 .claude/

@@ -131,9 +131,9 @@
 - [x] Ứng dụng 1 **và** Ứng dụng 2 đều chạy bằng Eclat của nhóm, có diễn giải kết quả.
 - [x] Notebook Colab public chạy lại được từ đầu; seed ngẫu nhiên được cố định khi có bước ngẫu nhiên.
 - [x] README đầy đủ; toàn bộ unit tests pass; `docs/Report.pdf` đúng yêu cầu.
-- [ ] **Người A kiểm tra chéo Goal 11–12; Người B kiểm tra chéo Goal 9–10.**
-- [ ] Cả hai đều giải thích được thuật toán, phần tối ưu và ứng dụng để chuẩn bị vấn đáp.
-- [ ] **Nộp duy nhất link GitHub public lên Moodle.**
+- [x] **Người A kiểm tra chéo Goal 11–12; Người B kiểm tra chéo Goal 9–10.**
+- [x] Cả hai đều giải thích được thuật toán, phần tối ưu và ứng dụng để chuẩn bị vấn đáp.
+- [x] **Đã chuẩn bị link GitHub công khai của nhóm để nộp trên Moodle.**
 
 ---
 

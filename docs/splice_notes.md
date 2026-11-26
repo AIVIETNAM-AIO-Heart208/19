@@ -239,7 +239,7 @@ tạo với bản đã commit và so mã SHA-256 ghi trong `results/figures/spli
 trước khi hiện hai hình. Ghi vào thư mục tạm để chạy notebook không ghi đè kết quả đã commit, giống cách phần
 Ứng dụng 1 ghi bảng luật ra thư mục tạm.
 
-**Cách đặt code:** giống Ứng dụng 1 của trưởng nhóm (hàm trong `src/applications/`, script trong `scripts/`,
+**Tổ chức mã nguồn** theo cùng cấu trúc với ứng dụng giỏ hàng (hàm trong `src/applications/`, script trong `scripts/`,
 notebook gọi script).
 
 ## Kết quả chính
