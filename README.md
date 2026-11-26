@@ -15,7 +15,7 @@
 
 [Mở demo trên Google Colab](https://colab.research.google.com/github/AIVIETNAM-AIO-Heart208/eclat-mining/blob/main/notebooks/demo.ipynb)
 
-Kết nối runtime và chọn **Runtime → Run all**. Notebook khởi tạo môi trường Julia, chuẩn bị năm bộ dữ liệu benchmark trong `data/processed/` rồi chạy lần lượt hai ứng dụng bằng Eclat của nhóm.
+Kết nối runtime và chọn **Runtime → Run all**. Notebook khởi tạo môi trường Julia, chạy lần lượt hai ứng dụng bằng Eclat của nhóm rồi chuẩn bị năm bộ dữ liệu benchmark trong `data/processed/`.
 
 - **Phân tích giỏ hàng** hiển thị 10 luật có lift cao nhất tại minsup 1% và minconf 50%. Có thể đối chiếu với [bảng kết quả tham chiếu](results/metrics/online_retail_rules.md). [Nguồn UCI Online Retail](https://archive.ics.uci.edu/dataset/352/online+retail) · [Báo cáo ứng dụng](docs/report/market_basket.md)
 - **Phân tích mẫu DNA quanh vị trí cắt nối gen** tự kiểm tra cả 8 bảng CSV với bản đã lưu, xác nhận SHA-256 của dữ liệu dùng để vẽ hai biểu đồ và hiển thị hai hình đã lưu. [Nguồn UCI Splice-junction](https://doi.org/10.24432/C5M888) · [Phân tích kết quả](docs/splice_notes.md)
