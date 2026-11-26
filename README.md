@@ -13,7 +13,7 @@
 
 ## Demo trên Google Colab
 
-[Mở demo trên Google Colab](https://colab.research.google.com/github/AIVIETNAM-AIO-Heart208/eclat-mining/blob/main/notebooks/demo.ipynb)
+[Mở demo trên Google Colab](https://colab.research.google.com/github/AIVIETNAM-AIO-Heart208/14/blob/main/notebooks/demo.ipynb)
 
 Kết nối runtime và chọn **Runtime → Run all**. Notebook khởi tạo môi trường Julia, chạy lần lượt hai ứng dụng bằng Eclat của nhóm rồi chuẩn bị năm bộ dữ liệu benchmark trong `data/processed/`.
 
