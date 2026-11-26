@@ -31,8 +31,8 @@ Script tải raw còn thiếu theo URL trong manifest, kiểm tra checksum trư�
 nhưng sai checksum bị từ chối và giữ nguyên. Output chỉ được thay khi chuẩn hóa
 xong, đủ số giao dịch và khớp checksum dự kiến. File đã đúng checksum được tái sử
 dụng. Cuối cùng script kiểm tra thống kê theo dòng, không giữ nhiều bản CSDL lớn
-trong RAM. [Notebook demo](../notebooks/demo.ipynb) gọi script này ngay sau khi
-khởi tạo môi trường Julia.
+trong RAM. [Notebook demo](../notebooks/demo.ipynb) chạy ứng dụng giỏ hàng rồi
+ứng dụng splice-junction trước khi gọi script này để chuẩn bị năm bộ benchmark.
 
 ## Quy tắc sử dụng
 

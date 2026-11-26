@@ -74,12 +74,12 @@ xác. Số lẻ chỉ được làm tròn khi hiển thị. Chương trình ki�
   **93,25%** (221/237) và lift **76,83**. Cặp này có số giỏ đồng xuất hiện
   cao hơn hai bộ ba trên, nên là ứng viên cho một gói hai sản phẩm.
 
-Cả 10 luật tập trung vào cùng dòng thẻ đánh dấu cây gia vị. Các luật ngược
-chiều của cùng một cặp vế có chung lift và có thể khác confidence. Nhóm
-có thể dùng vài bộ sản phẩm phân biệt để thử trưng bày liền kề hoặc gợi ý bán
-kèm. Dữ liệu mô tả hành vi trong các hóa đơn quan sát được. Để đo tác động
-lên tỷ lệ mua, cần kiểm tra trên giao dịch mới hoặc thực hiện thử nghiệm
-có nhóm so sánh.
+Cả 10 luật thuộc dòng thẻ đánh dấu cây gia vị, tạo thành 5 cặp thuận/nghịch
+và quy về 3 bộ sản phẩm khi gộp hai vế. Hai chiều có cùng lift, còn confidence
+theo từng chiều giúp chọn lời gợi ý để thử nghiệm, chẳng hạn gợi ý Thyme khi
+giỏ đã có Rosemary và Parsley. Dữ liệu mô tả hành vi trong các hóa đơn quan
+sát được. Để đo tác động lên tỷ lệ mua, cần kiểm tra trên giao dịch mới
+hoặc thực hiện thử nghiệm có nhóm so sánh.
 
 ## Tái lập
 
