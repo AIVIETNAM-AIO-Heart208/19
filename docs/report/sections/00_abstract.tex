@@ -4,7 +4,7 @@ Báo cáo trình bày việc cài đặt lại thuật toán Eclat của Zaki~\c
 tập phổ biến (frequent itemset mining), với hai biểu diễn dữ liệu dọc: danh sách giao dịch (TID-list) và vector bit
 (bitset). Cả hai bản khớp với SPMF~\cite{fournierviger2014spmf} trên 27 trường hợp kiểm thử nhỏ; bản bitset
 còn khớp toàn bộ itemset và support ở 35 cấu hình trên năm bộ dữ liệu benchmark. Trên dữ liệu tổng hợp dày, bản bitset nhanh hơn bản
-cơ bản (TID-list) khoảng 31 lần; trên dữ liệu thưa, bản bitset tốn nhiều bộ nhớ hơn. Nhóm đề xuất (chưa cài đặt) chọn
+cơ bản (TID-list) khoảng 31 lần; trên Retail ở minsup 0,1\%, bản bitset tốn nhiều bộ nhớ hơn. Nhóm đề xuất (chưa cài đặt) chọn
 TID-list hay bitset theo support của từng nút cho điểm yếu này, và dùng diffset để thu gọn TID-list trên dữ
 liệu dày. Hai ứng dụng dùng chính cài đặt của nhóm: phân tích giỏ hàng trên UCI Online Retail và khai thác mẫu DNA
 quanh vị trí cắt nối gen trên bộ UCI Splice-junction, trong đó Eclat tìm lại được quy tắc GT-AG đã biết và cho
