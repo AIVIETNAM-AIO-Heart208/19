@@ -179,7 +179,8 @@ còn nút dùng TID-list có ít hơn N/64 phần tử. Số liệu hiện có c
   phụ thuộc mạnh vào dữ liệu (Chess tăng 410 lần, Accidents 73 lần trong dải
   đã chọn).
 - **Scalability:** Accidents ở 75% tăng gần tuyến tính theo số giao dịch;
-  Retail ở 0,1% tăng nhưng T/N dao động, chưa đủ để kết luận tuyến tính.
+  Retail ở 0,1% tăng gần tuyến tính trong dải 10–100% (N tăng ~10 lần, thời gian
+  tăng ~7,97 lần) dù T/N dao động.
   Tăng độ dài giao dịch (L từ 8 lên 24) làm runtime tăng khoảng 25,7 lần, có
   bước nhảy khi xuất hiện cặp item phổ biến.
 - **Bộ nhớ:** peak RSS phần lớn là runtime Julia cùng dữ liệu đã đọc (236–380
