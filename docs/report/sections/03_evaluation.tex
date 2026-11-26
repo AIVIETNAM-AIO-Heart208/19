@@ -233,10 +233,10 @@ T10I4D100K 0,75\% & 463 & 1,88\% & 10.807.440 & 5.818.984 & 1,86 \\
 \label{fig:memory}
 \end{figure*}
 
-\textbf{Khi nào bitset gọn hơn.} Một item có support tuyệt đối $s$ tốn $8s$ byte nếu lưu TID-list số nguyên 64
+\textbf{Khi nào bitset gọn hơn.} Một item có support tuyệt đối $\sigma$ tốn $8\sigma$ byte nếu lưu TID-list số nguyên 64
 bit, nhưng luôn tốn khoảng $N/8$ byte nếu lưu mask $N$ bit. Hai cách bằng nhau khi
 \begin{equation}
-8s = \frac{N}{8} \iff \frac{s}{N} = \frac{1}{64} \approx 1{,}56\%,
+8\sigma = \frac{N}{8} \iff \frac{\sigma}{N} = \frac{1}{64} \approx 1{,}56\%,
 \label{eq:breakeven}
 \end{equation}
 nên tỉ lệ TID-list / bitset xấp xỉ $64\bar{s}$. Bảng~\ref{tab:vertical} và Hình~\ref{fig:memory} khớp quy luật
@@ -381,7 +381,7 @@ MB). (4) Nhãn dày/thưa của cả CSDL không đủ để dự đoán: điề
 Cả hai hướng dưới đây là đề xuất, nhóm chưa cài đặt và chưa đo.
 
 \textbf{Hướng 1: chọn TID-list hay bitset theo support của từng nút.} Khi tạo một nút (item đơn ở gốc hoặc kết
-quả một phép giao), lưu mask nếu support $s \ge N/64$ và lưu TID-list đã sắp nếu $s < N/64$, theo
+quả một phép giao), lưu mask nếu support $\sigma \ge N/64$ và lưu TID-list đã sắp nếu $\sigma < N/64$, theo
 (\ref{eq:breakeven}); dùng số nguyên 32 bit cho TID (mọi bộ benchmark có $N < 2^{31}$) thì ngưỡng chuyển thành
 $N/32$. Cần ba kiểu giao: mask với mask (AND từng từ máy), danh sách với danh sách (trộn hai danh sách đã sắp như
 bản cơ bản), và danh sách với mask (kiểm bit của từng TID, chi phí $O(|\text{danh sách}|)$). Support của kết quả
